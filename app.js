@@ -50,6 +50,8 @@ const dom = {
   gameCategory: $("#gameCategory"),
   listCategory: $("#listCategory"),
   wordCategoryInput: $("#wordCategoryInput"),
+  bulkCategoryInput: $("#bulkCategoryInput"),
+  bulkTextInput: $("#bulkTextInput"),
   cardEmoji: $("#cardEmoji"),
   cardWord: $("#cardWord"),
   cardMeaning: $("#cardMeaning"),
@@ -64,6 +66,7 @@ const dom = {
   fxLayer: $("#fxLayer"),
   soundToggle: $("#soundToggle"),
   wordDialog: $("#wordDialog"),
+  bulkDialog: $("#bulkDialog"),
   catDialog: $("#catDialog"),
   profileDialog: $("#profileDialog"),
   wordInput: $("#wordInput"),
@@ -358,11 +361,14 @@ function bindEvents() {
   dom.listCategory.addEventListener("change", () => selectCategory(dom.listCategory.value));
 
   $("#addWordBtn").addEventListener("click", () => openWordDialog());
+  $("#bulkAddBtn").addEventListener("click", openBulkDialog);
   $("#addCatBtn").addEventListener("click", () => dom.catDialog.showModal());
   $("#deleteCatBtn").addEventListener("click", deleteSelectedCategory);
   $("#closeWordDialog").addEventListener("click", () => dom.wordDialog.close());
+  $("#closeBulkDialog").addEventListener("click", () => dom.bulkDialog.close());
   $("#closeCatDialog").addEventListener("click", () => dom.catDialog.close());
   $("#saveWordBtn").addEventListener("click", saveWordFromDialog);
+  $("#saveBulkBtn").addEventListener("click", saveBulkWordsFromDialog);
   $("#saveCatBtn").addEventListener("click", saveCategoryFromDialog);
 
   $("#profileBtn").addEventListener("click", () => {
@@ -524,7 +530,9 @@ function renderSelects() {
   });
 
   dom.wordCategoryInput.innerHTML = noAll;
+  dom.bulkCategoryInput.innerHTML = noAll;
   if (!dom.wordCategoryInput.value) dom.wordCategoryInput.value = "day1";
+  if (!dom.bulkCategoryInput.value) dom.bulkCategoryInput.value = "day1";
 }
 
 function renderCard() {
@@ -1052,6 +1060,77 @@ async function saveCategoryRemote(category) {
     updatedAt: serverTimestamp(),
     updatedBy: state.firebaseUser.uid
   }, { merge: true });
+}
+
+function openBulkDialog() {
+  dom.bulkTextInput.value = "";
+  dom.bulkCategoryInput.value = state.selectedCategoryId === "all" ? "day1" : state.selectedCategoryId;
+  dom.bulkDialog.showModal();
+}
+
+async function saveBulkWordsFromDialog() {
+  const categoryId = dom.bulkCategoryInput.value || "day1";
+  const text = dom.bulkTextInput.value || "";
+  const lines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (!lines.length) {
+    showToast("입력 확인", "추가할 단어를 붙여넣어 주세요");
+    return;
+  }
+
+  const parsed = [];
+  const skipped = [];
+
+  for (const line of lines) {
+    const parts = line.split("/");
+    const rawWord = parts[0]?.trim();
+    const meaning = parts.slice(1).join("/").trim();
+    const word = cleanWord(rawWord);
+
+    if (!word || !meaning) {
+      skipped.push(line);
+      continue;
+    }
+
+    const wordItem = {
+      id: makeWordId(word, categoryId),
+      word,
+      meaning,
+      emoji: "📘",
+      categoryId,
+      base: false
+    };
+
+    const alreadyExists = state.words.some((item) => item.id === wordItem.id || item.word === word);
+    if (alreadyExists) {
+      skipped.push(line);
+      continue;
+    }
+
+    parsed.push(wordItem);
+  }
+
+  if (!parsed.length) {
+    showToast("추가 실패", "형식은 단어 / 뜻 으로 입력해 주세요");
+    return;
+  }
+
+  mergeWords(parsed);
+  saveLocal();
+
+  if (state.firebaseReady) {
+    for (const word of parsed) {
+      await saveWordRemote(word);
+    }
+  }
+
+  dom.bulkDialog.close();
+  dom.bulkTextInput.value = "";
+  showToast("일괄 추가 완료", `${parsed.length}개 추가 · ${skipped.length}개 제외`);
+  render();
 }
 
 function openWordDialog() {

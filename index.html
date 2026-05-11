@@ -147,6 +147,7 @@
 
       <div class="manage-grid">
         <button id="addWordBtn" class="manage-btn">➕ 단어 추가</button>
+        <button id="bulkAddBtn" class="manage-btn">📋 일괄 추가</button>
         <button id="addCatBtn" class="manage-btn">🗂️ 카테고리 추가</button>
         <button id="deleteCatBtn" class="manage-btn danger">🗑️ 카테고리 삭제</button>
         <button id="exportBtn" class="manage-btn">📤 백업</button>
@@ -167,6 +168,19 @@
     <div class="dialog-actions">
       <button id="closeWordDialog" class="soft-btn">닫기</button>
       <button id="saveWordBtn" class="soft-btn good">저장</button>
+    </div>
+  </dialog>
+
+  <dialog id="bulkDialog" class="dialog">
+    <h2>단어 일괄 추가</h2>
+    <p class="hint">한 줄에 하나씩 입력하세요. 형식: <b>단어 / 뜻</b></p>
+    <label>카테고리<select id="bulkCategoryInput" class="select"></select></label>
+    <label>붙여넣기
+      <textarea id="bulkTextInput" class="textarea" placeholder="apple / 사과\nbanana / 바나나\nclassroom / 교실"></textarea>
+    </label>
+    <div class="dialog-actions">
+      <button id="closeBulkDialog" class="soft-btn">닫기</button>
+      <button id="saveBulkBtn" class="soft-btn good">일괄 저장</button>
     </div>
   </dialog>
 
