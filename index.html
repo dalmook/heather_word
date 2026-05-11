@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Heather Word · Spellingmon</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div id="fxLayer" class="fx-layer"></div>
+  <div id="toast" class="toast"></div>
+
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon">🦄</div>
+        <div>
+          <h1>Heather Word</h1>
+          <p id="syncStatus">LOCAL 모드</p>
+        </div>
+      </div>
+
+      <div class="score-box">
+        <span id="scorePill">⭐ 0</span>
+        <span id="coinPill">🍪 0</span>
+        <span id="comboPill">🔥 0</span>
+      </div>
+    </header>
+
+    <section id="homeScreen" class="screen active">
+      <div class="pet-card">
+        <div class="screen-row">
+          <button id="soundToggle" class="chip dark">🔊 ON</button>
+          <button id="profileBtn" class="chip">👤 이름</button>
+        </div>
+
+        <div class="pet-glow">
+          <div id="petEmoji" class="pet-emoji">🥚</div>
+        </div>
+
+        <h2 id="petName">알 스펠링몬</h2>
+        <p id="petMsg">단어를 맞히면 펫이 자라요.</p>
+
+        <div class="xpbar">
+          <i id="xpFill"></i>
+        </div>
+        <div class="screen-row small-row">
+          <strong id="levelText">Lv.1</strong>
+          <span id="nextXpText">100XP 남음</span>
+        </div>
+      </div>
+
+      <div class="category-strip" id="categoryStrip"></div>
+
+      <div class="main-actions">
+        <button class="big-action" data-nav="card">
+          <span>🃏</span>
+          <b>카드</b>
+          <em>듣고 익히기</em>
+        </button>
+        <button class="big-action" data-nav="game">
+          <span>🎮</span>
+          <b>게임</b>
+          <em>스펠링 도전</em>
+        </button>
+        <button class="big-action" data-nav="rank">
+          <span>🏆</span>
+          <b>랭킹</b>
+          <em>친구와 경쟁</em>
+        </button>
+        <button class="big-action" data-nav="manage">
+          <span>⚙️</span>
+          <b>관리</b>
+          <em>단어/카테고리</em>
+        </button>
+      </div>
+    </section>
+
+    <section id="cardScreen" class="screen">
+      <div class="screen-head">
+        <button class="back-btn" data-nav="home">←</button>
+        <select id="cardCategory" class="select"></select>
+        <button id="cardSpeakBtn" class="round-btn">🔊</button>
+      </div>
+
+      <div class="word-card">
+        <div id="cardEmoji" class="card-emoji">🍎</div>
+        <div id="cardWord" class="card-word">apple</div>
+        <div id="cardMeaning" class="card-meaning">사과</div>
+        <div id="cardCategoryName" class="tag">1일차</div>
+      </div>
+
+      <div class="bottom-actions">
+        <button id="prevCardBtn" class="soft-btn">← 이전</button>
+        <button id="hardBtn" class="soft-btn warn">어려워요</button>
+        <button id="knowBtn" class="soft-btn good">알아요 +5</button>
+        <button id="nextCardBtn" class="soft-btn">다음 →</button>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <div class="screen-head">
+        <button class="back-btn" data-nav="home">←</button>
+        <select id="gameCategory" class="select"></select>
+        <button id="newQuestionBtn" class="round-btn">↻</button>
+      </div>
+
+      <div class="mode-tabs">
+        <button class="mode-btn active" data-mode="choice">뜻</button>
+        <button class="mode-btn" data-mode="block">블록</button>
+        <button class="mode-btn" data-mode="blank">빈칸</button>
+        <button class="mode-btn" data-mode="type">쓰기</button>
+      </div>
+
+      <div id="gameBox" class="game-box"></div>
+      <div id="feedback" class="feedback"></div>
+    </section>
+
+    <section id="rankScreen" class="screen">
+      <div class="screen-head">
+        <button class="back-btn" data-nav="home">←</button>
+        <h2>🏆 랭킹</h2>
+        <button id="refreshRankBtn" class="round-btn">↻</button>
+      </div>
+
+      <div class="rank-card me">
+        <div>
+          <b id="myNameRank">나</b>
+          <p>내 점수</p>
+        </div>
+        <strong id="myScoreRank">0점</strong>
+      </div>
+
+      <div id="rankingList" class="ranking-list"></div>
+
+      <p class="hint">
+        Firebase 설정을 넣으면 여러 휴대폰에서 같은 단어장과 랭킹을 공유합니다.
+      </p>
+    </section>
+
+    <section id="manageScreen" class="screen">
+      <div class="screen-head">
+        <button class="back-btn" data-nav="home">←</button>
+        <h2>⚙️ 관리</h2>
+        <button id="syncBtn" class="round-btn">☁️</button>
+      </div>
+
+      <div class="manage-grid">
+        <button id="addWordBtn" class="manage-btn">➕ 단어 추가</button>
+        <button id="addCatBtn" class="manage-btn">🗂️ 카테고리 추가</button>
+        <button id="exportBtn" class="manage-btn">📤 백업</button>
+        <button id="importBtn" class="manage-btn">📥 복원</button>
+      </div>
+
+      <select id="listCategory" class="select"></select>
+      <div id="wordList" class="word-list"></div>
+    </section>
+  </main>
+
+  <dialog id="wordDialog" class="dialog">
+    <h2>단어 추가</h2>
+    <label>영어 단어<input id="wordInput" class="input" placeholder="apple" autocomplete="off" /></label>
+    <label>한글 뜻<input id="meaningInput" class="input" placeholder="사과" autocomplete="off" /></label>
+    <label>아이콘<input id="emojiInput" class="input" placeholder="🍎" autocomplete="off" /></label>
+    <label>카테고리<select id="wordCategoryInput" class="select"></select></label>
+    <div class="dialog-actions">
+      <button id="closeWordDialog" class="soft-btn">닫기</button>
+      <button id="saveWordBtn" class="soft-btn good">저장</button>
+    </div>
+  </dialog>
+
+  <dialog id="catDialog" class="dialog">
+    <h2>카테고리 추가</h2>
+    <label>카테고리 이름<input id="catNameInput" class="input" placeholder="3일차 / 학교숙제 / 파닉스" autocomplete="off" /></label>
+    <label>아이콘<input id="catEmojiInput" class="input" placeholder="3️⃣" autocomplete="off" /></label>
+    <div class="dialog-actions">
+      <button id="closeCatDialog" class="soft-btn">닫기</button>
+      <button id="saveCatBtn" class="soft-btn good">저장</button>
+    </div>
+  </dialog>
+
+  <dialog id="profileDialog" class="dialog">
+    <h2>사용자 이름</h2>
+    <p class="hint">랭킹에 표시될 이름이에요.</p>
+    <label>이름<input id="playerNameInput" class="input" placeholder="Heather" autocomplete="off" /></label>
+    <div class="dialog-actions">
+      <button id="closeProfileDialog" class="soft-btn">닫기</button>
+      <button id="saveProfileBtn" class="soft-btn good">저장</button>
+    </div>
+  </dialog>
+
+  <input id="importFile" type="file" accept="application/json" hidden />
+
+  <script src="./firebase-config.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
