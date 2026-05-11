@@ -391,6 +391,8 @@ function bindEvents() {
     syncPlayer();
   });
 
+  dom.petEmoji.addEventListener("click", petReaction);
+
   document.addEventListener("click", (event) => {
     if (event.target.closest("button")) playSfx("click");
   }, { capture: true });
@@ -1061,6 +1063,42 @@ async function loadRanking() {
       </div>
     `;
   }).join("");
+}
+
+
+function petReaction() {
+  const reactions = [
+    ["쓰담쓰담!", "스펠링몬이 기분 좋아졌어요 💜"],
+    ["까르르!", "한 번 더 단어를 맞혀볼까요?"],
+    ["반짝!", "오늘도 영어 에너지 충전 ✨"],
+    ["냠냠!", "쿠키 생각이 나는 표정이에요 🍪"],
+    ["파이팅!", "틀려도 다시 하면 강해져요 💪"]
+  ];
+
+  const [title, message] = reactions[Math.floor(Math.random() * reactions.length)];
+
+  playSfx("level");
+  showToast(title, message);
+  document.body.classList.add("pet-reacting");
+  heartBurst();
+
+  setTimeout(() => {
+    document.body.classList.remove("pet-reacting");
+  }, 900);
+}
+
+function heartBurst() {
+  const marks = ["💜", "⭐", "✨", "🍪", "🎈"];
+  for (let i = 0; i < 14; i += 1) {
+    const item = document.createElement("div");
+    item.className = "pet-heart";
+    item.textContent = marks[i % marks.length];
+    item.style.left = `${42 + Math.random() * 16}vw`;
+    item.style.top = `${28 + Math.random() * 12}vh`;
+    item.style.animationDelay = `${Math.random() * 0.12}s`;
+    dom.fxLayer.appendChild(item);
+    setTimeout(() => item.remove(), 1100);
+  }
 }
 
 function exportData() {
