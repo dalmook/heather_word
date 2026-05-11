@@ -1062,3 +1062,45 @@ body.keyboard-open .dialog-actions .soft-btn {
     transform: scaleX(0.92);
   }
 }
+
+
+/* v3.7 card emoji size fix */
+.word-card {
+  align-content: center;
+  justify-items: center;
+  gap: 6px;
+}
+
+.card-emoji {
+  font-size: clamp(42px, 9vh, 62px) !important;
+  line-height: 1 !important;
+  margin-bottom: 0 !important;
+  max-height: 68px;
+}
+
+.card-word {
+  margin-top: 0 !important;
+  line-height: 0.95 !important;
+  max-width: 100%;
+}
+
+.card-meaning {
+  margin-top: 6px !important;
+}
+
+/* 화면 높이가 낮거나 주소창이 큰 모바일에서 더 작게 */
+@media (max-height: 700px) {
+  .card-emoji {
+    font-size: clamp(34px, 7vh, 50px) !important;
+    max-height: 54px;
+  }
+
+  .card-word {
+    line-height: 0.9 !important;
+  }
+}
+
+/* 긴 단어일 때 이모지가 단어를 밀어내지 않도록 더 축소 */
+.card-word.long-word ~ .card-meaning {
+  margin-top: 4px !important;
+}
