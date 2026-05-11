@@ -976,3 +976,59 @@ body.keyboard-open .feedback {
 #listCategory {
   flex-shrink: 0;
 }
+
+
+/* v3.4 category delete + dialog keyboard fix */
+.manage-btn.danger {
+  color: #991b1b;
+  background: linear-gradient(145deg, #fff, #fee2e2);
+}
+
+.dialog {
+  position: fixed;
+  top: max(8px, env(safe-area-inset-top, 8px));
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  width: min(480px, 92vw);
+  max-height: calc(var(--vh) - 16px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.dialog-actions {
+  position: sticky;
+  bottom: 0;
+  padding-top: 10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0), #fff 30%);
+}
+
+body.keyboard-open .dialog {
+  top: 6px;
+  max-height: calc(var(--vh) - 12px);
+  padding: 14px;
+}
+
+body.keyboard-open .dialog h2 {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+body.keyboard-open .dialog label {
+  margin: 7px 0;
+  gap: 3px;
+}
+
+body.keyboard-open .dialog .input,
+body.keyboard-open .dialog .select {
+  min-height: 38px;
+  padding: 8px 10px;
+}
+
+body.keyboard-open .dialog-actions {
+  gap: 6px;
+}
+
+body.keyboard-open .dialog-actions .soft-btn {
+  min-height: 40px;
+}

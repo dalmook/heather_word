@@ -357,6 +357,7 @@ function bindEvents() {
 
   $("#addWordBtn").addEventListener("click", () => openWordDialog());
   $("#addCatBtn").addEventListener("click", () => dom.catDialog.showModal());
+  $("#deleteCatBtn").addEventListener("click", deleteSelectedCategory);
   $("#closeWordDialog").addEventListener("click", () => dom.wordDialog.close());
   $("#closeCatDialog").addEventListener("click", () => dom.catDialog.close());
   $("#saveWordBtn").addEventListener("click", saveWordFromDialog);
@@ -908,6 +909,50 @@ async function saveCategoryFromDialog() {
   render();
 }
 
+
+async function deleteSelectedCategory() {
+  const categoryId = dom.listCategory.value || state.selectedCategoryId;
+  const category = state.categories.find((item) => item.id === categoryId);
+
+  if (!category || category.id === "all") {
+    showToast("삭제 불가", "전체 카테고리는 삭제할 수 없어요");
+    return;
+  }
+
+  if (category.base) {
+    showToast("삭제 불가", "기본 카테고리는 삭제하지 않도록 했어요");
+    return;
+  }
+
+  const wordsInCategory = state.words.filter((word) => word.categoryId === category.id);
+  const message = wordsInCategory.length
+    ? `${category.emoji} ${category.name} 삭제\n단어 ${wordsInCategory.length}개는 직접추가로 이동할까요?`
+    : `${category.emoji} ${category.name} 카테고리를 삭제할까요?`;
+
+  if (!confirm(message)) return;
+
+  state.categories = state.categories.filter((item) => item.id !== category.id);
+  state.words = state.words.map((word) => (
+    word.categoryId === category.id
+      ? { ...word, categoryId: "custom", base: false }
+      : word
+  ));
+
+  state.selectedCategoryId = "all";
+  saveLocal();
+
+  if (state.firebaseReady) {
+    await deleteDoc(doc(firebase.db, "classes", firebase.classId, "categories", category.id));
+
+    for (const word of state.words.filter((item) => item.categoryId === "custom" && wordsInCategory.some((oldWord) => oldWord.id === item.id))) {
+      await saveWordRemote(word);
+    }
+  }
+
+  showToast("카테고리 삭제", "단어는 직접추가로 이동했어요");
+  render();
+}
+
 async function deleteWord(wordId) {
   state.words = state.words.filter((word) => word.id !== wordId);
   saveLocal();
@@ -952,7 +997,6 @@ function openWordDialog() {
   clearWordDialog();
   dom.wordCategoryInput.value = state.selectedCategoryId === "all" ? "day1" : state.selectedCategoryId;
   dom.wordDialog.showModal();
-  setTimeout(() => dom.wordInput.focus(), 80);
 }
 
 function clearWordDialog() {
