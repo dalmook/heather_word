@@ -91,6 +91,7 @@ let state = {
   selectedCategoryId: "all",
   screen: "home",
   cardIndex: 0,
+  cardLocked: false,
   gameMode: "choice",
   currentWord: null,
   answerTiles: [],
@@ -341,8 +342,8 @@ function bindEvents() {
   $("#cardSpeakBtn").addEventListener("click", () => speak(currentCardWord()?.word));
   $("#prevCardBtn").addEventListener("click", () => moveCard(-1));
   $("#nextCardBtn").addEventListener("click", () => moveCard(1));
-  $("#knowBtn").addEventListener("click", () => award(5, currentCardWord(), false));
-  $("#hardBtn").addEventListener("click", () => markWrong(currentCardWord()));
+  $("#knowBtn").addEventListener("click", awardCurrentCard);
+  $("#hardBtn").addEventListener("click", markCurrentCardHard);
 
   dom.cardCategory.addEventListener("change", () => selectCategory(dom.cardCategory.value));
   dom.gameCategory.addEventListener("change", () => {
@@ -660,7 +661,7 @@ function renderBlankGame() {
   dom.gameBox.innerHTML = `
     ${questionHeader()}
     <div class="question-word">${masked}</div>
-    <input id="answerInput" class="type-input" placeholder="전체 단어 쓰기" autocomplete="off" autocapitalize="none" spellcheck="false" />
+    <input id="answerInput" class="type-input" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" lang="en" />
     <button id="checkInputBtn" class="soft-btn good">확인 +15</button>
   `;
 
@@ -670,7 +671,8 @@ function renderBlankGame() {
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") check();
   });
-  setTimeout(() => input.focus(), 50);
+  input.addEventListener("focus", () => document.body.classList.add("keyboard-open"));
+  input.addEventListener("blur", () => setTimeout(() => document.body.classList.remove("keyboard-open"), 120));
 }
 
 function renderTypeGame() {
@@ -681,7 +683,7 @@ function renderTypeGame() {
       <div class="question-meaning">${escapeHtml(state.currentWord.meaning || "")} ${state.currentWord.emoji || ""}</div>
       <div class="tag">${getCategoryLabel(state.currentWord.categoryId)}</div>
     </div>
-    <input id="answerInput" class="type-input" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" />
+    <input id="answerInput" class="type-input" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" lang="en" />
     <button id="checkInputBtn" class="soft-btn good">확인 +20</button>
   `;
 
@@ -693,10 +695,11 @@ function renderTypeGame() {
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") check();
   });
+  input.addEventListener("focus", () => document.body.classList.add("keyboard-open"));
+  input.addEventListener("blur", () => setTimeout(() => document.body.classList.remove("keyboard-open"), 120));
 
   setTimeout(() => {
     speak(state.currentWord.word);
-    input.focus();
   }, 120);
 }
 
@@ -769,6 +772,38 @@ function getPetStage() {
   const percent = Math.max(5, Math.min(100, ((xp - stage.min) / range) * 100));
 
   return { ...stage, percent };
+}
+
+
+function awardCurrentCard() {
+  if (state.cardLocked) return;
+
+  const word = currentCardWord();
+  if (!word) return;
+
+  state.cardLocked = true;
+  award(5, word, false);
+  dom.feedback.textContent = "";
+
+  setTimeout(() => {
+    moveCard(1);
+    state.cardLocked = false;
+  }, 420);
+}
+
+function markCurrentCardHard() {
+  if (state.cardLocked) return;
+
+  const word = currentCardWord();
+  if (!word) return;
+
+  state.cardLocked = true;
+  markWrong(word);
+
+  setTimeout(() => {
+    moveCard(1);
+    state.cardLocked = false;
+  }, 420);
 }
 
 async function saveWordFromDialog() {

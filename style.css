@@ -761,3 +761,78 @@ body.keyboard-open .question-meaning {
     font-size: 16px;
   }
 }
+
+
+/* v3.1 mobile keyboard fix */
+body.keyboard-open .topbar {
+  display: none;
+}
+
+body.keyboard-open .app-shell {
+  grid-template-rows: 1fr;
+  padding-top: 6px;
+}
+
+body.keyboard-open #gameScreen.active {
+  grid-template-rows: 40px 1fr 40px;
+}
+
+body.keyboard-open .mode-tabs {
+  display: none;
+}
+
+body.keyboard-open .game-box {
+  padding: 8px;
+  gap: 6px;
+  align-content: start;
+}
+
+body.keyboard-open .question-emoji,
+body.keyboard-open .question-top .tag {
+  display: none;
+}
+
+body.keyboard-open .question-top {
+  min-height: 0;
+}
+
+body.keyboard-open .question-meaning {
+  font-size: 18px;
+  line-height: 1.15;
+}
+
+body.keyboard-open .question-word {
+  font-size: 34px;
+  line-height: 1.05;
+}
+
+body.keyboard-open .type-input {
+  padding: 10px;
+  font-size: 24px;
+  border-radius: 18px;
+}
+
+body.keyboard-open .soft-btn {
+  padding: 9px 10px;
+}
+
+body.keyboard-open .feedback {
+  min-height: 34px;
+  font-size: 16px;
+}
+
+body.keyboard-open .screen-head {
+  grid-template-columns: 38px 1fr 38px;
+}
+
+body.keyboard-open .round-btn,
+body.keyboard-open .back-btn {
+  min-width: 38px;
+  height: 38px;
+}
+
+/* v3.1 card scoring lock visual */
+#knowBtn:active,
+#hardBtn:active {
+  transform: translateY(2px) scale(0.99);
+}
