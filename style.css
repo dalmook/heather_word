@@ -1356,3 +1356,51 @@ body.keyboard-open .dialog-actions .soft-btn {
     margin: 5px 0 3px !important;
   }
 }
+
+
+/* v3.9 game skip button + smaller question emoji */
+.game-box .question-emoji {
+  font-size: clamp(34px, 7vh, 54px) !important;
+  max-height: 58px;
+  line-height: 1 !important;
+  margin-bottom: 0 !important;
+}
+
+.game-box .question-top {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+
+.game-box .question-meaning {
+  margin-top: 0 !important;
+}
+
+.game-actions {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+.soft-btn.skip {
+  color: #475569;
+  background: #f1f5f9;
+}
+
+body.typing-mode .game-actions,
+body.keyboard-open .game-actions {
+  grid-template-columns: 1fr 1fr;
+}
+
+body.typing-mode .soft-btn.skip,
+body.keyboard-open .soft-btn.skip {
+  min-height: 42px;
+}
+
+@media (max-height: 700px) {
+  .game-box .question-emoji {
+    font-size: clamp(28px, 6vh, 44px) !important;
+    max-height: 48px;
+  }
+}

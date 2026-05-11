@@ -642,11 +642,14 @@ function renderChoiceGame() {
     <div class="choices">
       ${options.map((word) => `<button class="choice" data-word-id="${word.id}">${escapeHtml(word.word)}</button>`).join("")}
     </div>
+    <button id="skipQuestionBtn" class="soft-btn skip">몰라요 · 다음 →</button>
   `;
 
   dom.gameBox.querySelectorAll("[data-word-id]").forEach((button) => {
     button.addEventListener("click", () => checkAnswer(button.dataset.wordId === state.currentWord.id, 5));
   });
+
+  $("#skipQuestionBtn").addEventListener("click", skipQuestion);
 }
 
 function renderBlockGame() {
@@ -654,8 +657,9 @@ function renderBlockGame() {
     ${questionHeader()}
     <div id="answerBank" class="bank answer-bank"></div>
     <div id="letterBank" class="bank"></div>
-    <div class="screen-row">
+    <div class="screen-row game-actions">
       <button id="clearTilesBtn" class="soft-btn">지우기</button>
+      <button id="skipQuestionBtn" class="soft-btn skip">몰라요 · 다음</button>
       <button id="checkTilesBtn" class="soft-btn good">확인 +10</button>
     </div>
   `;
@@ -667,6 +671,8 @@ function renderBlockGame() {
     state.bankTiles = shuffle(state.currentWord.word.split("").map((char, index) => ({ char, index })));
     drawTiles();
   });
+
+  $("#skipQuestionBtn").addEventListener("click", skipQuestion);
 
   $("#checkTilesBtn").addEventListener("click", () => {
     const answer = state.answerTiles.map((tile) => tile.char).join("");
@@ -711,11 +717,15 @@ function renderBlankGame() {
     </div>
     <div class="question-word long-fit" style="font-size:${getWordFontSize(state.currentWord.word, 56, 24)}">${masked}</div>
     <input id="answerInput" class="type-input" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" lang="en" />
-    <button id="checkInputBtn" class="soft-btn good">확인 +15</button>
+    <div class="screen-row game-actions">
+      <button id="skipQuestionBtn" class="soft-btn skip">몰라요 · 다음</button>
+      <button id="checkInputBtn" class="soft-btn good">확인 +15</button>
+    </div>
   `;
 
   const input = $("#answerInput");
   const check = () => checkAnswer(cleanWord(input.value) === state.currentWord.word, 15);
+  $("#skipQuestionBtn").addEventListener("click", skipQuestion);
   $("#checkInputBtn").addEventListener("click", check);
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") check();
@@ -732,13 +742,17 @@ function renderTypeGame() {
       <div class="tag">${getCategoryLabel(state.currentWord.categoryId)}</div>
     </div>
     <input id="answerInput" class="type-input" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" lang="en" />
-    <button id="checkInputBtn" class="soft-btn good">확인 +20</button>
+    <div class="screen-row game-actions">
+      <button id="skipQuestionBtn" class="soft-btn skip">몰라요 · 다음</button>
+      <button id="checkInputBtn" class="soft-btn good">확인 +20</button>
+    </div>
   `;
 
   $("#speakQuestionBtn").addEventListener("click", () => speak(state.currentWord.word));
 
   const input = $("#answerInput");
   const check = () => checkAnswer(cleanWord(input.value) === state.currentWord.word, 20);
+  $("#skipQuestionBtn").addEventListener("click", skipQuestion);
   $("#checkInputBtn").addEventListener("click", check);
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") check();
@@ -749,6 +763,30 @@ function renderTypeGame() {
   setTimeout(() => {
     speak(state.currentWord.word);
   }, 120);
+}
+
+function skipQuestion() {
+  if (!state.currentWord) {
+    newQuestion();
+    return;
+  }
+
+  clearTimeout(nextTimer);
+  state.player.combo = 0;
+
+  const progress = state.player.progress[state.currentWord.id] || { correct: 0, wrong: 0, skip: 0 };
+  progress.skip = (progress.skip || 0) + 1;
+  state.player.progress[state.currentWord.id] = progress;
+
+  playSfx("click");
+  showToast("다음 문제", `정답은 ${state.currentWord.word}`);
+  dom.feedback.textContent = `정답은 ${state.currentWord.word}`;
+  dom.feedback.className = "feedback bad";
+  syncPlayer();
+
+  nextTimer = setTimeout(() => {
+    newQuestion();
+  }, 520);
 }
 
 function checkAnswer(isCorrect, points) {
