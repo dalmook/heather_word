@@ -21,7 +21,7 @@ import {
 
 const DEFAULT_CATEGORY = { id: "all", name: "전체", emoji: "🌈" };
 const LOCAL_KEY = "heather_word_v3";
-const MAX_LIST_ROWS = 6;
+const MAX_LIST_ROWS = 9999;
 const NEXT_DELAY_MS = 650;
 
 const $ = (selector) => document.querySelector(selector);
@@ -86,7 +86,8 @@ let state = {
     combo: 0,
     bestCombo: 0,
     sound: true,
-    progress: {}
+    progress: {},
+    knownCards: {}
   },
   selectedCategoryId: "all",
   screen: "home",
@@ -321,6 +322,7 @@ function syncPlayer() {
     xp: Number(state.player.xp || 0),
     combo: Number(state.player.combo || 0),
     bestCombo: Number(state.player.bestCombo || 0),
+    knownCards: state.player.knownCards || {},
     updatedAt: serverTimestamp()
   }, { merge: true }).catch(console.error);
 }
@@ -334,6 +336,7 @@ function bindEvents() {
     button.addEventListener("click", () => {
       state.gameMode = button.dataset.mode;
       $$(".mode-btn").forEach((item) => item.classList.toggle("active", item === button));
+      updateTypingModeClass();
       newQuestion();
     });
   });
@@ -395,6 +398,8 @@ function navigate(screen) {
   Object.entries(dom.screens).forEach(([key, el]) => {
     el.classList.toggle("active", key === screen);
   });
+
+  updateTypingModeClass();
 
   if (screen === "rank") loadRanking();
   render();
@@ -508,10 +513,17 @@ function renderCard() {
   dom.cardWord.textContent = word.word;
   dom.cardMeaning.textContent = word.meaning || "뜻 입력";
   dom.cardCategoryName.textContent = getCategoryLabel(word.categoryId);
+
+  const alreadyKnown = Boolean(state.player.knownCards?.[word.id]);
+  const knowButton = $("#knowBtn");
+  if (knowButton) {
+    knowButton.textContent = alreadyKnown ? "✅ 완료 · 다음" : "알아요 +5";
+    knowButton.classList.toggle("good", !alreadyKnown);
+  }
 }
 
 function renderWordList() {
-  const list = filteredWords().slice(0, MAX_LIST_ROWS);
+  const list = filteredWords().slice(0, MAX_LIST_ROWS); // 관리 화면은 CSS 내부 스크롤로 전체 관리
 
   if (!list.length) {
     dom.wordList.innerHTML = `<div class="hint">이 카테고리에 단어가 없어요.</div>`;
@@ -554,8 +566,10 @@ function moveCard(delta) {
 
 function newQuestion() {
   clearTimeout(nextTimer);
+  updateTypingModeClass();
   dom.feedback.textContent = "";
   dom.feedback.className = "feedback";
+  dom.gameBox.className = `game-box ${isTypingMode() ? "typing-game" : ""}`;
 
   state.currentWord = pickQuestionWord();
   state.answerTiles = [];
@@ -571,6 +585,14 @@ function pickQuestionWord() {
   const list = filteredWords();
   const source = list.length ? list : state.words;
   return source[Math.floor(Math.random() * source.length)];
+}
+
+function isTypingMode() {
+  return state.screen === "game" && (state.gameMode === "blank" || state.gameMode === "type");
+}
+
+function updateTypingModeClass() {
+  document.body.classList.toggle("typing-mode", isTypingMode());
 }
 
 function questionHeader(showWord = false) {
@@ -659,7 +681,10 @@ function renderBlankGame() {
     .join(" ");
 
   dom.gameBox.innerHTML = `
-    ${questionHeader()}
+    <div class="question-top compact-question">
+      <div class="question-meaning">${escapeHtml(state.currentWord.meaning || "뜻 입력")} ${state.currentWord.emoji || ""}</div>
+      <div class="tag">${getCategoryLabel(state.currentWord.categoryId)}</div>
+    </div>
     <div class="question-word">${masked}</div>
     <input id="answerInput" class="type-input" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" lang="en" />
     <button id="checkInputBtn" class="soft-btn good">확인 +15</button>
@@ -677,8 +702,7 @@ function renderBlankGame() {
 
 function renderTypeGame() {
   dom.gameBox.innerHTML = `
-    <div class="question-top">
-      <div class="question-emoji">🎧</div>
+    <div class="question-top compact-question">
       <button id="speakQuestionBtn" class="soft-btn">🔊 다시 듣기</button>
       <div class="question-meaning">${escapeHtml(state.currentWord.meaning || "")} ${state.currentWord.emoji || ""}</div>
       <div class="tag">${getCategoryLabel(state.currentWord.categoryId)}</div>
@@ -760,11 +784,17 @@ function markWrong(word) {
 function getPetStage() {
   const xp = state.player.xp || 0;
   const stages = [
-    { min: 0, next: 100, emoji: "🥚", name: "알 스펠링몬", message: "정답을 맞히면 곧 깨어나요" },
-    { min: 100, next: 300, emoji: "🐣", name: "아기 스펠링몬", message: "쿠키를 먹고 자라는 중!" },
-    { min: 300, next: 700, emoji: "🐰", name: "토끼 스펠링몬", message: "스펠링 블록을 좋아해요" },
-    { min: 700, next: 1200, emoji: "🦊", name: "여우 스펠링몬", message: "직접 쓰기도 잘해요" },
-    { min: 1200, next: 2000, emoji: "🐲", name: "드래곤 스펠링몬", message: "어려운 단어를 먹고 강해져요" }
+    { min: 0, next: 300, emoji: "🥚", name: "알 스펠링몬", message: "천천히 알을 깨워요" },
+    { min: 300, next: 800, emoji: "🐣", name: "아기 병아리몬", message: "처음 단어를 먹기 시작했어요" },
+    { min: 800, next: 1500, emoji: "🐹", name: "햄스터몬", message: "쿠키를 모으며 자라요" },
+    { min: 1500, next: 3000, emoji: "🐰", name: "토끼몬", message: "짧은 단어는 자신 있어요" },
+    { min: 3000, next: 5000, emoji: "🐼", name: "판다몬", message: "카테고리별 단어를 모아요" },
+    { min: 5000, next: 8000, emoji: "🦊", name: "여우몬", message: "스펠링 감각이 좋아졌어요" },
+    { min: 8000, next: 12000, emoji: "🦄", name: "유니콘몬", message: "쓰기 문제도 멋지게 풀어요" },
+    { min: 12000, next: 18000, emoji: "🐲", name: "드래곤몬", message: "어려운 단어를 먹고 강해져요" },
+    { min: 18000, next: 26000, emoji: "🦅", name: "피닉스몬", message: "틀려도 다시 살아나는 힘!" },
+    { min: 26000, next: 36000, emoji: "🌟", name: "스타몬", message: "반짝반짝 단어 마스터" },
+    { min: 36000, next: 50000, emoji: "👑", name: "레전드 스펠링몬", message: "진짜 영어 챔피언!" }
   ];
 
   const stage = [...stages].reverse().find((item) => xp >= item.min) || stages[0];
@@ -782,12 +812,27 @@ function awardCurrentCard() {
   if (!word) return;
 
   state.cardLocked = true;
+  state.player.knownCards ||= {};
+
+  if (state.player.knownCards[word.id]) {
+    showToast("이미 완료", "이 단어는 점수를 이미 받았어요");
+    playSfx("click");
+
+    setTimeout(() => {
+      moveCard(1);
+      state.cardLocked = false;
+      renderCard();
+    }, 360);
+    return;
+  }
+
+  state.player.knownCards[word.id] = true;
   award(5, word, false);
-  dom.feedback.textContent = "";
 
   setTimeout(() => {
     moveCard(1);
     state.cardLocked = false;
+    renderCard();
   }, 420);
 }
 

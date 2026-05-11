@@ -836,3 +836,143 @@ body.keyboard-open .back-btn {
 #hardBtn:active {
   transform: translateY(2px) scale(0.99);
 }
+
+
+/* v3.2 writing-mode redesign: no squashed keyboard screen */
+body.typing-mode .topbar,
+body.keyboard-open .topbar {
+  display: none !important;
+}
+
+body.typing-mode .app-shell,
+body.keyboard-open .app-shell {
+  height: var(--vh);
+  grid-template-rows: 1fr !important;
+  padding-top: 6px;
+}
+
+body.typing-mode #gameScreen.active,
+body.keyboard-open #gameScreen.active {
+  grid-template-rows: 42px 1fr 42px !important;
+  gap: 6px;
+}
+
+body.typing-mode .mode-tabs,
+body.keyboard-open .mode-tabs {
+  display: none !important;
+}
+
+body.typing-mode .game-box,
+body.keyboard-open .game-box {
+  padding: 10px;
+  gap: 8px;
+  align-content: center;
+  border-radius: 24px;
+}
+
+body.typing-mode .compact-question,
+body.keyboard-open .compact-question {
+  display: grid;
+  gap: 6px;
+  place-items: center;
+}
+
+body.typing-mode .question-emoji,
+body.keyboard-open .question-emoji {
+  display: none !important;
+}
+
+body.typing-mode .question-meaning,
+body.keyboard-open .question-meaning {
+  font-size: clamp(20px, 5.8vw, 28px);
+  line-height: 1.12;
+  font-weight: 1000;
+}
+
+body.typing-mode .question-word,
+body.keyboard-open .question-word {
+  font-size: clamp(40px, 11vw, 60px);
+  line-height: 1;
+}
+
+body.typing-mode .type-input,
+body.keyboard-open .type-input {
+  min-height: 64px;
+  padding: 10px 12px;
+  font-size: clamp(26px, 8vw, 38px);
+  border-radius: 20px;
+}
+
+body.typing-mode .soft-btn,
+body.keyboard-open .soft-btn {
+  min-height: 44px;
+  padding: 9px 10px;
+}
+
+body.typing-mode .feedback,
+body.keyboard-open .feedback {
+  min-height: 34px;
+  font-size: 16px;
+}
+
+@media (max-height: 560px) {
+  body.typing-mode .screen-head,
+  body.keyboard-open .screen-head {
+    grid-template-columns: 36px 1fr 36px;
+  }
+
+  body.typing-mode .round-btn,
+  body.typing-mode .back-btn,
+  body.keyboard-open .round-btn,
+  body.keyboard-open .back-btn {
+    min-width: 36px;
+    height: 36px;
+  }
+
+  body.typing-mode #gameScreen.active,
+  body.keyboard-open #gameScreen.active {
+    grid-template-rows: 36px 1fr 32px !important;
+  }
+
+  body.typing-mode .game-box,
+  body.keyboard-open .game-box {
+    padding: 8px;
+  }
+
+  body.typing-mode .tag,
+  body.keyboard-open .tag {
+    display: none;
+  }
+}
+
+
+/* v3.3 manage screen: show all words with inner scroll */
+#manageScreen.active {
+  grid-template-rows: 44px 88px 44px minmax(0, 1fr);
+}
+
+.word-list {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2px 2px 12px;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.word-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.word-list::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.35);
+  border-radius: 999px;
+}
+
+.word-row {
+  min-height: 58px;
+}
+
+#listCategory {
+  flex-shrink: 0;
+}
