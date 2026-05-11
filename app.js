@@ -512,6 +512,8 @@ function renderCard() {
 
   dom.cardEmoji.textContent = word.emoji || "📘";
   dom.cardWord.textContent = word.word;
+  dom.cardWord.style.fontSize = getWordFontSize(word.word, 68, 24);
+  dom.cardWord.classList.toggle("long-word", word.word.length >= 11);
   dom.cardMeaning.textContent = word.meaning || "뜻 입력";
   dom.cardCategoryName.textContent = getCategoryLabel(word.categoryId);
 
@@ -686,7 +688,7 @@ function renderBlankGame() {
       <div class="question-meaning">${escapeHtml(state.currentWord.meaning || "뜻 입력")} ${state.currentWord.emoji || ""}</div>
       <div class="tag">${getCategoryLabel(state.currentWord.categoryId)}</div>
     </div>
-    <div class="question-word">${masked}</div>
+    <div class="question-word long-fit" style="font-size:${getWordFontSize(state.currentWord.word, 56, 24)}">${masked}</div>
     <input id="answerInput" class="type-input" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" lang="en" />
     <button id="checkInputBtn" class="soft-btn good">확인 +15</button>
   `;
@@ -1183,6 +1185,13 @@ function floatScore(text) {
 function getCategoryLabel(categoryId) {
   const category = state.categories.find((item) => item.id === categoryId);
   return category ? `${category.emoji} ${category.name}` : "⭐ 직접추가";
+}
+
+function getWordFontSize(word, max = 68, min = 24) {
+  const length = Math.max(1, String(word || "").length);
+  // 한글/이모지/버튼 영역을 고려해 휴대폰 폭에서 잘리지 않도록 길수록 폰트를 줄입니다.
+  const size = Math.floor(345 / (Math.max(6, length) * 0.58));
+  return `${Math.max(min, Math.min(max, size))}px`;
 }
 
 function makeWordId(word, categoryId = "word", index = "") {
