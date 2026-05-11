@@ -332,6 +332,8 @@ function bindEvents() {
     button.addEventListener("click", () => navigate(button.dataset.nav));
   });
 
+  $("#gameBackBtn").addEventListener("click", handleGameBack);
+
   $$(".mode-btn").forEach((button) => {
     button.addEventListener("click", () => {
       state.gameMode = button.dataset.mode;
@@ -392,6 +394,23 @@ function bindEvents() {
   document.addEventListener("click", (event) => {
     if (event.target.closest("button")) playSfx("click");
   }, { capture: true });
+}
+
+function handleGameBack() {
+  // 쓰기/빈칸 모드는 화면 확보를 위해 모드 탭을 숨긴다.
+  // 이때 뒤로가기는 홈이 아니라 게임 선택이 가능한 "뜻" 모드로 돌아간다.
+  if (state.gameMode === "blank" || state.gameMode === "type") {
+    state.gameMode = "choice";
+    $$(".mode-btn").forEach((button) => {
+      button.classList.toggle("active", button.dataset.mode === "choice");
+    });
+    updateTypingModeClass();
+    newQuestion();
+    showToast("게임 선택", "다른 게임을 고를 수 있어요");
+    return;
+  }
+
+  navigate("home");
 }
 
 function navigate(screen) {
