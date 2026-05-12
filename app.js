@@ -65,6 +65,7 @@ const dom = {
   toast: $("#toast"),
   fxLayer: $("#fxLayer"),
   soundToggle: $("#soundToggle"),
+  profileBtn: $("#profileBtn"),
   wordDialog: $("#wordDialog"),
   bulkDialog: $("#bulkDialog"),
   catDialog: $("#catDialog"),
@@ -371,7 +372,7 @@ function bindEvents() {
   $("#saveBulkBtn").addEventListener("click", saveBulkWordsFromDialog);
   $("#saveCatBtn").addEventListener("click", saveCategoryFromDialog);
 
-  $("#profileBtn").addEventListener("click", () => {
+  dom.profileBtn.addEventListener("click", () => {
     dom.playerNameInput.value = state.player.name || "";
     dom.profileDialog.showModal();
     setTimeout(() => dom.playerNameInput.focus(), 80);
@@ -484,6 +485,7 @@ function render() {
   dom.coinPill.textContent = `🍪 ${state.player.coin || 0}`;
   dom.comboPill.textContent = `🔥 ${state.player.combo || 0}`;
   dom.soundToggle.textContent = state.player.sound ? "🔊 ON" : "🔇 OFF";
+  renderProfileButton();
 
   const pet = getPetStage();
   dom.petEmoji.textContent = pet.emoji;
@@ -497,6 +499,17 @@ function render() {
   renderSelects();
   renderCard();
   renderWordList();
+}
+
+function renderProfileButton() {
+  if (!dom.profileBtn) return;
+
+  const name = String(state.player.name || "").trim();
+  const hasName = name && name !== "Player";
+
+  dom.profileBtn.classList.toggle("need-name", !hasName);
+  dom.profileBtn.textContent = hasName ? `👤 ${name}` : "👤 이름 입력!";
+  dom.profileBtn.title = hasName ? `현재 이름: ${name}` : "랭킹에 표시할 이름을 입력해 주세요";
 }
 
 function renderCategories() {
@@ -1258,7 +1271,11 @@ function clearWordDialog() {
 }
 
 function saveProfile() {
-  const name = dom.playerNameInput.value.trim() || "Player";
+  const name = dom.playerNameInput.value.trim();
+  if (!name) {
+    showToast("이름 확인", "랭킹에 표시할 이름을 입력해 주세요");
+    return;
+  }
   state.player.name = name;
   localStorage.setItem("heather_player_name", name);
   dom.profileDialog.close();

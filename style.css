@@ -1435,3 +1435,28 @@ body.keyboard-open .soft-btn.skip {
 body.keyboard-open #bulkDialog .textarea {
   min-height: 120px;
 }
+
+
+/* v4.2 profile name button */
+#profileBtn {
+  max-width: 132px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#profileBtn.need-name {
+  color: #fff;
+  background: linear-gradient(135deg, #f97316, #ec4899);
+  box-shadow:
+    0 0 0 4px rgba(249, 115, 22, 0.16),
+    0 8px 0 rgba(236, 72, 153, 0.20);
+  animation: namePulse 1.25s ease-in-out infinite;
+}
+
+@keyframes namePulse {
+  50% {
+    transform: translateY(-1px) scale(1.03);
+    filter: brightness(1.05);
+  }
+}
