@@ -1081,40 +1081,43 @@ async function saveBulkWordsFromDialog() {
     return;
   }
 
+  const parsedRows = parseBulkWordText(lines);
   const parsed = [];
   const skipped = [];
 
-  for (const line of lines) {
-    const parts = line.split("/");
-    const rawWord = parts[0]?.trim();
-    const meaning = parts.slice(1).join("/").trim();
-    const word = cleanWord(rawWord);
+  for (const row of parsedRows) {
+    const words = splitWordAliases(row.word);
+    const meaning = row.meaning.trim();
 
-    if (!word || !meaning) {
-      skipped.push(line);
+    if (!words.length || !meaning) {
+      skipped.push(row.raw || `${row.word} / ${row.meaning}`);
       continue;
     }
 
-    const wordItem = {
-      id: makeWordId(word, categoryId),
-      word,
-      meaning,
-      emoji: "📘",
-      categoryId,
-      base: false
-    };
+    for (const word of words) {
+      const wordItem = {
+        id: makeWordId(word, categoryId),
+        word,
+        meaning,
+        emoji: "📘",
+        categoryId,
+        base: false
+      };
 
-    const alreadyExists = state.words.some((item) => item.id === wordItem.id || item.word === word);
-    if (alreadyExists) {
-      skipped.push(line);
-      continue;
+      const alreadyExists = state.words.some((item) => item.id === wordItem.id || item.word === word);
+      const alreadyParsed = parsed.some((item) => item.id === wordItem.id || item.word === word);
+
+      if (alreadyExists || alreadyParsed) {
+        skipped.push(row.raw || `${word} / ${meaning}`);
+        continue;
+      }
+
+      parsed.push(wordItem);
     }
-
-    parsed.push(wordItem);
   }
 
   if (!parsed.length) {
-    showToast("추가 실패", "형식은 단어 / 뜻 으로 입력해 주세요");
+    showToast("추가 실패", "단어 줄 다음에 뜻 줄을 넣거나, 단어 / 뜻 형식으로 입력해 주세요");
     return;
   }
 
@@ -1131,6 +1134,115 @@ async function saveBulkWordsFromDialog() {
   dom.bulkTextInput.value = "";
   showToast("일괄 추가 완료", `${parsed.length}개 추가 · ${skipped.length}개 제외`);
   render();
+}
+
+function parseBulkWordText(lines) {
+  const rows = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const current = lines[i].trim();
+    const next = lines[i + 1]?.trim() || "";
+
+    // 1) 한 줄 형식: apple / 사과, aunt / 이모 / 고모
+    const slashRow = parseSlashRow(current);
+    if (slashRow) {
+      rows.push(slashRow);
+      i += 1;
+      continue;
+    }
+
+    // 2) 두 줄 형식:
+    // grandparents
+    // 조부모님
+    if (looksLikeEnglishWordLine(current) && next && looksLikeMeaningLine(next)) {
+      rows.push({
+        word: current,
+        meaning: next,
+        raw: `${current} / ${next}`
+      });
+      i += 2;
+      continue;
+    }
+
+    // 3) 탭/쉼표/콜론 형식도 허용: apple\t사과, apple,사과
+    const looseRow = parseLooseRow(current);
+    if (looseRow) {
+      rows.push(looseRow);
+      i += 1;
+      continue;
+    }
+
+    i += 1;
+  }
+
+  return rows;
+}
+
+function parseSlashRow(line) {
+  if (!line.includes("/")) return null;
+
+  const parts = line.split("/").map((part) => part.trim()).filter(Boolean);
+  if (parts.length < 2) return null;
+
+  const first = parts[0];
+  const rest = parts.slice(1).join(" / ");
+
+  // 오른쪽에 한글이 있는 경우에만 "단어 / 뜻"으로 본다.
+  // mother / mom 처럼 영어만 있으면 다음 줄의 뜻과 묶는다.
+  if (looksLikeEnglishWordLine(first) && hasKorean(rest)) {
+    return {
+      word: first,
+      meaning: rest,
+      raw: line
+    };
+  }
+
+  return null;
+}
+
+function parseLooseRow(line) {
+  const separators = ["\t", ",", "：", ":"];
+  for (const sep of separators) {
+    if (!line.includes(sep)) continue;
+
+    const [left, ...rightParts] = line.split(sep);
+    const right = rightParts.join(sep).trim();
+
+    if (looksLikeEnglishWordLine(left) && looksLikeMeaningLine(right)) {
+      return {
+        word: left.trim(),
+        meaning: right,
+        raw: line
+      };
+    }
+  }
+
+  return null;
+}
+
+function splitWordAliases(rawWord) {
+  return String(rawWord || "")
+    .split("/")
+    .map((word) => cleanWord(word))
+    .filter(Boolean);
+}
+
+function hasKorean(value) {
+  return /[가-힣]/.test(String(value || ""));
+}
+
+function looksLikeMeaningLine(value) {
+  const text = String(value || "").trim();
+  if (!text) return false;
+  return hasKorean(text) || /[^\x00-\x7F]/.test(text);
+}
+
+function looksLikeEnglishWordLine(value) {
+  const text = String(value || "").trim();
+  if (!text) return false;
+  // mother / mom, in-laws, class schedule 같은 영어 줄 허용
+  return /^[A-Za-z][A-Za-z\s/'’.-]*$/.test(text);
 }
 
 function openWordDialog() {
