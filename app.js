@@ -618,7 +618,7 @@ function newQuestion() {
 
   state.currentWord = pickQuestionWord();
   state.answerTiles = [];
-  state.bankTiles = shuffle(state.currentWord.word.split("").map((char, index) => ({ char, index })));
+  state.bankTiles = shuffle(spellingLetters(state.currentWord.word).split("").map((char, index) => ({ char, index })));
 
   if (state.gameMode === "choice") renderChoiceGame();
   if (state.gameMode === "block") renderBlockGame();
@@ -689,7 +689,7 @@ function renderBlockGame() {
 
   $("#clearTilesBtn").addEventListener("click", () => {
     state.answerTiles = [];
-    state.bankTiles = shuffle(state.currentWord.word.split("").map((char, index) => ({ char, index })));
+    state.bankTiles = shuffle(spellingLetters(state.currentWord.word).split("").map((char, index) => ({ char, index })));
     drawTiles();
   });
 
@@ -697,7 +697,7 @@ function renderBlockGame() {
 
   $("#checkTilesBtn").addEventListener("click", () => {
     const answer = state.answerTiles.map((tile) => tile.char).join("");
-    checkAnswer(answer === state.currentWord.word, 10);
+    checkAnswer(answer === spellingLetters(state.currentWord.word), 10);
   });
 }
 
@@ -726,7 +726,8 @@ function drawTiles() {
 }
 
 function renderBlankGame() {
-  const masked = state.currentWord.word
+  const target = spellingLetters(state.currentWord.word);
+  const masked = target
     .split("")
     .map((char, index) => (index % 2 === 0 ? char : "_"))
     .join(" ");
@@ -745,7 +746,7 @@ function renderBlankGame() {
   `;
 
   const input = $("#answerInput");
-  const check = () => checkAnswer(cleanWord(input.value) === state.currentWord.word, 15);
+  const check = () => checkAnswer(normalizeAnswer(input.value) === normalizeAnswer(state.currentWord.word), 15);
   $("#skipQuestionBtn").addEventListener("click", skipQuestion);
   $("#checkInputBtn").addEventListener("click", check);
   input.addEventListener("keydown", (event) => {
@@ -772,7 +773,7 @@ function renderTypeGame() {
   $("#speakQuestionBtn").addEventListener("click", () => speak(state.currentWord.word));
 
   const input = $("#answerInput");
-  const check = () => checkAnswer(cleanWord(input.value) === state.currentWord.word, 20);
+  const check = () => checkAnswer(normalizeAnswer(input.value) === normalizeAnswer(state.currentWord.word), 20);
   $("#skipQuestionBtn").addEventListener("click", skipQuestion);
   $("#checkInputBtn").addEventListener("click", check);
   input.addEventListener("keydown", (event) => {
@@ -1497,12 +1498,33 @@ function getWordFontSize(word, max = 68, min = 24) {
   return `${Math.max(min, Math.min(max, size))}px`;
 }
 
+function normalizeAnswer(value) {
+  // 채점용: middle school, middle-school, middleschool 모두 같은 답으로 인정
+  return String(value || "").toLowerCase().replace(/[^a-z]/g, "");
+}
+
+function spellingLetters(value) {
+  // 블록/빈칸 게임용: 공백/하이픈은 타일로 만들지 않음
+  return normalizeAnswer(value);
+}
+
 function makeWordId(word, categoryId = "word", index = "") {
-  return `${categoryId}_${cleanWord(word)}_${index}`.replace(/_$/, "");
+  const safeWord = cleanWord(word)
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+  return `${categoryId}_${safeWord}_${index}`.replace(/_$/, "");
 }
 
 function cleanWord(value) {
-  return String(value || "").toLowerCase().replace(/[^a-z]/g, "");
+  // 저장/표시용: middle school처럼 띄어쓰기는 유지
+  // in-laws, father's 같은 기본 부호도 유지
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[’]/g, "'")
+    .replace(/[^a-z\s'-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function shuffle(array) {
