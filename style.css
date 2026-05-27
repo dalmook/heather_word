@@ -2192,6 +2192,28 @@ h1 {
   background: #f8f8fe;
 }
 
+.game-box.block-game {
+  align-content: stretch;
+  grid-template-rows: auto auto minmax(58px, 1fr) auto;
+  overflow: hidden;
+  padding-bottom: 18px;
+}
+
+.block-game .bank {
+  min-height: 0;
+  align-content: start;
+  overflow-y: auto;
+}
+
+.block-game .answer-bank {
+  max-height: min(148px, 24vh);
+}
+
+.block-game .game-actions {
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
 .type-input {
   border: 2px solid #e5e3fa;
   color: #181f3b;
@@ -2686,5 +2708,16 @@ body.keyboard-open .round-bar {
 
   .monster-tile {
     min-height: 94px;
+  }
+
+  .block-game .tile {
+    min-width: 37px;
+    height: 42px;
+    font-size: 21px;
+  }
+
+  .block-game .bank {
+    gap: 6px;
+    padding: 7px;
   }
 }

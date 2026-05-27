@@ -519,6 +519,12 @@ function bindEvents() {
 }
 
 function handleGameBack() {
+  if (state.gameMode === "blank" || state.gameMode === "type") {
+    startRound("choice");
+    showToast("게임 선택", "다른 게임 모드를 선택할 수 있어요");
+    return;
+  }
+
   navigate("home");
 }
 
@@ -536,7 +542,7 @@ function navigate(screen) {
   updateTypingModeClass();
 
   if (screen === "rank") loadRanking();
-  if (screen === "game") startRound(state.gameMode);
+  if (screen === "game") startRound("choice");
   render();
 }
 
@@ -982,6 +988,7 @@ function renderChoiceGame() {
 }
 
 function renderBlockGame() {
+  dom.gameBox.classList.add("block-game");
   dom.gameBox.innerHTML = `
     ${questionHeader()}
     <div id="answerBank" class="bank answer-bank"></div>
