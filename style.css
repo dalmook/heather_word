@@ -2471,10 +2471,6 @@ body.keyboard-open .game-box {
   background: #daf8eb;
 }
 
-.mode-btn {
-  cursor: default;
-}
-
 .mode-btn.done:not(.active) {
   border-color: #ccefe0;
   color: #087646;

@@ -39,14 +39,12 @@ const SCORE_REWARDS = Object.freeze({
 });
 const MANAGE_PASSWORD = "3341";
 const MONSTER_XP_STEP = 250;
-const ROUND_COMPLETION_BONUS = 300;
-const ROUND_STAGES = Object.freeze([
-  { mode: "choice", count: 10, label: "뜻" },
-  { mode: "block", count: 10, label: "블록" },
-  { mode: "blank", count: 5, label: "빈칸" },
-  { mode: "type", count: 5, label: "쓰기" }
-]);
-const ROUND_TOTAL = ROUND_STAGES.reduce((total, stage) => total + stage.count, 0);
+const MODE_ROUNDS = Object.freeze({
+  choice: { count: 10, label: "뜻", bonus: 10 },
+  block: { count: 10, label: "블록", bonus: 100 },
+  blank: { count: 5, label: "빈칸", bonus: 200 },
+  type: { count: 5, label: "쓰기", bonus: 500 }
+});
 const MONSTER_BASE_NAMES = [
   "알몬", "삐약몬", "솜구름몬", "토끼몬", "판다몬",
   "여우몬", "유니콘몬", "드래곤몬", "피닉스몬", "스타몬",
@@ -429,7 +427,8 @@ function bindEvents() {
 
   $$(".mode-btn").forEach((button) => {
     button.addEventListener("click", () => {
-      showToast("라운드 진행 중", "뜻 → 블록 → 빈칸 → 쓰기 순서로 진행해요");
+      state.gameMode = button.dataset.mode;
+      startRound(state.gameMode);
     });
   });
 
@@ -514,7 +513,7 @@ function navigate(screen) {
   updateTypingModeClass();
 
   if (screen === "rank") loadRanking();
-  if (screen === "game") startRound();
+  if (screen === "game") startRound(state.gameMode);
   render();
 }
 
@@ -784,18 +783,20 @@ function newQuestion() {
   if (state.gameMode === "type") renderTypeGame();
 }
 
-function startRound() {
+function startRound(mode = state.gameMode) {
   clearTimeout(nextTimer);
   const source = filteredWords();
+  const roundMode = MODE_ROUNDS[mode] ? mode : "choice";
+  const config = MODE_ROUNDS[roundMode];
 
   state.round = {
     active: source.length > 0,
     completed: false,
     index: 0,
     correct: 0,
-    questions: source.length ? buildRoundQuestions(source) : []
+    questions: source.length ? buildRoundQuestions(source, roundMode) : []
   };
-  state.gameMode = "choice";
+  state.gameMode = roundMode;
   state.currentWord = null;
   state.questionLocked = false;
   updateTypingModeClass();
@@ -807,17 +808,16 @@ function startRound() {
     return;
   }
 
-  showToast("새 라운드", `총 ${ROUND_TOTAL}문제 · 완주 보너스 +${ROUND_COMPLETION_BONUS}`);
+  showToast(`${config.label} 도전`, `${config.count}문제 · 완주 보너스 +${config.bonus}`);
   newQuestion();
 }
 
-function buildRoundQuestions(source) {
-  return ROUND_STAGES.flatMap((stage) => {
-    let pool = [];
-    return Array.from({ length: stage.count }, () => {
-      if (!pool.length) pool = shuffle([...source]);
-      return { mode: stage.mode, word: pool.pop() };
-    });
+function buildRoundQuestions(source, mode) {
+  const count = MODE_ROUNDS[mode].count;
+  let pool = [];
+  return Array.from({ length: count }, () => {
+    if (!pool.length) pool = shuffle([...source]);
+    return { mode, word: pool.pop() };
   });
 }
 
@@ -828,7 +828,7 @@ function advanceRound() {
   }
 
   state.round.index += 1;
-  if (state.round.index >= ROUND_TOTAL) {
+  if (state.round.index >= state.round.questions.length) {
     completeRound();
     return;
   }
@@ -838,30 +838,30 @@ function advanceRound() {
 
 function completeRound() {
   clearTimeout(nextTimer);
+  const config = MODE_ROUNDS[state.gameMode];
   state.round.active = false;
   state.round.completed = true;
   state.currentWord = null;
   state.questionLocked = true;
-  state.gameMode = "choice";
   updateTypingModeClass();
 
-  state.player.score += ROUND_COMPLETION_BONUS;
-  state.player.coin += Math.ceil(ROUND_COMPLETION_BONUS / 5);
-  state.player.xp += ROUND_COMPLETION_BONUS;
-  successFx(ROUND_COMPLETION_BONUS);
+  state.player.score += config.bonus;
+  state.player.coin += Math.ceil(config.bonus / 5);
+  state.player.xp += config.bonus;
+  successFx(config.bonus);
   syncPlayer();
   render();
 
-  dom.feedback.textContent = `완주 보너스 +${ROUND_COMPLETION_BONUS} 획득!`;
+  dom.feedback.textContent = `${config.label} 완주 보너스 +${config.bonus} 획득!`;
   dom.feedback.className = "feedback good";
   dom.gameBox.className = "game-box";
   dom.gameBox.innerHTML = `
     <div class="round-complete">
       <span>🏅</span>
-      <h3>라운드 완주!</h3>
-      <p>정답 ${state.round.correct} / ${ROUND_TOTAL}</p>
-      <strong>보너스 +${ROUND_COMPLETION_BONUS} XP</strong>
-      <button id="restartRoundBtn" class="soft-btn good">새 라운드 시작</button>
+      <h3>${config.label} 완주!</h3>
+      <p>정답 ${state.round.correct} / ${config.count}</p>
+      <strong>보너스 +${config.bonus} XP</strong>
+      <button id="restartRoundBtn" class="soft-btn good">${config.label} 다시 도전</button>
     </div>
   `;
   $("#restartRoundBtn").addEventListener("click", startRound);
@@ -870,27 +870,27 @@ function completeRound() {
 function renderRoundProgress() {
   if (!dom.roundProgress) return;
 
-  const answered = state.round.completed ? ROUND_TOTAL : state.round.index;
-  const current = state.round.active ? Math.min(ROUND_TOTAL, state.round.index + 1) : 0;
+  const config = MODE_ROUNDS[state.gameMode];
+  const answered = state.round.completed ? config.count : state.round.index;
+  const current = state.round.active ? Math.min(config.count, state.round.index + 1) : 0;
   dom.roundProgress.textContent = state.round.completed
-    ? "ROUND COMPLETE"
+    ? `${config.label} COMPLETE`
     : state.round.active
-      ? `ROUND ${current} / ${ROUND_TOTAL}`
-      : `ROUND 0 / ${ROUND_TOTAL}`;
+      ? `${config.label} ${current} / ${config.count}`
+      : `${config.label} 0 / ${config.count}`;
   dom.roundCorrect.textContent = `정답 ${state.round.correct || 0}`;
-  dom.roundBonus.textContent = `완주 +${ROUND_COMPLETION_BONUS}`;
+  dom.roundBonus.textContent = `완주 +${config.bonus}`;
 
-  let offset = 0;
-  ROUND_STAGES.forEach((stage) => {
-    const done = Math.max(0, Math.min(stage.count, answered - offset));
-    const element = $(`#modeProgress${stage.mode[0].toUpperCase()}${stage.mode.slice(1)}`);
-    if (element) element.textContent = `${done}/${stage.count} · +${SCORE_REWARDS[stage.mode]}`;
-    const button = $(`.mode-btn[data-mode="${stage.mode}"]`);
+  Object.entries(MODE_ROUNDS).forEach(([mode, stage]) => {
+    const selected = mode === state.gameMode;
+    const done = selected ? answered : 0;
+    const element = $(`#modeProgress${mode[0].toUpperCase()}${mode.slice(1)}`);
+    if (element) element.textContent = `${done}/${stage.count} · +${SCORE_REWARDS[mode]}`;
+    const button = $(`.mode-btn[data-mode="${mode}"]`);
     if (button) {
-      button.classList.toggle("active", state.round.active && state.gameMode === stage.mode);
-      button.classList.toggle("done", done === stage.count);
+      button.classList.toggle("active", selected);
+      button.classList.toggle("done", selected && state.round.completed);
     }
-    offset += stage.count;
   });
 }
 
@@ -901,7 +901,7 @@ function pickQuestionWord() {
 }
 
 function isTypingMode() {
-  return state.screen === "game" && (state.gameMode === "blank" || state.gameMode === "type");
+  return state.screen === "game" && state.round.active && (state.gameMode === "blank" || state.gameMode === "type");
 }
 
 function updateTypingModeClass() {
