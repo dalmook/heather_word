@@ -20,9 +20,23 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const DEFAULT_CATEGORY = { id: "all", name: "전체", emoji: "🌈" };
+const CUSTOM_CATEGORY = { id: "custom", name: "직접추가", emoji: "⭐", base: true };
 const LOCAL_KEY = "heather_word_v3";
 const MAX_LIST_ROWS = 9999;
 const NEXT_DELAY_MS = 650;
+const MAX_WORD_LENGTH = 60;
+const MAX_MEANING_LENGTH = 120;
+const MAX_CATEGORY_NAME_LENGTH = 30;
+const MAX_PLAYER_NAME_LENGTH = 20;
+const MAX_IMPORT_CATEGORIES = 500;
+const MAX_IMPORT_WORDS = 10000;
+const SCORE_REWARDS = Object.freeze({
+  card: 1,
+  choice: 1,
+  block: 15,
+  blank: 40,
+  type: 100
+});
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -99,6 +113,7 @@ let state = {
   cardLocked: false,
   gameMode: "choice",
   currentWord: null,
+  questionLocked: false,
   answerTiles: [],
   bankTiles: [],
   firebaseReady: false,
@@ -131,8 +146,13 @@ async function init() {
   await initFirebaseIfEnabled();
 
   if (state.firebaseReady) {
-    await seedDefaultDataIfEmpty();
-    subscribeFirebase();
+    try {
+      await seedDefaultDataIfEmpty();
+      subscribeFirebase();
+    } catch (error) {
+      markSyncFailure(error);
+      state.firebaseReady = false;
+    }
   }
 
   newQuestion();
@@ -162,37 +182,44 @@ function setupViewport() {
 }
 
 async function loadDefaultWords() {
-  const response = await fetch("./words.json", { cache: "no-store" });
-  const data = await response.json();
+  state.categories = [DEFAULT_CATEGORY, CUSTOM_CATEGORY];
+  state.words = [];
 
-  state.categories = [DEFAULT_CATEGORY, ...data.categories];
-  state.words = data.words.map((word, index) => ({
-    id: makeWordId(word.word, word.categoryId, index),
-    word: cleanWord(word.word),
-    meaning: word.meaning || "",
-    emoji: word.emoji || "📘",
-    categoryId: word.categoryId || "day1",
-    base: true
-  }));
+  try {
+    const response = await fetch("./words.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`words.json: ${response.status}`);
+    const data = await response.json();
+    const categories = Array.isArray(data.categories) ? data.categories : [];
+    const words = Array.isArray(data.words) ? data.words : [];
+
+    mergeCategories(categories.map((category) => ({ ...category, base: true })));
+    mergeWords(words.map((word, index) => ({
+      id: makeWordId(word.word, word.categoryId, index),
+      word: word.word,
+      meaning: word.meaning,
+      emoji: word.emoji,
+      categoryId: word.categoryId || CUSTOM_CATEGORY.id,
+      base: true
+    })));
+  } catch (error) {
+    console.error("기본 단어장을 불러오지 못했습니다.", error);
+  }
 }
 
 function loadLocalState() {
-  const saved = safeJson(localStorage.getItem(LOCAL_KEY), {});
-  state.player = {
-    ...state.player,
-    ...(saved.player || {})
-  };
+  const saved = safeJson(localStorage.getItem(LOCAL_KEY), {}) || {};
+  state.player = normalizePlayer({ ...state.player, ...(saved.player || {}) });
   state.selectedCategoryId = saved.selectedCategoryId || "all";
 
-  const localCategories = saved.categories || [];
-  const localWords = saved.words || [];
+  const localCategories = Array.isArray(saved.categories) ? saved.categories : [];
+  const localWords = Array.isArray(saved.words) ? saved.words : [];
 
   mergeCategories(localCategories);
   mergeWords(localWords);
 
   if (!state.player.name || state.player.name === "Player") {
     const nick = localStorage.getItem("heather_player_name");
-    if (nick) state.player.name = nick;
+    if (nick) state.player.name = limitText(nick, MAX_PLAYER_NAME_LENGTH) || "Player";
   }
 }
 
@@ -206,7 +233,9 @@ function saveLocal() {
 }
 
 async function initFirebaseIfEnabled() {
-  if (!window.HEATHER_USE_FIREBASE) {
+  const localModeRequested = new URLSearchParams(window.location.search).get("mode") === "local";
+
+  if (!window.HEATHER_USE_FIREBASE || localModeRequested) {
     dom.syncStatus.textContent = "LOCAL 모드";
     return;
   }
@@ -241,6 +270,7 @@ async function seedDefaultDataIfEmpty() {
   const snap = await getDocs(query(wordsRef, limit(1)));
 
   if (!snap.empty) return;
+  if (!state.words.length) return;
 
   const batch = writeBatch(firebase.db);
 
@@ -248,6 +278,7 @@ async function seedDefaultDataIfEmpty() {
     batch.set(doc(firebase.db, "classes", firebase.classId, "categories", category.id), {
       name: category.name,
       emoji: category.emoji,
+      base: Boolean(category.base),
       createdAt: serverTimestamp()
     });
   }
@@ -281,33 +312,29 @@ function subscribeFirebase() {
     state.words = [];
     mergeWords(remoteWords);
     render();
-    if (!state.currentWord) newQuestion();
-  });
+    if (state.screen === "game" || !state.currentWord) newQuestion();
+  }, markSyncFailure);
 
   firebase.unsubCategories = onSnapshot(categoriesRef, (snapshot) => {
     const remoteCategories = snapshot.docs.map((item) => ({
       id: item.id,
-      ...item.data(),
-      base: false
+      ...item.data()
     }));
 
-    state.categories = [DEFAULT_CATEGORY];
+    state.categories = [DEFAULT_CATEGORY, CUSTOM_CATEGORY];
     mergeCategories(remoteCategories);
     render();
-  });
+  }, markSyncFailure);
 
   firebase.unsubPlayer = onSnapshot(playerRef, (snapshot) => {
     if (snapshot.exists()) {
-      state.player = {
-        ...state.player,
-        ...snapshot.data()
-      };
+      state.player = normalizePlayer({ ...state.player, ...snapshot.data() });
       saveLocal();
       render();
     } else {
       syncPlayer();
     }
-  });
+  }, markSyncFailure);
 
   syncPlayer();
   loadRanking();
@@ -328,7 +355,12 @@ function syncPlayer() {
     bestCombo: Number(state.player.bestCombo || 0),
     knownCards: state.player.knownCards || {},
     updatedAt: serverTimestamp()
-  }, { merge: true }).catch(console.error);
+  }, { merge: true }).catch(markSyncFailure);
+}
+
+function markSyncFailure(error) {
+  console.error(error);
+  dom.syncStatus.textContent = "동기화 실패 · 기기 저장됨";
 }
 
 function bindEvents() {
@@ -443,44 +475,64 @@ function selectCategory(categoryId) {
 
 function mergeCategories(categories) {
   const map = new Map(state.categories.map((category) => [category.id, category]));
+  const merged = [];
   for (const category of categories) {
-    if (!category.id || category.id === "all") continue;
-    map.set(category.id, {
-      id: category.id,
-      name: category.name || "새 카테고리",
-      emoji: category.emoji || "🗂️",
-      base: Boolean(category.base)
-    });
+    const id = String(category?.id || "");
+    if (!id || id === "all" || id.includes("/")) continue;
+    const normalized = {
+      id,
+      name: limitText(category.name, MAX_CATEGORY_NAME_LENGTH) || "새 카테고리",
+      emoji: limitText(category.emoji, 4) || "🗂️",
+      base: id === CUSTOM_CATEGORY.id || Boolean(category.base)
+    };
+    map.set(id, normalized);
+    merged.push(normalized);
   }
   state.categories = [...map.values()];
+  return merged;
 }
 
 function mergeWords(words) {
   const map = new Map(state.words.map((word) => [word.id, word]));
+  const merged = [];
   for (const word of words) {
-    const cleaned = cleanWord(word.word);
+    const cleaned = cleanWord(word?.word);
     if (!cleaned) continue;
-    const id = word.id || makeWordId(cleaned, word.categoryId || "custom");
-    map.set(id, {
+    const requestedCategoryId = String(word.categoryId || "");
+    const categoryId = requestedCategoryId && !requestedCategoryId.includes("/")
+      ? requestedCategoryId
+      : CUSTOM_CATEGORY.id;
+    const requestedId = String(word.id || "");
+    const id = requestedId && !requestedId.includes("/")
+      ? requestedId
+      : makeWordId(cleaned, categoryId);
+    const normalized = {
       id,
       word: cleaned,
-      meaning: word.meaning || "",
-      emoji: word.emoji || "📘",
-      categoryId: word.categoryId || "custom",
+      meaning: limitText(word.meaning, MAX_MEANING_LENGTH),
+      emoji: limitText(word.emoji, 4) || "📘",
+      categoryId,
       base: Boolean(word.base)
-    });
+    };
+    map.set(id, normalized);
+    merged.push(normalized);
   }
   state.words = [...map.values()].sort((a, b) => a.word.localeCompare(b.word));
+  return merged;
 }
 
 function categoryOptions(includeAll = true) {
   return state.categories
     .filter((category) => includeAll || category.id !== "all")
-    .map((category) => `<option value="${escapeHtml(category.id)}">${category.emoji} ${escapeHtml(category.name)}</option>`)
+    .map((category) => `<option value="${escapeHtml(category.id)}">${escapeHtml(category.emoji)} ${escapeHtml(category.name)}</option>`)
     .join("");
 }
 
 function render() {
+  if (!state.categories.some((category) => category.id === state.selectedCategoryId)) {
+    state.selectedCategoryId = "all";
+  }
+
   dom.scorePill.textContent = `⭐ ${state.player.score || 0}`;
   dom.coinPill.textContent = `🍪 ${state.player.coin || 0}`;
   dom.comboPill.textContent = `🔥 ${state.player.combo || 0}`;
@@ -520,7 +572,7 @@ function renderCategories() {
 
     return `
       <button class="cat-btn ${state.selectedCategoryId === category.id ? "active" : ""}" data-cat="${escapeHtml(category.id)}">
-        ${category.emoji} ${escapeHtml(category.name)} ${count}
+        ${escapeHtml(category.emoji)} ${escapeHtml(category.name)} ${count}
       </button>
     `;
   }).join("");
@@ -544,13 +596,25 @@ function renderSelects() {
 
   dom.wordCategoryInput.innerHTML = noAll;
   dom.bulkCategoryInput.innerHTML = noAll;
-  if (!dom.wordCategoryInput.value) dom.wordCategoryInput.value = "day1";
-  if (!dom.bulkCategoryInput.value) dom.bulkCategoryInput.value = "day1";
+  if (!dom.wordCategoryInput.value) dom.wordCategoryInput.value = CUSTOM_CATEGORY.id;
+  if (!dom.bulkCategoryInput.value) dom.bulkCategoryInput.value = CUSTOM_CATEGORY.id;
 }
 
 function renderCard() {
   const word = currentCardWord();
-  if (!word) return;
+  [$("#cardSpeakBtn"), $("#prevCardBtn"), $("#nextCardBtn"), $("#knowBtn"), $("#hardBtn")].forEach((button) => {
+    if (button) button.disabled = !word;
+  });
+
+  if (!word) {
+    dom.cardEmoji.textContent = "📭";
+    dom.cardWord.textContent = "단어 없음";
+    dom.cardWord.style.fontSize = "";
+    dom.cardWord.classList.remove("long-word");
+    dom.cardMeaning.textContent = "관리 화면에서 단어를 추가해 주세요";
+    dom.cardCategoryName.textContent = getCategoryLabel(state.selectedCategoryId);
+    return;
+  }
 
   dom.cardEmoji.textContent = word.emoji || "📘";
   dom.cardWord.textContent = word.word;
@@ -562,7 +626,7 @@ function renderCard() {
   const alreadyKnown = Boolean(state.player.knownCards?.[word.id]);
   const knowButton = $("#knowBtn");
   if (knowButton) {
-    knowButton.textContent = alreadyKnown ? "✅ 완료 · 다음" : "알아요 +5";
+    knowButton.textContent = alreadyKnown ? "✅ 완료 · 다음" : `알아요 +${SCORE_REWARDS.card}`;
     knowButton.classList.toggle("good", !alreadyKnown);
   }
 }
@@ -577,10 +641,10 @@ function renderWordList() {
 
   dom.wordList.innerHTML = list.map((word) => `
     <div class="word-row">
-      <div style="font-size:30px">${word.emoji || "📘"}</div>
+      <div style="font-size:30px">${escapeHtml(word.emoji || "📘")}</div>
       <div>
         <b>${escapeHtml(word.word)}</b>
-        <small>${escapeHtml(word.meaning || "뜻 입력")} · ${getCategoryLabel(word.categoryId)}</small>
+        <small>${escapeHtml(word.meaning || "뜻 입력")} · ${escapeHtml(getCategoryLabel(word.categoryId))}</small>
       </div>
       <button class="delete-btn" data-delete="${escapeHtml(word.id)}">삭제</button>
     </div>
@@ -598,7 +662,7 @@ function filteredWords() {
 
 function currentCardWord() {
   const list = filteredWords();
-  if (!list.length) return state.words[0];
+  if (!list.length) return null;
   return list[state.cardIndex % list.length];
 }
 
@@ -617,7 +681,15 @@ function newQuestion() {
   dom.gameBox.className = `game-box ${isTypingMode() ? "typing-game" : ""}`;
 
   state.currentWord = pickQuestionWord();
+  state.questionLocked = false;
   state.answerTiles = [];
+  state.bankTiles = [];
+
+  if (!state.currentWord) {
+    renderEmptyGame();
+    return;
+  }
+
   state.bankTiles = shuffle(spellingLetters(state.currentWord.word).split("").map((char, index) => ({ char, index })));
 
   if (state.gameMode === "choice") renderChoiceGame();
@@ -627,8 +699,8 @@ function newQuestion() {
 }
 
 function pickQuestionWord() {
-  const list = filteredWords();
-  const source = list.length ? list : state.words;
+  const source = filteredWords();
+  if (!source.length) return null;
   return source[Math.floor(Math.random() * source.length)];
 }
 
@@ -644,30 +716,48 @@ function questionHeader(showWord = false) {
   const word = state.currentWord;
   return `
     <div class="question-top">
-      <div class="question-emoji">${word.emoji || "📘"}</div>
+      <div class="question-emoji">${escapeHtml(word.emoji || "📘")}</div>
       <div class="question-meaning">${escapeHtml(word.meaning || "뜻 입력")}</div>
       ${showWord ? `<div class="question-word">${escapeHtml(word.word)}</div>` : ""}
-      <div class="tag">${getCategoryLabel(word.categoryId)}</div>
+      <div class="tag">${escapeHtml(getCategoryLabel(word.categoryId))}</div>
     </div>
   `;
 }
 
+function renderEmptyGame() {
+  dom.gameBox.innerHTML = `
+    <div class="empty-game">
+      <strong>이 카테고리에 단어가 없어요</strong>
+      <span>단어를 추가하면 바로 게임을 시작할 수 있어요.</span>
+      <button id="emptyAddWordBtn" class="soft-btn good">단어 추가하기</button>
+    </div>
+  `;
+
+  $("#emptyAddWordBtn").addEventListener("click", () => {
+    navigate("manage");
+    openWordDialog();
+  });
+}
+
 function renderChoiceGame() {
+  const distractors = uniqueWordsBySpelling(
+    state.words.filter((word) => word.word !== state.currentWord.word)
+  );
   const options = shuffle([
     state.currentWord,
-    ...shuffle(state.words.filter((word) => word.id !== state.currentWord.id)).slice(0, 3)
+    ...shuffle(distractors).slice(0, 3)
   ]);
 
   dom.gameBox.innerHTML = `
     ${questionHeader()}
     <div class="choices">
-      ${options.map((word) => `<button class="choice" data-word-id="${word.id}">${escapeHtml(word.word)}</button>`).join("")}
+      ${options.map((word) => `<button class="choice" data-word-id="${escapeHtml(word.id)}">${escapeHtml(word.word)}</button>`).join("")}
     </div>
     <button id="skipQuestionBtn" class="soft-btn skip">몰라요 · 다음 →</button>
   `;
 
   dom.gameBox.querySelectorAll("[data-word-id]").forEach((button) => {
-    button.addEventListener("click", () => checkAnswer(button.dataset.wordId === state.currentWord.id, 5));
+    button.addEventListener("click", () => checkAnswer(button.dataset.wordId === state.currentWord.id, SCORE_REWARDS.choice));
   });
 
   $("#skipQuestionBtn").addEventListener("click", skipQuestion);
@@ -681,7 +771,7 @@ function renderBlockGame() {
     <div class="screen-row game-actions">
       <button id="clearTilesBtn" class="soft-btn">지우기</button>
       <button id="skipQuestionBtn" class="soft-btn skip">몰라요 · 다음</button>
-      <button id="checkTilesBtn" class="soft-btn good">확인 +10</button>
+      <button id="checkTilesBtn" class="soft-btn good">확인 +${SCORE_REWARDS.block}</button>
     </div>
   `;
 
@@ -697,7 +787,7 @@ function renderBlockGame() {
 
   $("#checkTilesBtn").addEventListener("click", () => {
     const answer = state.answerTiles.map((tile) => tile.char).join("");
-    checkAnswer(answer === spellingLetters(state.currentWord.word), 10);
+    checkAnswer(answer === spellingLetters(state.currentWord.word), SCORE_REWARDS.block);
   });
 }
 
@@ -734,19 +824,19 @@ function renderBlankGame() {
 
   dom.gameBox.innerHTML = `
     <div class="question-top compact-question">
-      <div class="question-meaning">${escapeHtml(state.currentWord.meaning || "뜻 입력")} ${state.currentWord.emoji || ""}</div>
-      <div class="tag">${getCategoryLabel(state.currentWord.categoryId)}</div>
+      <div class="question-meaning">${escapeHtml(state.currentWord.meaning || "뜻 입력")} ${escapeHtml(state.currentWord.emoji || "")}</div>
+      <div class="tag">${escapeHtml(getCategoryLabel(state.currentWord.categoryId))}</div>
     </div>
     <div class="question-word long-fit" style="font-size:${getWordFontSize(state.currentWord.word, 56, 24)}">${masked}</div>
-    <input id="answerInput" class="type-input" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" lang="en" />
+    <input id="answerInput" class="type-input" aria-label="정답 입력" maxlength="${MAX_WORD_LENGTH}" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" lang="en" />
     <div class="screen-row game-actions">
       <button id="skipQuestionBtn" class="soft-btn skip">몰라요 · 다음</button>
-      <button id="checkInputBtn" class="soft-btn good">확인 +15</button>
+      <button id="checkInputBtn" class="soft-btn good">확인 +${SCORE_REWARDS.blank}</button>
     </div>
   `;
 
   const input = $("#answerInput");
-  const check = () => checkAnswer(normalizeAnswer(input.value) === normalizeAnswer(state.currentWord.word), 15);
+  const check = () => checkAnswer(normalizeAnswer(input.value) === normalizeAnswer(state.currentWord.word), SCORE_REWARDS.blank);
   $("#skipQuestionBtn").addEventListener("click", skipQuestion);
   $("#checkInputBtn").addEventListener("click", check);
   input.addEventListener("keydown", (event) => {
@@ -760,20 +850,20 @@ function renderTypeGame() {
   dom.gameBox.innerHTML = `
     <div class="question-top compact-question">
       <button id="speakQuestionBtn" class="soft-btn">🔊 다시 듣기</button>
-      <div class="question-meaning">${escapeHtml(state.currentWord.meaning || "")} ${state.currentWord.emoji || ""}</div>
-      <div class="tag">${getCategoryLabel(state.currentWord.categoryId)}</div>
+      <div class="question-meaning">${escapeHtml(state.currentWord.meaning || "")} ${escapeHtml(state.currentWord.emoji || "")}</div>
+      <div class="tag">${escapeHtml(getCategoryLabel(state.currentWord.categoryId))}</div>
     </div>
-    <input id="answerInput" class="type-input" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" lang="en" />
+    <input id="answerInput" class="type-input" aria-label="정답 입력" maxlength="${MAX_WORD_LENGTH}" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" lang="en" />
     <div class="screen-row game-actions">
       <button id="skipQuestionBtn" class="soft-btn skip">몰라요 · 다음</button>
-      <button id="checkInputBtn" class="soft-btn good">확인 +20</button>
+      <button id="checkInputBtn" class="soft-btn good">확인 +${SCORE_REWARDS.type}</button>
     </div>
   `;
 
   $("#speakQuestionBtn").addEventListener("click", () => speak(state.currentWord.word));
 
   const input = $("#answerInput");
-  const check = () => checkAnswer(normalizeAnswer(input.value) === normalizeAnswer(state.currentWord.word), 20);
+  const check = () => checkAnswer(normalizeAnswer(input.value) === normalizeAnswer(state.currentWord.word), SCORE_REWARDS.type);
   $("#skipQuestionBtn").addEventListener("click", skipQuestion);
   $("#checkInputBtn").addEventListener("click", check);
   input.addEventListener("keydown", (event) => {
@@ -788,11 +878,14 @@ function renderTypeGame() {
 }
 
 function skipQuestion() {
+  if (state.questionLocked) return;
+
   if (!state.currentWord) {
     newQuestion();
     return;
   }
 
+  state.questionLocked = true;
   clearTimeout(nextTimer);
   state.player.combo = 0;
 
@@ -812,8 +905,12 @@ function skipQuestion() {
 }
 
 function checkAnswer(isCorrect, points) {
+  if (state.questionLocked || !state.currentWord) return;
+
+  state.questionLocked = true;
+
   if (isCorrect) {
-    award(points, state.currentWord, true);
+    award(points, state.currentWord);
     dom.feedback.textContent = `정답! ${state.currentWord.word} 🎉`;
     dom.feedback.className = "feedback good";
 
@@ -827,10 +924,15 @@ function checkAnswer(isCorrect, points) {
   markWrong(state.currentWord);
   dom.feedback.textContent = `아깝다! 정답은 ${state.currentWord.word}`;
   dom.feedback.className = "feedback bad";
+
+  clearTimeout(nextTimer);
+  nextTimer = setTimeout(() => {
+    newQuestion();
+  }, 950);
 }
 
-function award(points, word, shouldMoveNext) {
-  const bonus = (state.player.combo + 1) % 3 === 0 ? 5 : 0;
+function award(points, word) {
+  const bonus = (state.player.combo + 1) % 3 === 0 ? Math.max(1, Math.round(points * 0.2)) : 0;
   const total = points + bonus;
 
   state.player.combo += 1;
@@ -847,8 +949,7 @@ function award(points, word, shouldMoveNext) {
 
   successFx(total, word);
   syncPlayer();
-
-  if (!shouldMoveNext) render();
+  render();
 }
 
 function markWrong(word) {
@@ -911,7 +1012,7 @@ function awardCurrentCard() {
   }
 
   state.player.knownCards[word.id] = true;
-  award(5, word, false);
+  award(SCORE_REWARDS.card, word);
 
   setTimeout(() => {
     moveCard(1);
@@ -937,17 +1038,18 @@ function markCurrentCardHard() {
 
 async function saveWordFromDialog() {
   const word = cleanWord(dom.wordInput.value);
-  const meaning = dom.meaningInput.value.trim();
-  const emoji = dom.emojiInput.value.trim() || "📘";
-  const categoryId = dom.wordCategoryInput.value || "day1";
+  const meaning = limitText(dom.meaningInput.value, MAX_MEANING_LENGTH);
+  const emoji = limitText(dom.emojiInput.value, 4) || "📘";
+  const categoryId = selectedEditableCategory(dom.wordCategoryInput.value);
 
   if (!word) {
     showToast("단어 확인", "영어 단어를 입력해 주세요");
     return;
   }
 
+  const existingWord = findWordInCategory(word, categoryId);
   const wordItem = {
-    id: makeWordId(word, categoryId),
+    id: existingWord?.id || makeWordId(word, categoryId),
     word,
     meaning,
     emoji,
@@ -961,13 +1063,13 @@ async function saveWordFromDialog() {
 
   await saveWordRemote(wordItem);
   syncPlayer();
-  showToast("단어 추가", `${word} 저장 완료`);
+  showToast(existingWord ? "단어 수정" : "단어 추가", `${word} 저장 완료`);
   render();
 }
 
 async function saveCategoryFromDialog() {
-  const name = dom.catNameInput.value.trim();
-  const emoji = dom.catEmojiInput.value.trim() || "🗂️";
+  const name = limitText(dom.catNameInput.value, MAX_CATEGORY_NAME_LENGTH);
+  const emoji = limitText(dom.catEmojiInput.value, 4) || "🗂️";
 
   if (!name) {
     showToast("카테고리 확인", "이름을 입력해 주세요");
@@ -975,7 +1077,7 @@ async function saveCategoryFromDialog() {
   }
 
   const category = {
-    id: `cat_${Date.now()}`,
+    id: makeCategoryId(),
     name,
     emoji,
     base: false
@@ -1002,7 +1104,7 @@ async function deleteSelectedCategory() {
     return;
   }
 
-  if (category.base) {
+  if (category.base || category.id === CUSTOM_CATEGORY.id) {
     showToast("삭제 불가", "기본 카테고리는 삭제하지 않도록 했어요");
     return;
   }
@@ -1025,10 +1127,14 @@ async function deleteSelectedCategory() {
   saveLocal();
 
   if (state.firebaseReady) {
-    await deleteDoc(doc(firebase.db, "classes", firebase.classId, "categories", category.id));
+    try {
+      await deleteDoc(doc(firebase.db, "classes", firebase.classId, "categories", category.id));
 
-    for (const word of state.words.filter((item) => item.categoryId === "custom" && wordsInCategory.some((oldWord) => oldWord.id === item.id))) {
-      await saveWordRemote(word);
+      for (const word of state.words.filter((item) => item.categoryId === "custom" && wordsInCategory.some((oldWord) => oldWord.id === item.id))) {
+        await saveWordRemote(word);
+      }
+    } catch (error) {
+      markSyncFailure(error);
     }
   }
 
@@ -1041,11 +1147,16 @@ async function deleteWord(wordId) {
   saveLocal();
 
   if (state.firebaseReady) {
-    await deleteDoc(doc(firebase.db, "classes", firebase.classId, "words", wordId));
+    try {
+      await deleteDoc(doc(firebase.db, "classes", firebase.classId, "words", wordId));
+    } catch (error) {
+      markSyncFailure(error);
+    }
   }
 
   showToast("삭제 완료", "단어를 삭제했어요");
   render();
+  if (state.screen === "game") newQuestion();
 }
 
 async function saveWordRemote(word) {
@@ -1053,14 +1164,18 @@ async function saveWordRemote(word) {
 
   if (!state.firebaseReady) return;
 
-  await setDoc(doc(firebase.db, "classes", firebase.classId, "words", word.id), {
-    word: word.word,
-    meaning: word.meaning,
-    emoji: word.emoji,
-    categoryId: word.categoryId,
-    updatedAt: serverTimestamp(),
-    updatedBy: state.firebaseUser.uid
-  }, { merge: true });
+  try {
+    await setDoc(doc(firebase.db, "classes", firebase.classId, "words", word.id), {
+      word: word.word,
+      meaning: word.meaning,
+      emoji: word.emoji,
+      categoryId: word.categoryId,
+      updatedAt: serverTimestamp(),
+      updatedBy: state.firebaseUser.uid
+    }, { merge: true });
+  } catch (error) {
+    markSyncFailure(error);
+  }
 }
 
 async function saveCategoryRemote(category) {
@@ -1068,22 +1183,27 @@ async function saveCategoryRemote(category) {
 
   if (!state.firebaseReady) return;
 
-  await setDoc(doc(firebase.db, "classes", firebase.classId, "categories", category.id), {
-    name: category.name,
-    emoji: category.emoji,
-    updatedAt: serverTimestamp(),
-    updatedBy: state.firebaseUser.uid
-  }, { merge: true });
+  try {
+    await setDoc(doc(firebase.db, "classes", firebase.classId, "categories", category.id), {
+      name: category.name,
+      emoji: category.emoji,
+      base: Boolean(category.base),
+      updatedAt: serverTimestamp(),
+      updatedBy: state.firebaseUser.uid
+    }, { merge: true });
+  } catch (error) {
+    markSyncFailure(error);
+  }
 }
 
 function openBulkDialog() {
   dom.bulkTextInput.value = "";
-  dom.bulkCategoryInput.value = state.selectedCategoryId === "all" ? "day1" : state.selectedCategoryId;
+  dom.bulkCategoryInput.value = selectedEditableCategory(state.selectedCategoryId);
   dom.bulkDialog.showModal();
 }
 
 async function saveBulkWordsFromDialog() {
-  const categoryId = dom.bulkCategoryInput.value || "day1";
+  const categoryId = selectedEditableCategory(dom.bulkCategoryInput.value);
   const text = dom.bulkTextInput.value || "";
   const lines = text
     .split(/\r?\n/)
@@ -1101,7 +1221,7 @@ async function saveBulkWordsFromDialog() {
 
   for (const row of parsedRows) {
     const words = splitWordAliases(row.word);
-    const meaning = row.meaning.trim();
+    const meaning = limitText(row.meaning, MAX_MEANING_LENGTH);
 
     if (!words.length || !meaning) {
       skipped.push(row.raw || `${row.word} / ${row.meaning}`);
@@ -1118,8 +1238,8 @@ async function saveBulkWordsFromDialog() {
         base: false
       };
 
-      const alreadyExists = state.words.some((item) => item.id === wordItem.id || item.word === word);
-      const alreadyParsed = parsed.some((item) => item.id === wordItem.id || item.word === word);
+      const alreadyExists = Boolean(findWordInCategory(word, categoryId));
+      const alreadyParsed = Boolean(findWordInCategory(word, categoryId, parsed));
 
       if (alreadyExists || alreadyParsed) {
         skipped.push(row.raw || `${word} / ${meaning}`);
@@ -1261,7 +1381,7 @@ function looksLikeEnglishWordLine(value) {
 
 function openWordDialog() {
   clearWordDialog();
-  dom.wordCategoryInput.value = state.selectedCategoryId === "all" ? "day1" : state.selectedCategoryId;
+  dom.wordCategoryInput.value = selectedEditableCategory(state.selectedCategoryId);
   dom.wordDialog.showModal();
 }
 
@@ -1272,7 +1392,7 @@ function clearWordDialog() {
 }
 
 function saveProfile() {
-  const name = dom.playerNameInput.value.trim();
+  const name = limitText(dom.playerNameInput.value, MAX_PLAYER_NAME_LENGTH);
   if (!name) {
     showToast("이름 확인", "랭킹에 표시할 이름을 입력해 주세요");
     return;
@@ -1295,18 +1415,29 @@ async function loadRanking() {
   }
 
   const playersRef = collection(firebase.db, "classes", firebase.classId, "players");
-  const snap = await getDocs(query(playersRef, orderBy("score", "desc"), limit(10)));
+  let snap;
+
+  try {
+    snap = await getDocs(query(playersRef, orderBy("score", "desc"), limit(10)));
+  } catch (error) {
+    markSyncFailure(error);
+    dom.rankingList.innerHTML = `<div class="hint">랭킹을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</div>`;
+    return;
+  }
 
   dom.rankingList.innerHTML = snap.docs.map((item, index) => {
     const player = item.data();
+    const name = limitText(player.name, MAX_PLAYER_NAME_LENGTH) || "Player";
+    const score = safeCounter(player.score);
+    const bestCombo = safeCounter(player.bestCombo);
     return `
       <div class="rank-row">
         <div style="font-size:28px">${index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "⭐"}</div>
         <div>
-          <b>${escapeHtml(player.name || "Player")}</b>
-          <small>베스트 콤보 ${player.bestCombo || 0}</small>
+          <b>${escapeHtml(name)}</b>
+          <small>베스트 콤보 ${bestCombo}</small>
         </div>
-        <strong>${player.score || 0}</strong>
+        <strong>${score}</strong>
       </div>
     `;
   }).join("");
@@ -1366,25 +1497,34 @@ async function importData(event) {
   if (!file) return;
 
   const data = safeJson(await file.text(), null);
-  if (!data) {
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
     showToast("복원 실패", "JSON 파일을 확인해 주세요");
     return;
   }
 
-  mergeCategories(data.categories || []);
-  mergeWords(data.words || []);
-  state.player = { ...state.player, ...(data.player || {}) };
+  const categories = Array.isArray(data.categories)
+    ? data.categories.slice(0, MAX_IMPORT_CATEGORIES)
+    : [];
+  const words = Array.isArray(data.words)
+    ? data.words.slice(0, MAX_IMPORT_WORDS)
+    : [];
+
+  const importedCategories = mergeCategories(categories);
+  const importedWords = mergeWords(words);
+  state.player = normalizePlayer({ ...state.player, ...(data.player || {}) });
 
   saveLocal();
 
   if (state.firebaseReady) {
-    for (const category of data.categories || []) await saveCategoryRemote(category);
-    for (const word of data.words || []) await saveWordRemote(word);
+    for (const category of importedCategories) await saveCategoryRemote(category);
+    for (const word of importedWords) await saveWordRemote(word);
     syncPlayer();
   }
 
+  dom.importFile.value = "";
   showToast("복원 완료", "백업을 불러왔어요");
   render();
+  if (state.screen === "game") newQuestion();
 }
 
 function speak(text) {
@@ -1486,6 +1626,30 @@ function floatScore(text) {
   setTimeout(() => item.remove(), 1000);
 }
 
+function uniqueWordsBySpelling(words) {
+  const seen = new Set();
+  return words.filter((word) => {
+    if (seen.has(word.word)) return false;
+    seen.add(word.word);
+    return true;
+  });
+}
+
+function findWordInCategory(word, categoryId, words = state.words) {
+  return words.find((item) => item.word === word && item.categoryId === categoryId);
+}
+
+function selectedEditableCategory(categoryId) {
+  const category = state.categories.find((item) => item.id === categoryId && item.id !== "all");
+  return category?.id || CUSTOM_CATEGORY.id;
+}
+
+function makeCategoryId() {
+  const token = globalThis.crypto?.randomUUID?.()
+    || `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  return `cat_${token}`;
+}
+
 function getCategoryLabel(categoryId) {
   const category = state.categories.find((item) => item.id === categoryId);
   return category ? `${category.emoji} ${category.name}` : "⭐ 직접추가";
@@ -1524,11 +1688,48 @@ function cleanWord(value) {
     .replace(/[’]/g, "'")
     .replace(/[^a-z\s'-]/g, " ")
     .replace(/\s+/g, " ")
-    .trim();
+    .trim()
+    .slice(0, MAX_WORD_LENGTH);
+}
+
+function limitText(value, maxLength) {
+  return Array.from(String(value ?? "").trim()).slice(0, maxLength).join("");
+}
+
+function safeCounter(value) {
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? Math.floor(number) : 0;
+}
+
+function normalizePlayer(player) {
+  const progress = player.progress && typeof player.progress === "object" && !Array.isArray(player.progress)
+    ? player.progress
+    : {};
+  const knownCards = player.knownCards && typeof player.knownCards === "object" && !Array.isArray(player.knownCards)
+    ? player.knownCards
+    : {};
+
+  return {
+    ...player,
+    name: limitText(player.name, MAX_PLAYER_NAME_LENGTH) || "Player",
+    score: safeCounter(player.score),
+    coin: safeCounter(player.coin),
+    xp: safeCounter(player.xp),
+    combo: safeCounter(player.combo),
+    bestCombo: safeCounter(player.bestCombo),
+    sound: player.sound !== false,
+    progress,
+    knownCards
+  };
 }
 
 function shuffle(array) {
-  return [...array].sort(() => Math.random() - 0.5);
+  const shuffled = [...array];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
 }
 
 function safeJson(text, fallback) {

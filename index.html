@@ -3,12 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#7c3aed" />
+  <meta name="description" content="카테고리별 영어 단어와 스펠링을 연습하는 Heather Word" />
   <title>Heather Word · Spellingmon</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
   <div id="fxLayer" class="fx-layer"></div>
-  <div id="toast" class="toast"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <main class="app-shell">
     <header class="topbar">
@@ -78,9 +80,9 @@
 
     <section id="cardScreen" class="screen">
       <div class="screen-head">
-        <button class="back-btn" data-nav="home">←</button>
+        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
         <select id="cardCategory" class="select"></select>
-        <button id="cardSpeakBtn" class="round-btn">🔊</button>
+        <button id="cardSpeakBtn" class="round-btn" aria-label="단어 발음 듣기">🔊</button>
       </div>
 
       <div class="word-card">
@@ -93,34 +95,34 @@
       <div class="bottom-actions">
         <button id="prevCardBtn" class="soft-btn">← 이전</button>
         <button id="hardBtn" class="soft-btn warn">어려워요</button>
-        <button id="knowBtn" class="soft-btn good">알아요 +5</button>
+        <button id="knowBtn" class="soft-btn good">알아요 +1</button>
         <button id="nextCardBtn" class="soft-btn">다음 →</button>
       </div>
     </section>
 
     <section id="gameScreen" class="screen">
       <div class="screen-head">
-        <button id="gameBackBtn" class="back-btn">←</button>
+        <button id="gameBackBtn" class="back-btn" aria-label="이전 화면으로 돌아가기">←</button>
         <select id="gameCategory" class="select"></select>
-        <button id="newQuestionBtn" class="round-btn">↻</button>
+        <button id="newQuestionBtn" class="round-btn" aria-label="새 문제">↻</button>
       </div>
 
       <div class="mode-tabs">
-        <button class="mode-btn active" data-mode="choice">뜻</button>
-        <button class="mode-btn" data-mode="block">블록</button>
-        <button class="mode-btn" data-mode="blank">빈칸</button>
-        <button class="mode-btn" data-mode="type">쓰기</button>
+        <button class="mode-btn active" data-mode="choice">뜻 +1</button>
+        <button class="mode-btn" data-mode="block">블록 +15</button>
+        <button class="mode-btn" data-mode="blank">빈칸 +40</button>
+        <button class="mode-btn" data-mode="type">쓰기 +100</button>
       </div>
 
       <div id="gameBox" class="game-box"></div>
-      <div id="feedback" class="feedback"></div>
+      <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
     </section>
 
     <section id="rankScreen" class="screen">
       <div class="screen-head">
-        <button class="back-btn" data-nav="home">←</button>
+        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
         <h2>🏆 랭킹</h2>
-        <button id="refreshRankBtn" class="round-btn">↻</button>
+        <button id="refreshRankBtn" class="round-btn" aria-label="랭킹 새로고침">↻</button>
       </div>
 
       <div class="rank-card me">
@@ -140,9 +142,9 @@
 
     <section id="manageScreen" class="screen">
       <div class="screen-head">
-        <button class="back-btn" data-nav="home">←</button>
+        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
         <h2>⚙️ 관리</h2>
-        <button id="syncBtn" class="round-btn">☁️</button>
+        <button id="syncBtn" class="round-btn" aria-label="데이터 동기화">☁️</button>
       </div>
 
       <div class="manage-grid">
@@ -161,9 +163,9 @@
 
   <dialog id="wordDialog" class="dialog">
     <h2>단어 추가</h2>
-    <label>영어 단어<input id="wordInput" class="input" placeholder="apple" autocomplete="off" /></label>
-    <label>한글 뜻<input id="meaningInput" class="input" placeholder="사과" autocomplete="off" /></label>
-    <label>아이콘<input id="emojiInput" class="input" placeholder="🍎" autocomplete="off" /></label>
+    <label>영어 단어<input id="wordInput" class="input" placeholder="apple" maxlength="60" autocomplete="off" /></label>
+    <label>한글 뜻<input id="meaningInput" class="input" placeholder="사과" maxlength="120" autocomplete="off" /></label>
+    <label>아이콘<input id="emojiInput" class="input" placeholder="🍎" maxlength="8" autocomplete="off" /></label>
     <label>카테고리<select id="wordCategoryInput" class="select"></select></label>
     <div class="dialog-actions">
       <button id="closeWordDialog" class="soft-btn">닫기</button>
@@ -176,7 +178,7 @@
     <p class="hint">한 줄에 하나씩 입력하세요. 형식: <b>단어 / 뜻</b></p>
     <label>카테고리<select id="bulkCategoryInput" class="select"></select></label>
     <label>붙여넣기
-      <textarea id="bulkTextInput" class="textarea" placeholder="apple / 사과\nbanana / 바나나\nclassroom / 교실"></textarea>
+      <textarea id="bulkTextInput" class="textarea" maxlength="20000" placeholder="apple / 사과\nbanana / 바나나\nclassroom / 교실"></textarea>
     </label>
     <div class="dialog-actions">
       <button id="closeBulkDialog" class="soft-btn">닫기</button>
@@ -186,8 +188,8 @@
 
   <dialog id="catDialog" class="dialog">
     <h2>카테고리 추가</h2>
-    <label>카테고리 이름<input id="catNameInput" class="input" placeholder="3일차 / 학교숙제 / 파닉스" autocomplete="off" /></label>
-    <label>아이콘<input id="catEmojiInput" class="input" placeholder="3️⃣" autocomplete="off" /></label>
+    <label>카테고리 이름<input id="catNameInput" class="input" placeholder="3일차 / 학교숙제 / 파닉스" maxlength="30" autocomplete="off" /></label>
+    <label>아이콘<input id="catEmojiInput" class="input" placeholder="3️⃣" maxlength="8" autocomplete="off" /></label>
     <div class="dialog-actions">
       <button id="closeCatDialog" class="soft-btn">닫기</button>
       <button id="saveCatBtn" class="soft-btn good">저장</button>
@@ -197,7 +199,7 @@
   <dialog id="profileDialog" class="dialog">
     <h2>사용자 이름</h2>
     <p class="hint">랭킹에 표시될 이름이에요.</p>
-    <label>이름<input id="playerNameInput" class="input" placeholder="Heather" autocomplete="off" /></label>
+    <label>이름<input id="playerNameInput" class="input" placeholder="Heather" maxlength="20" autocomplete="off" /></label>
     <div class="dialog-actions">
       <button id="closeProfileDialog" class="soft-btn">닫기</button>
       <button id="saveProfileBtn" class="soft-btn good">저장</button>

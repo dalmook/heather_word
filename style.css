@@ -1545,3 +1545,28 @@ body.keyboard-open #bulkDialog .textarea {
     padding-bottom: 0.10em !important;
   }
 }
+
+/* v4.5 empty states and disabled controls */
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none !important;
+}
+
+.empty-game {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 30px 16px;
+  text-align: center;
+  color: #475569;
+}
+
+.empty-game strong {
+  color: #1e293b;
+  font-size: 20px;
+}
+
+.empty-game span {
+  line-height: 1.45;
+}

@@ -5,23 +5,83 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function validWord() {
+      let data = request.resource.data;
+      return data.keys().hasOnly([
+          'word', 'meaning', 'emoji', 'categoryId',
+          'createdAt', 'createdBy', 'updatedAt', 'updatedBy'
+        ])
+        && data.word is string
+        && data.word.size() > 0
+        && data.word.size() <= 60
+        && data.meaning is string
+        && data.meaning.size() <= 120
+        && data.emoji is string
+        && data.emoji.size() <= 8
+        && data.categoryId is string
+        && data.categoryId.size() > 0
+        && data.categoryId.size() <= 100
+        && (!('createdAt' in data) || data.createdAt is timestamp)
+        && (!('createdBy' in data) || data.createdBy is string)
+        && (!('updatedAt' in data) || data.updatedAt is timestamp)
+        && (!('updatedBy' in data) || data.updatedBy == request.auth.uid);
+    }
+
+    function validCategory() {
+      let data = request.resource.data;
+      return data.keys().hasOnly([
+          'name', 'emoji', 'base', 'createdAt', 'updatedAt', 'updatedBy'
+        ])
+        && data.name is string
+        && data.name.size() > 0
+        && data.name.size() <= 30
+        && data.emoji is string
+        && data.emoji.size() <= 8
+        && (!('base' in data) || data.base is bool)
+        && (!('createdAt' in data) || data.createdAt is timestamp)
+        && (!('updatedAt' in data) || data.updatedAt is timestamp)
+        && (!('updatedBy' in data) || data.updatedBy == request.auth.uid);
+    }
+
+    function validPlayer() {
+      let data = request.resource.data;
+      return data.keys().hasOnly([
+          'name', 'score', 'coin', 'xp', 'combo', 'bestCombo',
+          'sound', 'knownCards', 'progress', 'updatedAt'
+        ])
+        && data.name is string
+        && data.name.size() > 0
+        && data.name.size() <= 20
+        && data.score is number && data.score >= 0 && data.score <= 100000000
+        && data.coin is number && data.coin >= 0 && data.coin <= 100000000
+        && data.xp is number && data.xp >= 0 && data.xp <= 100000000
+        && data.combo is number && data.combo >= 0 && data.combo <= 1000000
+        && data.bestCombo is number && data.bestCombo >= 0 && data.bestCombo <= 1000000
+        && (!('sound' in data) || data.sound is bool)
+        && data.knownCards is map
+        && data.knownCards.size() <= 5000
+        && (!('progress' in data) || data.progress is map)
+        && (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
     match /classes/{classId} {
       allow read: if signedIn();
-      allow create, update: if signedIn();
 
       match /words/{wordId} {
         allow read: if signedIn();
-        allow create, update, delete: if signedIn();
+        allow create, update: if signedIn() && validWord();
+        allow delete: if signedIn();
       }
 
       match /categories/{catId} {
         allow read: if signedIn();
-        allow create, update, delete: if signedIn();
+        allow create, update: if signedIn() && validCategory();
+        allow delete: if signedIn();
       }
 
       match /players/{uid} {
         allow read: if signedIn();
-        allow create, update: if signedIn() && request.auth.uid == uid;
+        allow create, update: if signedIn() && request.auth.uid == uid && validPlayer();
         allow delete: if signedIn() && request.auth.uid == uid;
       }
     }
