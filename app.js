@@ -37,6 +37,43 @@ const SCORE_REWARDS = Object.freeze({
   blank: 40,
   type: 100
 });
+const MANAGE_PASSWORD = "3341";
+const MONSTER_XP_STEP = 250;
+const ROUND_COMPLETION_BONUS = 300;
+const ROUND_STAGES = Object.freeze([
+  { mode: "choice", count: 10, label: "뜻" },
+  { mode: "block", count: 10, label: "블록" },
+  { mode: "blank", count: 5, label: "빈칸" },
+  { mode: "type", count: 5, label: "쓰기" }
+]);
+const ROUND_TOTAL = ROUND_STAGES.reduce((total, stage) => total + stage.count, 0);
+const MONSTER_BASE_NAMES = [
+  "알몬", "삐약몬", "솜구름몬", "토끼몬", "판다몬",
+  "여우몬", "유니콘몬", "드래곤몬", "피닉스몬", "스타몬",
+  "고래몬", "나비몬", "호랑몬", "문어몬", "개구리몬",
+  "사자몬", "펭귄몬", "공룡몬", "곰몬", "왕관몬"
+];
+const MONSTER_EMOJIS = [
+  "🥚", "🐣", "☁️", "🐰", "🐼", "🦊", "🦄", "🐲", "🦅", "🌟",
+  "🐳", "🦋", "🐯", "🐙", "🐸", "🦁", "🐧", "🦖", "🐻", "👑"
+];
+const MONSTER_TIERS = ["새싹", "반짝", "달빛", "무지개", "레전드"];
+const MONSTER_MESSAGES = [
+  "새 단어를 기다리고 있어요", "조금씩 힘이 생기고 있어요", "오늘도 단어를 먹고 자라요",
+  "도감이 반짝반짝 채워져요", "쓰기 문제에도 자신 있어요"
+];
+const MONSTER_CATALOG = Array.from({ length: 100 }, (_, index) => {
+  const tier = Math.floor(index / MONSTER_BASE_NAMES.length);
+  return {
+    id: `monster_${String(index + 1).padStart(3, "0")}`,
+    number: index + 1,
+    min: index * MONSTER_XP_STEP,
+    emoji: MONSTER_EMOJIS[index % MONSTER_EMOJIS.length],
+    name: `${MONSTER_TIERS[tier]} ${MONSTER_BASE_NAMES[index % MONSTER_BASE_NAMES.length]}`,
+    message: MONSTER_MESSAGES[tier],
+    tone: `tone-${tier + 1}`
+  };
+});
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -47,6 +84,7 @@ const dom = {
     card: $("#cardScreen"),
     game: $("#gameScreen"),
     rank: $("#rankScreen"),
+    collection: $("#collectionScreen"),
     manage: $("#manageScreen")
   },
   syncStatus: $("#syncStatus"),
@@ -59,6 +97,10 @@ const dom = {
   xpFill: $("#xpFill"),
   levelText: $("#levelText"),
   nextXpText: $("#nextXpText"),
+  homeMonsterCount: $("#homeMonsterCount"),
+  monsterCount: $("#monsterCount"),
+  collectionHero: $("#collectionHero"),
+  monsterGrid: $("#monsterGrid"),
   categoryStrip: $("#categoryStrip"),
   cardCategory: $("#cardCategory"),
   gameCategory: $("#gameCategory"),
@@ -72,6 +114,9 @@ const dom = {
   cardCategoryName: $("#cardCategoryName"),
   gameBox: $("#gameBox"),
   feedback: $("#feedback"),
+  roundProgress: $("#roundProgress"),
+  roundCorrect: $("#roundCorrect"),
+  roundBonus: $("#roundBonus"),
   wordList: $("#wordList"),
   rankingList: $("#rankingList"),
   myNameRank: $("#myNameRank"),
@@ -84,12 +129,15 @@ const dom = {
   bulkDialog: $("#bulkDialog"),
   catDialog: $("#catDialog"),
   profileDialog: $("#profileDialog"),
+  manageLockDialog: $("#manageLockDialog"),
   wordInput: $("#wordInput"),
   meaningInput: $("#meaningInput"),
   emojiInput: $("#emojiInput"),
   catNameInput: $("#catNameInput"),
   catEmojiInput: $("#catEmojiInput"),
   playerNameInput: $("#playerNameInput"),
+  managePasswordInput: $("#managePasswordInput"),
+  managePasswordError: $("#managePasswordError"),
   importFile: $("#importFile")
 };
 
@@ -116,6 +164,14 @@ let state = {
   questionLocked: false,
   answerTiles: [],
   bankTiles: [],
+  manageUnlocked: false,
+  round: {
+    active: false,
+    completed: false,
+    index: 0,
+    correct: 0,
+    questions: []
+  },
   firebaseReady: false,
   firebaseUser: null
 };
@@ -312,7 +368,8 @@ function subscribeFirebase() {
     state.words = [];
     mergeWords(remoteWords);
     render();
-    if (state.screen === "game" || !state.currentWord) newQuestion();
+    if (state.screen === "game") startRound();
+    else if (!state.currentWord) newQuestion();
   }, markSyncFailure);
 
   firebase.unsubCategories = onSnapshot(categoriesRef, (snapshot) => {
@@ -372,14 +429,11 @@ function bindEvents() {
 
   $$(".mode-btn").forEach((button) => {
     button.addEventListener("click", () => {
-      state.gameMode = button.dataset.mode;
-      $$(".mode-btn").forEach((item) => item.classList.toggle("active", item === button));
-      updateTypingModeClass();
-      newQuestion();
+      showToast("라운드 진행 중", "뜻 → 블록 → 빈칸 → 쓰기 순서로 진행해요");
     });
   });
 
-  $("#newQuestionBtn").addEventListener("click", newQuestion);
+  $("#newQuestionBtn").addEventListener("click", startRound);
   $("#cardSpeakBtn").addEventListener("click", () => speak(currentCardWord()?.word));
   $("#prevCardBtn").addEventListener("click", () => moveCard(-1));
   $("#nextCardBtn").addEventListener("click", () => moveCard(1));
@@ -389,7 +443,7 @@ function bindEvents() {
   dom.cardCategory.addEventListener("change", () => selectCategory(dom.cardCategory.value));
   dom.gameCategory.addEventListener("change", () => {
     selectCategory(dom.gameCategory.value);
-    newQuestion();
+    startRound();
   });
   dom.listCategory.addEventListener("change", () => selectCategory(dom.listCategory.value));
 
@@ -411,6 +465,11 @@ function bindEvents() {
   });
   $("#closeProfileDialog").addEventListener("click", () => dom.profileDialog.close());
   $("#saveProfileBtn").addEventListener("click", saveProfile);
+  $("#closeManageLockDialog").addEventListener("click", () => dom.manageLockDialog.close());
+  $("#unlockManageBtn").addEventListener("click", unlockManageScreen);
+  dom.managePasswordInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") unlockManageScreen();
+  });
 
   $("#exportBtn").addEventListener("click", exportData);
   $("#importBtn").addEventListener("click", () => dom.importFile.click());
@@ -438,23 +497,15 @@ function bindEvents() {
 }
 
 function handleGameBack() {
-  // 쓰기/빈칸 모드는 화면 확보를 위해 모드 탭을 숨긴다.
-  // 이때 뒤로가기는 홈이 아니라 게임 선택이 가능한 "뜻" 모드로 돌아간다.
-  if (state.gameMode === "blank" || state.gameMode === "type") {
-    state.gameMode = "choice";
-    $$(".mode-btn").forEach((button) => {
-      button.classList.toggle("active", button.dataset.mode === "choice");
-    });
-    updateTypingModeClass();
-    newQuestion();
-    showToast("게임 선택", "다른 게임을 고를 수 있어요");
-    return;
-  }
-
   navigate("home");
 }
 
 function navigate(screen) {
+  if (screen === "manage" && !state.manageUnlocked) {
+    openManageLock();
+    return;
+  }
+
   state.screen = screen;
   Object.entries(dom.screens).forEach(([key, el]) => {
     el.classList.toggle("active", key === screen);
@@ -463,7 +514,30 @@ function navigate(screen) {
   updateTypingModeClass();
 
   if (screen === "rank") loadRanking();
+  if (screen === "game") startRound();
   render();
+}
+
+function openManageLock() {
+  dom.managePasswordInput.value = "";
+  dom.managePasswordError.textContent = "";
+  dom.manageLockDialog.showModal();
+  setTimeout(() => dom.managePasswordInput.focus(), 80);
+}
+
+function unlockManageScreen() {
+  if (dom.managePasswordInput.value !== MANAGE_PASSWORD) {
+    dom.managePasswordError.textContent = "비밀번호가 맞지 않아요.";
+    dom.managePasswordInput.value = "";
+    dom.managePasswordInput.focus();
+    playSfx("bad");
+    return;
+  }
+
+  state.manageUnlocked = true;
+  dom.manageLockDialog.close();
+  showToast("관리 잠금 해제", "이 기기의 현재 탭에서 편집할 수 있어요");
+  navigate("manage");
 }
 
 function selectCategory(categoryId) {
@@ -539,18 +613,21 @@ function render() {
   dom.soundToggle.textContent = state.player.sound ? "🔊 ON" : "🔇 OFF";
   renderProfileButton();
 
-  const pet = getPetStage();
+  const pet = getCurrentMonster();
   dom.petEmoji.textContent = pet.emoji;
   dom.petName.textContent = pet.name;
   dom.petMsg.textContent = pet.message;
   dom.xpFill.style.width = `${pet.percent}%`;
-  dom.levelText.textContent = `Lv.${Math.floor((state.player.xp || 0) / 100) + 1}`;
-  dom.nextXpText.textContent = `${pet.next - (state.player.xp || 0)}XP 남음`;
+  dom.levelText.textContent = `수집 ${pet.unlockedCount} / ${MONSTER_CATALOG.length}`;
+  dom.nextXpText.textContent = pet.complete ? "도감 완성!" : `다음까지 ${pet.remaining}XP`;
+  dom.homeMonsterCount.textContent = `${pet.unlockedCount} / ${MONSTER_CATALOG.length}`;
 
   renderCategories();
   renderSelects();
   renderCard();
   renderWordList();
+  renderCollection();
+  renderRoundProgress();
 }
 
 function renderProfileButton() {
@@ -580,7 +657,7 @@ function renderCategories() {
   dom.categoryStrip.querySelectorAll("[data-cat]").forEach((button) => {
     button.addEventListener("click", () => {
       selectCategory(button.dataset.cat);
-      if (state.screen === "game") newQuestion();
+      if (state.screen === "game") startRound();
     });
   });
 }
@@ -680,10 +757,19 @@ function newQuestion() {
   dom.feedback.className = "feedback";
   dom.gameBox.className = `game-box ${isTypingMode() ? "typing-game" : ""}`;
 
-  state.currentWord = pickQuestionWord();
+  if (state.round.active) {
+    const question = state.round.questions[state.round.index];
+    state.gameMode = question.mode;
+    state.currentWord = question.word;
+  } else {
+    state.currentWord = pickQuestionWord();
+  }
   state.questionLocked = false;
   state.answerTiles = [];
   state.bankTiles = [];
+  updateTypingModeClass();
+  dom.gameBox.className = `game-box ${isTypingMode() ? "typing-game" : ""}`;
+  renderRoundProgress();
 
   if (!state.currentWord) {
     renderEmptyGame();
@@ -696,6 +782,116 @@ function newQuestion() {
   if (state.gameMode === "block") renderBlockGame();
   if (state.gameMode === "blank") renderBlankGame();
   if (state.gameMode === "type") renderTypeGame();
+}
+
+function startRound() {
+  clearTimeout(nextTimer);
+  const source = filteredWords();
+
+  state.round = {
+    active: source.length > 0,
+    completed: false,
+    index: 0,
+    correct: 0,
+    questions: source.length ? buildRoundQuestions(source) : []
+  };
+  state.gameMode = "choice";
+  state.currentWord = null;
+  state.questionLocked = false;
+  updateTypingModeClass();
+
+  if (!source.length) {
+    dom.feedback.textContent = "";
+    renderRoundProgress();
+    renderEmptyGame();
+    return;
+  }
+
+  showToast("새 라운드", `총 ${ROUND_TOTAL}문제 · 완주 보너스 +${ROUND_COMPLETION_BONUS}`);
+  newQuestion();
+}
+
+function buildRoundQuestions(source) {
+  return ROUND_STAGES.flatMap((stage) => {
+    let pool = [];
+    return Array.from({ length: stage.count }, () => {
+      if (!pool.length) pool = shuffle([...source]);
+      return { mode: stage.mode, word: pool.pop() };
+    });
+  });
+}
+
+function advanceRound() {
+  if (!state.round.active) {
+    newQuestion();
+    return;
+  }
+
+  state.round.index += 1;
+  if (state.round.index >= ROUND_TOTAL) {
+    completeRound();
+    return;
+  }
+
+  newQuestion();
+}
+
+function completeRound() {
+  clearTimeout(nextTimer);
+  state.round.active = false;
+  state.round.completed = true;
+  state.currentWord = null;
+  state.questionLocked = true;
+  state.gameMode = "choice";
+  updateTypingModeClass();
+
+  state.player.score += ROUND_COMPLETION_BONUS;
+  state.player.coin += Math.ceil(ROUND_COMPLETION_BONUS / 5);
+  state.player.xp += ROUND_COMPLETION_BONUS;
+  successFx(ROUND_COMPLETION_BONUS);
+  syncPlayer();
+  render();
+
+  dom.feedback.textContent = `완주 보너스 +${ROUND_COMPLETION_BONUS} 획득!`;
+  dom.feedback.className = "feedback good";
+  dom.gameBox.className = "game-box";
+  dom.gameBox.innerHTML = `
+    <div class="round-complete">
+      <span>🏅</span>
+      <h3>라운드 완주!</h3>
+      <p>정답 ${state.round.correct} / ${ROUND_TOTAL}</p>
+      <strong>보너스 +${ROUND_COMPLETION_BONUS} XP</strong>
+      <button id="restartRoundBtn" class="soft-btn good">새 라운드 시작</button>
+    </div>
+  `;
+  $("#restartRoundBtn").addEventListener("click", startRound);
+}
+
+function renderRoundProgress() {
+  if (!dom.roundProgress) return;
+
+  const answered = state.round.completed ? ROUND_TOTAL : state.round.index;
+  const current = state.round.active ? Math.min(ROUND_TOTAL, state.round.index + 1) : 0;
+  dom.roundProgress.textContent = state.round.completed
+    ? "ROUND COMPLETE"
+    : state.round.active
+      ? `ROUND ${current} / ${ROUND_TOTAL}`
+      : `ROUND 0 / ${ROUND_TOTAL}`;
+  dom.roundCorrect.textContent = `정답 ${state.round.correct || 0}`;
+  dom.roundBonus.textContent = `완주 +${ROUND_COMPLETION_BONUS}`;
+
+  let offset = 0;
+  ROUND_STAGES.forEach((stage) => {
+    const done = Math.max(0, Math.min(stage.count, answered - offset));
+    const element = $(`#modeProgress${stage.mode[0].toUpperCase()}${stage.mode.slice(1)}`);
+    if (element) element.textContent = `${done}/${stage.count} · +${SCORE_REWARDS[stage.mode]}`;
+    const button = $(`.mode-btn[data-mode="${stage.mode}"]`);
+    if (button) {
+      button.classList.toggle("active", state.round.active && state.gameMode === stage.mode);
+      button.classList.toggle("done", done === stage.count);
+    }
+    offset += stage.count;
+  });
 }
 
 function pickQuestionWord() {
@@ -735,7 +931,6 @@ function renderEmptyGame() {
 
   $("#emptyAddWordBtn").addEventListener("click", () => {
     navigate("manage");
-    openWordDialog();
   });
 }
 
@@ -900,7 +1095,7 @@ function skipQuestion() {
   syncPlayer();
 
   nextTimer = setTimeout(() => {
-    newQuestion();
+    advanceRound();
   }, 520);
 }
 
@@ -910,13 +1105,14 @@ function checkAnswer(isCorrect, points) {
   state.questionLocked = true;
 
   if (isCorrect) {
+    if (state.round.active) state.round.correct += 1;
     award(points, state.currentWord);
     dom.feedback.textContent = `정답! ${state.currentWord.word} 🎉`;
     dom.feedback.className = "feedback good";
 
     clearTimeout(nextTimer);
     nextTimer = setTimeout(() => {
-      newQuestion();
+      advanceRound();
     }, NEXT_DELAY_MS);
     return;
   }
@@ -927,7 +1123,7 @@ function checkAnswer(isCorrect, points) {
 
   clearTimeout(nextTimer);
   nextTimer = setTimeout(() => {
-    newQuestion();
+    advanceRound();
   }, 950);
 }
 
@@ -966,27 +1162,47 @@ function markWrong(word) {
   syncPlayer();
 }
 
-function getPetStage() {
-  const xp = state.player.xp || 0;
-  const stages = [
-    { min: 0, next: 300, emoji: "🥚", name: "알 스펠링몬", message: "천천히 알을 깨워요" },
-    { min: 300, next: 800, emoji: "🐣", name: "아기 병아리몬", message: "처음 단어를 먹기 시작했어요" },
-    { min: 800, next: 1500, emoji: "🐹", name: "햄스터몬", message: "쿠키를 모으며 자라요" },
-    { min: 1500, next: 3000, emoji: "🐰", name: "토끼몬", message: "짧은 단어는 자신 있어요" },
-    { min: 3000, next: 5000, emoji: "🐼", name: "판다몬", message: "카테고리별 단어를 모아요" },
-    { min: 5000, next: 8000, emoji: "🦊", name: "여우몬", message: "스펠링 감각이 좋아졌어요" },
-    { min: 8000, next: 12000, emoji: "🦄", name: "유니콘몬", message: "쓰기 문제도 멋지게 풀어요" },
-    { min: 12000, next: 18000, emoji: "🐲", name: "드래곤몬", message: "어려운 단어를 먹고 강해져요" },
-    { min: 18000, next: 26000, emoji: "🦅", name: "피닉스몬", message: "틀려도 다시 살아나는 힘!" },
-    { min: 26000, next: 36000, emoji: "🌟", name: "스타몬", message: "반짝반짝 단어 마스터" },
-    { min: 36000, next: 50000, emoji: "👑", name: "레전드 스펠링몬", message: "진짜 영어 챔피언!" }
-  ];
+function getCurrentMonster() {
+  const xp = Number(state.player.xp || 0);
+  const unlockedCount = Math.min(MONSTER_CATALOG.length, Math.floor(xp / MONSTER_XP_STEP) + 1);
+  const monster = MONSTER_CATALOG[unlockedCount - 1];
+  const next = MONSTER_CATALOG[unlockedCount];
+  const percent = next
+    ? Math.max(5, Math.min(100, ((xp - monster.min) / MONSTER_XP_STEP) * 100))
+    : 100;
 
-  const stage = [...stages].reverse().find((item) => xp >= item.min) || stages[0];
-  const range = stage.next - stage.min;
-  const percent = Math.max(5, Math.min(100, ((xp - stage.min) / range) * 100));
+  return {
+    ...monster,
+    unlockedCount,
+    percent,
+    remaining: next ? Math.max(0, next.min - xp) : 0,
+    complete: !next
+  };
+}
 
-  return { ...stage, percent };
+function renderCollection() {
+  if (!dom.monsterGrid) return;
+
+  const current = getCurrentMonster();
+  dom.monsterCount.textContent = `${current.unlockedCount}/100`;
+  dom.collectionHero.innerHTML = `
+    <span class="collection-emoji">${escapeHtml(current.emoji)}</span>
+    <div>
+      <small>현재 파트너 · #${String(current.number).padStart(3, "0")}</small>
+      <strong>${escapeHtml(current.name)}</strong>
+      <p>${current.complete ? "도감 완성! 최고의 수집가예요." : `다음 몬스터까지 ${current.remaining} XP`}</p>
+    </div>
+  `;
+  dom.monsterGrid.innerHTML = MONSTER_CATALOG.map((monster, index) => {
+    const unlocked = index < current.unlockedCount;
+    return `
+      <article class="monster-tile ${unlocked ? `unlocked ${monster.tone}` : "locked"}">
+        <span>${unlocked ? escapeHtml(monster.emoji) : "?"}</span>
+        <b>#${String(monster.number).padStart(3, "0")}</b>
+        <small>${unlocked ? escapeHtml(monster.name) : `${monster.min} XP`}</small>
+      </article>
+    `;
+  }).join("");
 }
 
 
@@ -1156,7 +1372,7 @@ async function deleteWord(wordId) {
 
   showToast("삭제 완료", "단어를 삭제했어요");
   render();
-  if (state.screen === "game") newQuestion();
+  if (state.screen === "game") startRound();
 }
 
 async function saveWordRemote(word) {
@@ -1524,7 +1740,7 @@ async function importData(event) {
   dom.importFile.value = "";
   showToast("복원 완료", "백업을 불러왔어요");
   render();
-  if (state.screen === "game") newQuestion();
+  if (state.screen === "game") startRound();
 }
 
 function speak(text) {

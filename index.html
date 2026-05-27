@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#141b34" />
   <meta name="description" content="카테고리별 영어 단어와 스펠링을 연습하는 Heather Word" />
   <title>Heather Word · Spellingmon</title>
-  <link rel="stylesheet" href="./style.css?v=5.1" />
+  <link rel="stylesheet" href="./style.css?v=6.0" />
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -65,7 +65,7 @@
       <div class="collection-panel">
         <div class="section-title">
           <strong>내 단어장</strong>
-          <small>연습할 카테고리를 골라요</small>
+          <button class="collection-link" data-nav="collection">📖 도감 <b id="homeMonsterCount">1 / 100</b></button>
         </div>
         <div class="category-strip" id="categoryStrip"></div>
       </div>
@@ -130,14 +130,20 @@
       <div class="screen-head">
         <button id="gameBackBtn" class="back-btn" aria-label="이전 화면으로 돌아가기">←</button>
         <select id="gameCategory" class="select"></select>
-        <button id="newQuestionBtn" class="round-btn" aria-label="새 문제">↻</button>
+        <button id="newQuestionBtn" class="round-btn" aria-label="새 라운드 시작">↻</button>
+      </div>
+
+      <div class="round-bar">
+        <strong id="roundProgress">ROUND 1 / 30</strong>
+        <span id="roundCorrect">정답 0</span>
+        <b id="roundBonus">완주 +300</b>
       </div>
 
       <div class="mode-tabs">
-        <button class="mode-btn active" data-mode="choice"><span>뜻</span><small>+1</small></button>
-        <button class="mode-btn" data-mode="block"><span>블록</span><small>+15</small></button>
-        <button class="mode-btn" data-mode="blank"><span>빈칸</span><small>+40</small></button>
-        <button class="mode-btn" data-mode="type"><span>쓰기</span><small>+100</small></button>
+        <button class="mode-btn active" data-mode="choice"><span>뜻</span><small id="modeProgressChoice">0/10 · +1</small></button>
+        <button class="mode-btn" data-mode="block"><span>블록</span><small id="modeProgressBlock">0/10 · +15</small></button>
+        <button class="mode-btn" data-mode="blank"><span>빈칸</span><small id="modeProgressBlank">0/5 · +40</small></button>
+        <button class="mode-btn" data-mode="type"><span>쓰기</span><small id="modeProgressType">0/5 · +100</small></button>
       </div>
 
       <div id="gameBox" class="game-box"></div>
@@ -164,6 +170,17 @@
       <p class="hint">
         Firebase 설정을 넣으면 여러 휴대폰에서 같은 단어장과 랭킹을 공유합니다.
       </p>
+    </section>
+
+    <section id="collectionScreen" class="screen">
+      <div class="screen-head">
+        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
+        <h2>📖 몬스터 도감</h2>
+        <strong id="monsterCount" class="collection-count">1/100</strong>
+      </div>
+
+      <div id="collectionHero" class="collection-hero"></div>
+      <div id="monsterGrid" class="monster-grid" aria-label="몬스터 목록"></div>
     </section>
 
     <section id="manageScreen" class="screen">
@@ -232,9 +249,22 @@
     </div>
   </dialog>
 
+  <dialog id="manageLockDialog" class="dialog lock-dialog">
+    <h2>🔐 관리 잠금</h2>
+    <p class="hint">단어장을 편집하려면 관리 비밀번호를 입력하세요.</p>
+    <label>관리 비밀번호
+      <input id="managePasswordInput" class="input" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••" />
+    </label>
+    <p id="managePasswordError" class="lock-error" role="alert"></p>
+    <div class="dialog-actions">
+      <button id="closeManageLockDialog" class="soft-btn">취소</button>
+      <button id="unlockManageBtn" class="soft-btn good">입장</button>
+    </div>
+  </dialog>
+
   <input id="importFile" type="file" accept="application/json" hidden />
 
   <script src="./firebase-config.js"></script>
-  <script type="module" src="./app.js?v=4.5"></script>
+  <script type="module" src="./app.js?v=6.0"></script>
 </body>
 </html>

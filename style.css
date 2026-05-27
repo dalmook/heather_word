@@ -2407,3 +2407,288 @@ body.keyboard-open .game-box {
     bottom: 7px;
   }
 }
+
+/* v6.0 collection, structured rounds, and management lock */
+.collection-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 30px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #5849cf;
+  font-size: 11px;
+  font-weight: 850;
+  background: #eeecff;
+}
+
+.collection-link b {
+  color: #fff;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #6857f5;
+}
+
+#gameScreen.active {
+  grid-template-rows: 52px auto 67px minmax(0, 1fr) auto !important;
+  gap: 9px;
+}
+
+.round-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 6px 9px;
+  border-radius: 16px;
+  color: #66708b;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow-soft);
+}
+
+.round-bar strong {
+  margin-right: auto;
+  color: #252d4c;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+}
+
+.round-bar span,
+.round-bar b {
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.round-bar span {
+  color: #5b50d1;
+  background: #eeecff;
+}
+
+.round-bar b {
+  color: #087646;
+  background: #daf8eb;
+}
+
+.mode-btn {
+  cursor: default;
+}
+
+.mode-btn.done:not(.active) {
+  border-color: #ccefe0;
+  color: #087646;
+  background: #effcf7;
+}
+
+.mode-btn.done:not(.active) small {
+  color: #139267;
+}
+
+.round-complete {
+  height: 100%;
+  min-height: 290px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.round-complete span {
+  font-size: 58px;
+}
+
+.round-complete h3 {
+  margin: 0;
+  color: #151c35;
+  font-size: 25px;
+}
+
+.round-complete p {
+  margin: 0;
+  color: #69738d;
+  font-weight: 750;
+}
+
+.round-complete strong {
+  margin-bottom: 10px;
+  color: #087646;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: #daf8eb;
+}
+
+#collectionScreen.active {
+  grid-template-rows: 52px auto minmax(0, 1fr) !important;
+  gap: 11px;
+}
+
+.collection-count {
+  display: grid;
+  place-content: center;
+  height: 48px;
+  border-radius: 16px;
+  color: #fff;
+  font-size: 12px;
+  background: linear-gradient(135deg, #6857f5, #f04d94);
+  box-shadow: var(--shadow-soft);
+}
+
+.collection-hero {
+  min-height: 94px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 16px;
+  border-radius: 25px;
+  color: #fff;
+  background: linear-gradient(130deg, #151c37, #433789 62%, #6857f5);
+  box-shadow: var(--shadow);
+}
+
+.collection-emoji {
+  display: grid;
+  place-content: center;
+  width: 68px;
+  height: 68px;
+  font-size: 42px;
+  border-radius: 21px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.collection-hero div {
+  display: grid;
+  gap: 3px;
+}
+
+.collection-hero small {
+  color: #c9c5ff;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.collection-hero strong {
+  font-size: 18px;
+  letter-spacing: -0.045em;
+}
+
+.collection-hero p {
+  margin: 0;
+  color: rgba(241, 243, 255, 0.76);
+  font-size: 11px;
+}
+
+.monster-grid {
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: start;
+  gap: 8px;
+  padding: 2px 2px 14px;
+}
+
+.monster-tile {
+  min-height: 105px;
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
+  padding: 9px 4px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  text-align: center;
+  background: #fff;
+}
+
+.monster-tile span {
+  font-size: 31px;
+}
+
+.monster-tile b {
+  color: #59627d;
+  font-size: 10px;
+}
+
+.monster-tile small {
+  width: 100%;
+  overflow: hidden;
+  color: #313951;
+  font-size: 10px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.monster-tile.locked {
+  color: #a5adbf;
+  border-style: dashed;
+  background: #f4f6fc;
+}
+
+.monster-tile.locked span {
+  display: grid;
+  place-content: center;
+  width: 38px;
+  height: 38px;
+  color: #b3bacd;
+  font-size: 20px;
+  font-weight: 900;
+  border-radius: 50%;
+  background: #e7eaf3;
+}
+
+.monster-tile.locked small {
+  color: #9ba4b9;
+}
+
+.monster-tile.tone-1 {
+  background: #fffaf0;
+}
+
+.monster-tile.tone-2 {
+  background: #f1fbf7;
+}
+
+.monster-tile.tone-3 {
+  background: #f2f3ff;
+}
+
+.monster-tile.tone-4 {
+  background: #fff1f7;
+}
+
+.monster-tile.tone-5 {
+  background: #fff7e6;
+}
+
+.lock-dialog .hint {
+  margin: -5px 0 15px;
+}
+
+.lock-error {
+  min-height: 18px;
+  margin: 5px 0 0;
+  color: #d53f5d;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+body.typing-mode .round-bar,
+body.keyboard-open .round-bar {
+  display: none;
+}
+
+@media (max-height: 730px) {
+  .round-bar {
+    min-height: 34px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .monster-tile {
+    min-height: 94px;
+  }
+}
