@@ -3,12 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#7c3aed" />
+  <meta name="theme-color" content="#141b34" />
   <meta name="description" content="카테고리별 영어 단어와 스펠링을 연습하는 Heather Word" />
   <title>Heather Word · Spellingmon</title>
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./style.css?v=5.1" />
 </head>
 <body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
   <div id="fxLayer" class="fx-layer"></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
@@ -16,7 +18,8 @@
     <header class="topbar">
       <div class="brand">
         <div class="brand-icon">🦄</div>
-        <div>
+        <div class="brand-copy">
+          <span class="brand-kicker">SPELLING QUEST</span>
           <h1>Heather Word</h1>
           <p id="syncStatus">LOCAL 모드</p>
         </div>
@@ -31,50 +34,73 @@
 
     <section id="homeScreen" class="screen active">
       <div class="pet-card">
-        <div class="screen-row">
-          <button id="soundToggle" class="chip dark">🔊 ON</button>
-          <button id="profileBtn" class="chip">👤 이름</button>
+        <div class="hero-toolbar">
+          <span class="eyebrow">TODAY'S ADVENTURE</span>
+          <div class="hero-controls">
+            <button id="soundToggle" class="chip dark">🔊 ON</button>
+            <button id="profileBtn" class="chip">👤 이름</button>
+          </div>
         </div>
 
         <div class="pet-glow">
           <div id="petEmoji" class="pet-emoji">🥚</div>
         </div>
 
-        <h2 id="petName">알 스펠링몬</h2>
-        <p id="petMsg">단어를 맞히면 펫이 자라요.</p>
-
-        <div class="xpbar">
-          <i id="xpFill"></i>
+        <div class="pet-copy">
+          <h2 id="petName">알 스펠링몬</h2>
+          <p id="petMsg">단어를 맞히면 펫이 자라요.</p>
         </div>
-        <div class="screen-row small-row">
-          <strong id="levelText">Lv.1</strong>
-          <span id="nextXpText">100XP 남음</span>
+
+        <div class="progress-panel">
+          <div class="progress-label">
+            <strong id="levelText">Lv.1</strong>
+            <span id="nextXpText">100XP 남음</span>
+          </div>
+          <div class="xpbar">
+            <i id="xpFill"></i>
+          </div>
         </div>
       </div>
 
-      <div class="category-strip" id="categoryStrip"></div>
+      <div class="collection-panel">
+        <div class="section-title">
+          <strong>내 단어장</strong>
+          <small>연습할 카테고리를 골라요</small>
+        </div>
+        <div class="category-strip" id="categoryStrip"></div>
+      </div>
 
-      <div class="main-actions">
-        <button class="big-action" data-nav="card">
-          <span>🃏</span>
-          <b>카드</b>
-          <em>듣고 익히기</em>
-        </button>
-        <button class="big-action" data-nav="game">
-          <span>🎮</span>
-          <b>게임</b>
-          <em>스펠링 도전</em>
-        </button>
-        <button class="big-action" data-nav="rank">
-          <span>🏆</span>
-          <b>랭킹</b>
-          <em>친구와 경쟁</em>
-        </button>
-        <button class="big-action" data-nav="manage">
-          <span>⚙️</span>
-          <b>관리</b>
-          <em>단어/카테고리</em>
-        </button>
+      <div class="launch-panel">
+        <div class="section-title">
+          <strong>오늘의 학습</strong>
+          <small>어려울수록 XP가 커져요</small>
+        </div>
+        <div class="main-actions">
+          <button class="big-action action-card" data-nav="card">
+            <small class="action-badge">REVIEW</small>
+            <span>🃏</span>
+            <b>카드</b>
+            <em>보고 듣기</em>
+          </button>
+          <button class="big-action action-game" data-nav="game">
+            <small class="action-badge">PLAY</small>
+            <span>🎮</span>
+            <b>게임</b>
+            <em>쓰기 +100</em>
+          </button>
+          <button class="big-action action-rank" data-nav="rank">
+            <small class="action-badge">LEAGUE</small>
+            <span>🏆</span>
+            <b>랭킹</b>
+            <em>내 기록</em>
+          </button>
+          <button class="big-action action-manage" data-nav="manage">
+            <small class="action-badge">LIBRARY</small>
+            <span>⚙️</span>
+            <b>관리</b>
+            <em>단어장 편집</em>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -108,10 +134,10 @@
       </div>
 
       <div class="mode-tabs">
-        <button class="mode-btn active" data-mode="choice">뜻 +1</button>
-        <button class="mode-btn" data-mode="block">블록 +15</button>
-        <button class="mode-btn" data-mode="blank">빈칸 +40</button>
-        <button class="mode-btn" data-mode="type">쓰기 +100</button>
+        <button class="mode-btn active" data-mode="choice"><span>뜻</span><small>+1</small></button>
+        <button class="mode-btn" data-mode="block"><span>블록</span><small>+15</small></button>
+        <button class="mode-btn" data-mode="blank"><span>빈칸</span><small>+40</small></button>
+        <button class="mode-btn" data-mode="type"><span>쓰기</span><small>+100</small></button>
       </div>
 
       <div id="gameBox" class="game-box"></div>
@@ -209,6 +235,6 @@
   <input id="importFile" type="file" accept="application/json" hidden />
 
   <script src="./firebase-config.js"></script>
-  <script type="module" src="./app.js"></script>
+  <script type="module" src="./app.js?v=4.5"></script>
 </body>
 </html>
