@@ -38,7 +38,12 @@ const SCORE_REWARDS = Object.freeze({
   type: 100
 });
 const MANAGE_PASSWORD = "3341";
-const MONSTER_XP_STEP = 250;
+const LEGACY_MONSTER_COUNT = 100;
+const LEGACY_MONSTER_XP_STEP = 250;
+const MONSTER_CATALOG_SIZE = 300;
+const EXPANDED_MONSTER_START_GAP = 1500;
+const EXPANDED_MONSTER_TIER_SIZE = 20;
+const EXPANDED_MONSTER_GAP_INCREASE = 500;
 const MODE_ROUNDS = Object.freeze({
   choice: { count: 10, label: "뜻", bonus: 10 },
   block: { count: 10, label: "블록", bonus: 100 },
@@ -55,23 +60,41 @@ const MONSTER_EMOJIS = [
   "🥚", "🐣", "☁️", "🐰", "🐼", "🦊", "🦄", "🐲", "🦅", "🌟",
   "🐳", "🦋", "🐯", "🐙", "🐸", "🦁", "🐧", "🦖", "🐻", "👑"
 ];
-const MONSTER_TIERS = ["새싹", "반짝", "달빛", "무지개", "레전드"];
+const MONSTER_TIERS = [
+  "새싹", "반짝", "달빛", "무지개", "레전드",
+  "오로라", "별자리", "보석", "천공", "신화",
+  "은하", "태양", "우주", "영원", "마스터"
+];
 const MONSTER_MESSAGES = [
   "새 단어를 기다리고 있어요", "조금씩 힘이 생기고 있어요", "오늘도 단어를 먹고 자라요",
-  "도감이 반짝반짝 채워져요", "쓰기 문제에도 자신 있어요"
+  "도감이 반짝반짝 채워져요", "쓰기 문제에도 자신 있어요", "긴 여정의 시작이에요",
+  "희귀한 친구들을 만나고 있어요", "보석처럼 소중한 단어 실력!", "하늘 높이 모험 중이에요",
+  "전설 너머의 몬스터예요", "은하만큼 단어가 넓어졌어요", "빛나는 실력이 뜨거워요",
+  "우주 끝까지 수집해요", "끝없는 도전을 이어가요", "도감의 진짜 주인이에요"
 ];
-const MONSTER_CATALOG = Array.from({ length: 100 }, (_, index) => {
+const MONSTER_CATALOG = Array.from({ length: MONSTER_CATALOG_SIZE }, (_, index) => {
   const tier = Math.floor(index / MONSTER_BASE_NAMES.length);
   return {
     id: `monster_${String(index + 1).padStart(3, "0")}`,
     number: index + 1,
-    min: index * MONSTER_XP_STEP,
+    min: getMonsterRequiredXp(index),
     emoji: MONSTER_EMOJIS[index % MONSTER_EMOJIS.length],
     name: `${MONSTER_TIERS[tier]} ${MONSTER_BASE_NAMES[index % MONSTER_BASE_NAMES.length]}`,
     message: MONSTER_MESSAGES[tier],
-    tone: `tone-${tier + 1}`
+    tone: `tone-${(tier % 5) + 1}`
   };
 });
+
+function getMonsterRequiredXp(index) {
+  if (index < LEGACY_MONSTER_COUNT) return index * LEGACY_MONSTER_XP_STEP;
+
+  let xp = (LEGACY_MONSTER_COUNT - 1) * LEGACY_MONSTER_XP_STEP;
+  for (let current = LEGACY_MONSTER_COUNT; current <= index; current += 1) {
+    const expandedTier = Math.floor((current - LEGACY_MONSTER_COUNT) / EXPANDED_MONSTER_TIER_SIZE);
+    xp += EXPANDED_MONSTER_START_GAP + (expandedTier * EXPANDED_MONSTER_GAP_INCREASE);
+  }
+  return xp;
+}
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -1164,11 +1187,14 @@ function markWrong(word) {
 
 function getCurrentMonster() {
   const xp = Number(state.player.xp || 0);
-  const unlockedCount = Math.min(MONSTER_CATALOG.length, Math.floor(xp / MONSTER_XP_STEP) + 1);
+  const unlockedCount = MONSTER_CATALOG.reduce(
+    (count, monster) => (xp >= monster.min ? count + 1 : count),
+    0
+  );
   const monster = MONSTER_CATALOG[unlockedCount - 1];
   const next = MONSTER_CATALOG[unlockedCount];
   const percent = next
-    ? Math.max(5, Math.min(100, ((xp - monster.min) / MONSTER_XP_STEP) * 100))
+    ? Math.max(5, Math.min(100, ((xp - monster.min) / (next.min - monster.min)) * 100))
     : 100;
 
   return {
@@ -1184,7 +1210,7 @@ function renderCollection() {
   if (!dom.monsterGrid) return;
 
   const current = getCurrentMonster();
-  dom.monsterCount.textContent = `${current.unlockedCount}/100`;
+  dom.monsterCount.textContent = `${current.unlockedCount}/${MONSTER_CATALOG.length}`;
   dom.collectionHero.innerHTML = `
     <span class="collection-emoji">${escapeHtml(current.emoji)}</span>
     <div>
