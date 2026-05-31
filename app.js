@@ -183,6 +183,7 @@ let state = {
   screen: "home",
   cardIndex: 0,
   cardLocked: false,
+  cardAwardedIds: new Set(),
   gameMode: "choice",
   currentWord: null,
   questionLocked: false,
@@ -422,6 +423,13 @@ function subscribeFirebase() {
 }
 
 function syncPlayer() {
+  if (state.cardAwardedIds?.size) {
+    state.player.knownCards = {
+      ...(state.player.knownCards || {}),
+      ...Object.fromEntries([...state.cardAwardedIds].map((id) => [id, true]))
+    };
+  }
+
   saveLocal();
 
   if (!state.firebaseReady) return;
@@ -711,7 +719,7 @@ function renderSelects() {
 function renderCard() {
   const word = currentCardWord();
   [$("#cardSpeakBtn"), $("#prevCardBtn"), $("#nextCardBtn"), $("#knowBtn"), $("#hardBtn")].forEach((button) => {
-    if (button) button.disabled = !word;
+    if (button) button.disabled = !word || state.cardLocked;
   });
 
   if (!word) {
@@ -731,7 +739,7 @@ function renderCard() {
   dom.cardMeaning.textContent = word.meaning || "뜻 입력";
   dom.cardCategoryName.textContent = getCategoryLabel(word.categoryId);
 
-  const alreadyKnown = Boolean(state.player.knownCards?.[word.id]);
+  const alreadyKnown = isKnownCard(word);
   const knowButton = $("#knowBtn");
   if (knowButton) {
     knowButton.textContent = alreadyKnown ? "✅ 완료 · 다음" : `알아요 +${SCORE_REWARDS.card}`;
@@ -1049,11 +1057,13 @@ function renderChoiceGame() {
     <div class="choices">
       ${options.map((word) => `<button class="choice" data-word-id="${escapeHtml(word.id)}">${escapeHtml(word.word)}</button>`).join("")}
     </div>
-    <button id="skipQuestionBtn" class="soft-btn skip">몰라요 · 다음 →</button>
+    <button id="skipQuestionBtn" class="soft-btn skip">몰라요</button>
   `;
 
   dom.gameBox.querySelectorAll("[data-word-id]").forEach((button) => {
-    button.addEventListener("click", () => checkAnswer(button.dataset.wordId === state.currentWord.id, SCORE_REWARDS.choice));
+    button.addEventListener("click", () => {
+      checkAnswer(button.dataset.wordId === state.currentWord.id, SCORE_REWARDS.choice, button.textContent);
+    });
   });
 
   $("#skipQuestionBtn").addEventListener("click", skipQuestion);
@@ -1067,7 +1077,7 @@ function renderBlockGame() {
     <div id="letterBank" class="bank"></div>
     <div class="screen-row game-actions">
       <button id="clearTilesBtn" class="soft-btn">지우기</button>
-      <button id="skipQuestionBtn" class="soft-btn skip">몰라요 · 다음</button>
+      <button id="skipQuestionBtn" class="soft-btn skip">몰라요</button>
       <button id="checkTilesBtn" class="soft-btn good">확인 +${SCORE_REWARDS.block}</button>
     </div>
   `;
@@ -1084,7 +1094,7 @@ function renderBlockGame() {
 
   $("#checkTilesBtn").addEventListener("click", () => {
     const answer = state.answerTiles.map((tile) => tile.char).join("");
-    checkAnswer(answer === spellingLetters(state.currentWord.word), SCORE_REWARDS.block);
+    checkAnswer(answer === spellingLetters(state.currentWord.word), SCORE_REWARDS.block, answer);
   });
 }
 
@@ -1127,13 +1137,17 @@ function renderBlankGame() {
     <div class="question-word long-fit" style="font-size:${getWordFontSize(state.currentWord.word, 56, 24)}">${masked}</div>
     <input id="answerInput" class="type-input" aria-label="정답 입력" maxlength="${MAX_WORD_LENGTH}" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" lang="en" />
     <div class="screen-row game-actions">
-      <button id="skipQuestionBtn" class="soft-btn skip">몰라요 · 다음</button>
+      <button id="skipQuestionBtn" class="soft-btn skip">몰라요</button>
       <button id="checkInputBtn" class="soft-btn good">확인 +${SCORE_REWARDS.blank}</button>
     </div>
   `;
 
   const input = $("#answerInput");
-  const check = () => checkAnswer(normalizeAnswer(input.value) === normalizeAnswer(state.currentWord.word), SCORE_REWARDS.blank);
+  const check = () => checkAnswer(
+    normalizeAnswer(input.value) === normalizeAnswer(state.currentWord.word),
+    SCORE_REWARDS.blank,
+    input.value
+  );
   $("#skipQuestionBtn").addEventListener("click", skipQuestion);
   $("#checkInputBtn").addEventListener("click", check);
   input.addEventListener("keydown", (event) => {
@@ -1152,7 +1166,7 @@ function renderTypeGame() {
     </div>
     <input id="answerInput" class="type-input" aria-label="정답 입력" maxlength="${MAX_WORD_LENGTH}" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" lang="en" />
     <div class="screen-row game-actions">
-      <button id="skipQuestionBtn" class="soft-btn skip">몰라요 · 다음</button>
+      <button id="skipQuestionBtn" class="soft-btn skip">몰라요</button>
       <button id="checkInputBtn" class="soft-btn good">확인 +${SCORE_REWARDS.type}</button>
     </div>
   `;
@@ -1160,7 +1174,11 @@ function renderTypeGame() {
   $("#speakQuestionBtn").addEventListener("click", () => speak(state.currentWord.word));
 
   const input = $("#answerInput");
-  const check = () => checkAnswer(normalizeAnswer(input.value) === normalizeAnswer(state.currentWord.word), SCORE_REWARDS.type);
+  const check = () => checkAnswer(
+    normalizeAnswer(input.value) === normalizeAnswer(state.currentWord.word),
+    SCORE_REWARDS.type,
+    input.value
+  );
   $("#skipQuestionBtn").addEventListener("click", skipQuestion);
   $("#checkInputBtn").addEventListener("click", check);
   input.addEventListener("keydown", (event) => {
@@ -1191,17 +1209,11 @@ function skipQuestion() {
   state.player.progress[state.currentWord.id] = progress;
 
   playSfx("click");
-  showToast("다음 문제", `정답은 ${state.currentWord.word}`);
-  dom.feedback.textContent = `정답은 ${state.currentWord.word}`;
-  dom.feedback.className = "feedback bad";
   syncPlayer();
-
-  nextTimer = setTimeout(() => {
-    advanceRound();
-  }, 520);
+  renderAnswerReview("skip");
 }
 
-function checkAnswer(isCorrect, points) {
+function checkAnswer(isCorrect, points, submittedAnswer = "") {
   if (state.questionLocked || !state.currentWord) return;
 
   state.questionLocked = true;
@@ -1219,14 +1231,53 @@ function checkAnswer(isCorrect, points) {
     return;
   }
 
-  markWrong(state.currentWord);
-  dom.feedback.textContent = `아깝다! 정답은 ${state.currentWord.word}`;
-  dom.feedback.className = "feedback bad";
+  markWrong(state.currentWord, false);
+  clearTimeout(nextTimer);
+  renderAnswerReview("wrong", submittedAnswer);
+}
+
+function renderAnswerReview(reason, submittedAnswer = "") {
+  const word = state.currentWord;
+  if (!word) return;
 
   clearTimeout(nextTimer);
-  nextTimer = setTimeout(() => {
+  const isSkip = reason === "skip";
+  const title = isSkip ? "정답 확인" : "다시 볼 문제";
+  const message = isSkip
+    ? "몰랐던 단어를 확인하고 다음 문제로 넘어가세요."
+    : "틀린 답을 정답과 비교하고 다음 문제로 넘어가세요.";
+  const cleanedSubmitted = limitText(submittedAnswer, MAX_WORD_LENGTH) || "입력 없음";
+
+  dom.feedback.textContent = message;
+  dom.feedback.className = "feedback bad";
+  dom.gameBox.className = "game-box answer-review-mode";
+  dom.gameBox.innerHTML = `
+    <div class="answer-review">
+      <span class="review-label">${title}</span>
+      <strong class="review-word">${escapeHtml(word.word)}</strong>
+      <p class="review-meaning">${escapeHtml(word.meaning || "뜻 입력")}</p>
+      <dl class="review-details">
+        ${isSkip ? "" : `<div><dt>내 답</dt><dd>${escapeHtml(cleanedSubmitted)}</dd></div>`}
+        <div><dt>철자</dt><dd>${escapeHtml(formatSpelling(word.word))}</dd></div>
+        <div><dt>분류</dt><dd>${escapeHtml(getCategoryLabel(word.categoryId))}</dd></div>
+      </dl>
+      <div class="screen-row game-actions review-actions">
+        <button id="speakAnswerBtn" class="soft-btn">🔊 듣기</button>
+        <button id="nextReviewBtn" class="soft-btn good">다음 문제</button>
+      </div>
+    </div>
+  `;
+
+  let advanced = false;
+  $("#speakAnswerBtn").addEventListener("click", () => speak(word.word));
+  $("#nextReviewBtn").addEventListener("click", () => {
+    if (advanced) return;
+    advanced = true;
+    $("#nextReviewBtn").disabled = true;
+    clearTimeout(nextTimer);
     advanceRound();
-  }, 950);
+  });
+  speak(word.word);
 }
 
 function award(points, word) {
@@ -1250,7 +1301,7 @@ function award(points, word) {
   render();
 }
 
-function markWrong(word) {
+function markWrong(word, shouldSpeak = true) {
   state.player.combo = 0;
 
   if (word) {
@@ -1260,7 +1311,7 @@ function markWrong(word) {
   }
 
   playSfx("bad");
-  speak(word.word);
+  if (shouldSpeak) speak(word.word);
   syncPlayer();
 }
 
@@ -1319,8 +1370,10 @@ function awardCurrentCard() {
 
   state.cardLocked = true;
   state.player.knownCards ||= {};
+  const knowButton = $("#knowBtn");
+  if (knowButton) knowButton.disabled = true;
 
-  if (state.player.knownCards[word.id]) {
+  if (isKnownCard(word)) {
     showToast("이미 완료", "이 단어는 점수를 이미 받았어요");
     playSfx("click");
 
@@ -1333,13 +1386,29 @@ function awardCurrentCard() {
   }
 
   state.player.knownCards[word.id] = true;
-  award(SCORE_REWARDS.card, word);
+  state.cardAwardedIds.add(word.id);
+  awardCard(word);
 
   setTimeout(() => {
     moveCard(1);
     state.cardLocked = false;
     renderCard();
   }, 420);
+}
+
+function isKnownCard(word) {
+  return Boolean(word?.id && (state.cardAwardedIds.has(word.id) || state.player.knownCards?.[word.id]));
+}
+
+function awardCard(word) {
+  const points = SCORE_REWARDS.card;
+  state.player.score += points;
+  state.player.coin += Math.ceil(points / 5);
+  state.player.xp += points;
+
+  successFx(points, word);
+  syncPlayer();
+  render();
 }
 
 function markCurrentCardHard() {
@@ -1991,6 +2060,10 @@ function normalizeAnswer(value) {
 function spellingLetters(value) {
   // 블록/빈칸 게임용: 공백/하이픈은 타일로 만들지 않음
   return normalizeAnswer(value);
+}
+
+function formatSpelling(value) {
+  return spellingLetters(value).toUpperCase().split("").join(" · ");
 }
 
 function makeWordId(word, categoryId = "word", index = "") {
