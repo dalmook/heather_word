@@ -40,15 +40,15 @@ const SCORE_REWARDS = Object.freeze({
 const MANAGE_PASSWORD = "3341";
 const LEGACY_MONSTER_COUNT = 100;
 const LEGACY_MONSTER_XP_STEP = 250;
-const MONSTER_CATALOG_SIZE = 300;
+const MONSTER_CATALOG_SIZE = 1000;
 const EXPANDED_MONSTER_START_GAP = 1500;
 const EXPANDED_MONSTER_TIER_SIZE = 20;
 const EXPANDED_MONSTER_GAP_INCREASE = 500;
 const MODE_ROUNDS = Object.freeze({
   choice: { count: 10, label: "뜻", bonus: 10 },
   block: { count: 10, label: "블록", bonus: 100 },
-  blank: { count: 5, label: "빈칸", bonus: 200 },
-  type: { count: 5, label: "쓰기", bonus: 500 }
+  blank: { count: 10, label: "빈칸", bonus: 200 },
+  type: { count: 10, label: "쓰기", bonus: 500 }
 });
 const MONSTER_BASE_NAMES = [
   "알몬", "삐약몬", "솜구름몬", "토끼몬", "판다몬",
@@ -74,13 +74,15 @@ const MONSTER_MESSAGES = [
 ];
 const MONSTER_CATALOG = Array.from({ length: MONSTER_CATALOG_SIZE }, (_, index) => {
   const tier = Math.floor(index / MONSTER_BASE_NAMES.length);
+  const tierCycle = Math.floor(tier / MONSTER_TIERS.length);
+  const tierName = `${MONSTER_TIERS[tier % MONSTER_TIERS.length]}${tierCycle ? ` ${tierCycle + 1}` : ""}`;
   return {
     id: `monster_${String(index + 1).padStart(3, "0")}`,
     number: index + 1,
     min: getMonsterRequiredXp(index),
     emoji: MONSTER_EMOJIS[index % MONSTER_EMOJIS.length],
-    name: `${MONSTER_TIERS[tier]} ${MONSTER_BASE_NAMES[index % MONSTER_BASE_NAMES.length]}`,
-    message: MONSTER_MESSAGES[tier],
+    name: `${tierName} ${MONSTER_BASE_NAMES[index % MONSTER_BASE_NAMES.length]}`,
+    message: MONSTER_MESSAGES[tier % MONSTER_MESSAGES.length],
     tone: `tone-${(tier % 5) + 1}`
   };
 });
@@ -174,7 +176,8 @@ let state = {
     bestCombo: 0,
     sound: true,
     progress: {},
-    knownCards: {}
+    knownCards: {},
+    questionHistory: {}
   },
   selectedCategoryId: "all",
   screen: "home",
@@ -792,6 +795,7 @@ function newQuestion() {
   } else {
     state.currentWord = pickQuestionWord();
   }
+  if (state.round.active) rememberQuestionWord(state.currentWord, state.gameMode);
   state.questionLocked = false;
   state.answerTiles = [];
   state.bankTiles = [];
@@ -837,17 +841,78 @@ function startRound(mode = state.gameMode) {
     return;
   }
 
-  showToast(`${config.label} 도전`, `${config.count}문제 · 완주 보너스 +${config.bonus}`);
+  showToast(`${config.label} 도전`, `${config.count}문제 · 최대 보너스 +${config.bonus}`);
   newQuestion();
 }
 
 function buildRoundQuestions(source, mode) {
   const count = MODE_ROUNDS[mode].count;
-  let pool = [];
-  return Array.from({ length: count }, () => {
-    if (!pool.length) pool = shuffle([...source]);
-    return { mode, word: pool.pop() };
-  });
+  const words = takeRoundWords(source, mode, count);
+  return words.map((word) => ({ mode, word }));
+}
+
+function takeRoundWords(source, mode, count) {
+  const usable = source.filter((word) => word?.id);
+  if (!usable.length) return [];
+
+  const allIds = new Set(usable.map((word) => word.id));
+  const history = normalizeQuestionHistory(state.player.questionHistory);
+  const key = questionHistoryKey(mode);
+  let used = Array.isArray(history[key])
+    ? history[key].filter((id) => allIds.has(id))
+    : [];
+  let usedSet = new Set(used);
+  const selected = [];
+  const selectedSet = new Set();
+
+  while (selected.length < count) {
+    let candidates = usable.filter((word) => !usedSet.has(word.id) && !selectedSet.has(word.id));
+    if (!candidates.length) candidates = usable.filter((word) => !usedSet.has(word.id));
+    if (!candidates.length) {
+      used = [];
+      usedSet = new Set();
+      candidates = usable.filter((word) => !selectedSet.has(word.id));
+    }
+    if (!candidates.length) candidates = usable;
+
+    const word = shuffle(candidates)[0];
+    selected.push(word);
+    selectedSet.add(word.id);
+
+    if (!usedSet.has(word.id)) {
+      used.push(word.id);
+      usedSet.add(word.id);
+    }
+
+    if (usedSet.size >= allIds.size) {
+      used = [];
+      usedSet = new Set();
+    }
+  }
+
+  return selected;
+}
+
+function questionHistoryKey(mode) {
+  return `${state.selectedCategoryId || "all"}:${mode}`;
+}
+
+function rememberQuestionWord(word, mode = state.gameMode) {
+  if (!word?.id) return;
+
+  const allIds = new Set(filteredWords().map((item) => item.id));
+  if (!allIds.has(word.id)) return;
+
+  const history = normalizeQuestionHistory(state.player.questionHistory);
+  const key = questionHistoryKey(mode);
+  const used = Array.isArray(history[key])
+    ? history[key].filter((id) => allIds.has(id))
+    : [];
+
+  if (!used.includes(word.id)) used.push(word.id);
+  history[key] = used.length >= allIds.size ? [] : used;
+  state.player.questionHistory = history;
+  saveLocal();
 }
 
 function advanceRound() {
@@ -868,32 +933,39 @@ function advanceRound() {
 function completeRound() {
   clearTimeout(nextTimer);
   const config = MODE_ROUNDS[state.gameMode];
+  const earnedBonus = roundBonusEarned(config);
   state.round.active = false;
   state.round.completed = true;
   state.currentWord = null;
   state.questionLocked = true;
   updateTypingModeClass();
 
-  state.player.score += config.bonus;
-  state.player.coin += Math.ceil(config.bonus / 5);
-  state.player.xp += config.bonus;
-  successFx(config.bonus);
+  state.player.score += earnedBonus;
+  state.player.coin += Math.ceil(earnedBonus / 5);
+  state.player.xp += earnedBonus;
+  if (earnedBonus > 0) successFx(earnedBonus);
   syncPlayer();
   render();
 
-  dom.feedback.textContent = `${config.label} 완주 보너스 +${config.bonus} 획득!`;
-  dom.feedback.className = "feedback good";
+  dom.feedback.textContent = `${config.label} 완주 보너스 +${earnedBonus} 획득!`;
+  dom.feedback.className = earnedBonus > 0 ? "feedback good" : "feedback";
   dom.gameBox.className = "game-box";
   dom.gameBox.innerHTML = `
     <div class="round-complete">
       <span>🏅</span>
       <h3>${config.label} 완주!</h3>
       <p>정답 ${state.round.correct} / ${config.count}</p>
-      <strong>보너스 +${config.bonus} XP</strong>
+      <strong>보너스 +${earnedBonus} / ${config.bonus} XP</strong>
       <button id="restartRoundBtn" class="soft-btn good">${config.label} 다시 도전</button>
     </div>
   `;
-  $("#restartRoundBtn").addEventListener("click", startRound);
+  $("#restartRoundBtn").addEventListener("click", () => startRound(state.gameMode));
+}
+
+function roundBonusEarned(config) {
+  if (!config?.count) return 0;
+  const correct = Math.max(0, Math.min(config.count, state.round.correct || 0));
+  return Math.round(config.bonus * (correct / config.count));
 }
 
 function renderRoundProgress() {
@@ -908,7 +980,7 @@ function renderRoundProgress() {
       ? `${config.label} ${current} / ${config.count}`
       : `${config.label} 0 / ${config.count}`;
   dom.roundCorrect.textContent = `정답 ${state.round.correct || 0}`;
-  dom.roundBonus.textContent = `완주 +${config.bonus}`;
+  dom.roundBonus.textContent = `최대 +${config.bonus}`;
 
   Object.entries(MODE_ROUNDS).forEach(([mode, stage]) => {
     const selected = mode === state.gameMode;
@@ -1049,7 +1121,7 @@ function renderBlankGame() {
 
   dom.gameBox.innerHTML = `
     <div class="question-top compact-question">
-      <div class="question-meaning">${escapeHtml(state.currentWord.meaning || "뜻 입력")} ${escapeHtml(state.currentWord.emoji || "")}</div>
+      <div class="question-meaning">${escapeHtml(state.currentWord.meaning || "뜻 입력")}</div>
       <div class="tag">${escapeHtml(getCategoryLabel(state.currentWord.categoryId))}</div>
     </div>
     <div class="question-word long-fit" style="font-size:${getWordFontSize(state.currentWord.word, 56, 24)}">${masked}</div>
@@ -1075,7 +1147,7 @@ function renderTypeGame() {
   dom.gameBox.innerHTML = `
     <div class="question-top compact-question">
       <button id="speakQuestionBtn" class="soft-btn">🔊 다시 듣기</button>
-      <div class="question-meaning">${escapeHtml(state.currentWord.meaning || "")} ${escapeHtml(state.currentWord.emoji || "")}</div>
+      <div class="question-meaning">${escapeHtml(state.currentWord.meaning || "")}</div>
       <div class="tag">${escapeHtml(getCategoryLabel(state.currentWord.categoryId))}</div>
     </div>
     <input id="answerInput" class="type-input" aria-label="정답 입력" maxlength="${MAX_WORD_LENGTH}" placeholder="영어 단어" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" lang="en" />
@@ -1957,6 +2029,7 @@ function normalizePlayer(player) {
   const knownCards = player.knownCards && typeof player.knownCards === "object" && !Array.isArray(player.knownCards)
     ? player.knownCards
     : {};
+  const questionHistory = normalizeQuestionHistory(player.questionHistory);
 
   return {
     ...player,
@@ -1968,8 +2041,19 @@ function normalizePlayer(player) {
     bestCombo: safeCounter(player.bestCombo),
     sound: player.sound !== false,
     progress,
-    knownCards
+    knownCards,
+    questionHistory
   };
+}
+
+function normalizeQuestionHistory(history) {
+  if (!history || typeof history !== "object" || Array.isArray(history)) return {};
+
+  return Object.fromEntries(
+    Object.entries(history)
+      .filter(([, value]) => Array.isArray(value))
+      .map(([key, value]) => [key, value.map((id) => String(id)).filter(Boolean)])
+  );
 }
 
 function shuffle(array) {

@@ -2699,6 +2699,11 @@ body.keyboard-open .round-bar {
   display: none;
 }
 
+.card-emoji,
+.question-emoji {
+  display: none !important;
+}
+
 @media (max-height: 730px) {
   .round-bar {
     min-height: 34px;
