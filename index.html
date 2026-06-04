@@ -110,6 +110,34 @@
           <strong>오늘의 학습</strong>
           <small>어려울수록 XP가 커져요</small>
         </div>
+        <div class="mission-card" aria-labelledby="missionTitle">
+          <div class="mission-head">
+            <div>
+              <span class="mission-kicker">DAILY QUEST</span>
+              <strong id="missionTitle">오늘의 미션</strong>
+            </div>
+            <button id="claimMissionBtn" class="mission-claim" disabled>보상 받기</button>
+          </div>
+          <div class="mission-list">
+            <div class="mission-item">
+              <span>카드 5개 보기</span>
+              <b id="missionCardText">0/5</b>
+              <i><em id="missionCardFill"></em></i>
+            </div>
+            <div class="mission-item">
+              <span>게임 정답 5개</span>
+              <b id="missionCorrectText">0/5</b>
+              <i><em id="missionCorrectFill"></em></i>
+            </div>
+            <div class="mission-item">
+              <span>쓰기 모드 3번 도전</span>
+              <b id="missionWritingText">0/3</b>
+              <i><em id="missionWritingFill"></em></i>
+            </div>
+          </div>
+          <p id="missionRewardText">완료 보상: 🍪 20 · XP 1000</p>
+        </div>
+
         <div class="main-actions">
           <button class="big-action action-card" data-nav="card">
             <small class="action-badge">REVIEW</small>
