@@ -56,6 +56,10 @@ service cloud.firestore {
         && mission.rewarded is bool;
     }
 
+    function rewardClaimAdminUpdate() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rewardClaims', 'updatedAt']);
+    }
+
     function validPlayer() {
       let data = request.resource.data;
       return data.keys().hasOnly([
@@ -102,7 +106,10 @@ service cloud.firestore {
 
       match /players/{uid} {
         allow read: if signedIn();
-        allow create, update: if signedIn() && request.auth.uid == uid && validPlayer();
+        allow create: if signedIn() && request.auth.uid == uid && validPlayer();
+        allow update: if signedIn()
+          && validPlayer()
+          && (request.auth.uid == uid || rewardClaimAdminUpdate());
         allow delete: if signedIn() && request.auth.uid == uid;
       }
     }
