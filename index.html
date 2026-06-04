@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#141b34" />
   <meta name="description" content="카테고리별 영어 단어와 스펠링을 연습하는 Heather Word" />
   <title>Heather Word · Spellingmon</title>
-  <link rel="stylesheet" href="./style.css?v=6.4" />
+  <link rel="stylesheet" href="./style.css?v=6.6" />
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -44,6 +44,7 @@
 
         <div class="pet-glow">
           <div id="petEmoji" class="pet-emoji">🥚</div>
+          <div id="equippedAccessory" class="equipped-accessory" aria-hidden="true"></div>
         </div>
 
         <div class="pet-copy">
@@ -81,6 +82,34 @@
           <strong>오늘의 학습</strong>
           <small>어려울수록 XP가 커져요</small>
         </div>
+        <div class="mission-card" aria-labelledby="missionTitle">
+          <div class="mission-head">
+            <div>
+              <span class="mission-kicker">DAILY QUEST</span>
+              <strong id="missionTitle">오늘의 미션</strong>
+            </div>
+            <button id="claimMissionBtn" class="mission-claim" disabled>보상 받기</button>
+          </div>
+          <div class="mission-list">
+            <div class="mission-item">
+              <span>카드 5개 보기</span>
+              <b id="missionCardText">0/5</b>
+              <i><em id="missionCardFill"></em></i>
+            </div>
+            <div class="mission-item">
+              <span>게임 정답 5개</span>
+              <b id="missionCorrectText">0/5</b>
+              <i><em id="missionCorrectFill"></em></i>
+            </div>
+            <div class="mission-item">
+              <span>쓰기 모드 3번 도전</span>
+              <b id="missionWritingText">0/3</b>
+              <i><em id="missionWritingFill"></em></i>
+            </div>
+          </div>
+          <p id="missionRewardText">완료 보상: 🍪 20 · XP 1000</p>
+        </div>
+
         <div class="main-actions">
           <button class="big-action action-card" data-nav="card">
             <small class="action-badge">REVIEW</small>
@@ -99,6 +128,12 @@
             <span>🏆</span>
             <b>랭킹</b>
             <em>내 기록</em>
+          </button>
+          <button class="big-action action-shop" data-nav="shop">
+            <small class="action-badge">SHOP</small>
+            <span>🍪</span>
+            <b>쿠키샵</b>
+            <em>꾸미기 · 상품권</em>
           </button>
           <button class="big-action action-manage" data-nav="manage">
             <small class="action-badge">LIBRARY</small>
@@ -190,6 +225,48 @@
       <div id="monsterGrid" class="monster-grid" aria-label="몬스터 목록"></div>
     </section>
 
+
+    <section id="shopScreen" class="screen">
+      <div class="screen-head">
+        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
+        <h2>🍪 쿠키샵</h2>
+        <strong id="shopCookieCount" class="shop-cookie-count">0</strong>
+      </div>
+
+      <div class="shop-scroll">
+        <section class="shop-section">
+          <div class="section-title">
+            <strong>캐릭터 꾸미기</strong>
+            <small>구매 후 착용할 수 있어요</small>
+          </div>
+          <div id="shopItemGrid" class="shop-grid"></div>
+        </section>
+
+        <section class="shop-section">
+          <div class="section-title">
+            <strong>배경 꾸미기</strong>
+            <small>홈 배경이 바뀌어요</small>
+          </div>
+          <div id="shopThemeGrid" class="shop-grid"></div>
+        </section>
+
+        <section class="shop-section">
+          <div class="section-title">
+            <strong>상품권</strong>
+            <small>신청 후 관리자 확인</small>
+          </div>
+          <div class="voucher-card">
+            <div>
+              <b>🎁 다이소 3천원 상품권</b>
+              <p>신청 시 쿠키 300개가 차감돼요.</p>
+            </div>
+            <button id="requestDaisoVoucherBtn" class="soft-btn good">300쿠키 신청</button>
+          </div>
+          <div id="shopVoucherList" class="voucher-list"></div>
+        </section>
+      </div>
+    </section>
+
     <section id="manageScreen" class="screen">
       <div class="screen-head">
         <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
@@ -211,6 +288,14 @@
         <input id="manageSearch" class="input" placeholder="단어 또는 뜻 검색" autocomplete="off" />
       </div>
       <div id="wordList" class="word-list"></div>
+
+      <section class="reward-admin-panel">
+        <div class="section-title">
+          <strong>상품권 신청 관리</strong>
+          <small>쿠키샵 신청 내역</small>
+        </div>
+        <div id="manageRewardList" class="reward-admin-list"></div>
+      </section>
     </section>
   </main>
 
@@ -275,6 +360,6 @@
   <input id="importFile" type="file" accept="application/json" hidden />
 
   <script src="./firebase-config.js"></script>
-  <script type="module" src="./app.js?v=6.4"></script>
+  <script type="module" src="./app.js?v=6.6"></script>
 </body>
 </html>

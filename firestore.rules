@@ -43,11 +43,26 @@ service cloud.firestore {
         && (!('updatedBy' in data) || data.updatedBy == request.auth.uid);
     }
 
+    function validDailyMission(mission) {
+      return mission is map
+        && mission.keys().hasOnly([
+          'date', 'cardViews', 'gameCorrect', 'writingAttempts', 'rewarded'
+        ])
+        && mission.date is string
+        && mission.date.size() == 10
+        && mission.cardViews is number && mission.cardViews >= 0 && mission.cardViews <= 5
+        && mission.gameCorrect is number && mission.gameCorrect >= 0 && mission.gameCorrect <= 5
+        && mission.writingAttempts is number && mission.writingAttempts >= 0 && mission.writingAttempts <= 3
+        && mission.rewarded is bool;
+    }
+
     function validPlayer() {
       let data = request.resource.data;
       return data.keys().hasOnly([
           'name', 'score', 'coin', 'xp', 'combo', 'bestCombo',
-          'sound', 'knownCards', 'progress', 'updatedAt'
+          'sound', 'knownCards', 'progress', 'dailyMission',
+          'ownedItems', 'equippedItem', 'ownedThemes', 'equippedTheme', 'rewardClaims',
+          'updatedAt'
         ])
         && data.name is string
         && data.name.size() > 0
@@ -61,6 +76,12 @@ service cloud.firestore {
         && data.knownCards is map
         && data.knownCards.size() <= 5000
         && (!('progress' in data) || data.progress is map)
+        && (!('dailyMission' in data) || validDailyMission(data.dailyMission))
+        && (!('ownedItems' in data) || (data.ownedItems is map && data.ownedItems.size() <= 100))
+        && (!('equippedItem' in data) || (data.equippedItem is string && data.equippedItem.size() <= 80))
+        && (!('ownedThemes' in data) || (data.ownedThemes is map && data.ownedThemes.size() <= 100))
+        && (!('equippedTheme' in data) || (data.equippedTheme is string && data.equippedTheme.size() <= 80))
+        && (!('rewardClaims' in data) || (data.rewardClaims is list && data.rewardClaims.size() <= 200))
         && (!('updatedAt' in data) || data.updatedAt is timestamp);
     }
 

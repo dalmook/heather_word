@@ -37,6 +37,32 @@ const SCORE_REWARDS = Object.freeze({
   blank: 40,
   type: 100
 });
+const DAILY_MISSION_TARGETS = Object.freeze({
+  cardViews: 5,
+  gameCorrect: 5,
+  writingAttempts: 3
+});
+const DAILY_MISSION_REWARD = Object.freeze({
+  coin: 20,
+  xp: 1000
+});
+const DAISO_VOUCHER_COOKIE_COST = 300;
+const SHOP_ITEMS = Object.freeze([
+  { id: "ribbon", emoji: "🎀", name: "리본", cost: 30 },
+  { id: "crown", emoji: "👑", name: "왕관", cost: 50 },
+  { id: "sunglasses", emoji: "😎", name: "선글라스", cost: 60 },
+  { id: "magic_hat", emoji: "🎩", name: "마법모자", cost: 70 },
+  { id: "wings", emoji: "🪽", name: "날개", cost: 100 },
+  { id: "star_pin", emoji: "⭐", name: "별핀", cost: 40 }
+]);
+const SHOP_THEMES = Object.freeze([
+  { id: "night", emoji: "🌙", name: "밤하늘 배경", cost: 80, className: "theme-night" },
+  { id: "beach", emoji: "🏖️", name: "바다 배경", cost: 80, className: "theme-beach" },
+  { id: "cherry", emoji: "🌸", name: "벚꽃 배경", cost: 100, className: "theme-cherry" },
+  { id: "space", emoji: "🚀", name: "우주 배경", cost: 120, className: "theme-space" },
+  { id: "forest", emoji: "🌿", name: "숲 배경", cost: 90, className: "theme-forest" }
+]);
+const DAISO_VOUCHER_LABEL = "다이소 3천원 상품권";
 const MANAGE_PASSWORD = "3341";
 const LEGACY_MONSTER_COUNT = 100;
 const LEGACY_MONSTER_XP_STEP = 250;
@@ -114,6 +140,7 @@ const dom = {
     game: $("#gameScreen"),
     rank: $("#rankScreen"),
     collection: $("#collectionScreen"),
+    shop: $("#shopScreen"),
     manage: $("#manageScreen")
   },
   syncStatus: $("#syncStatus"),
@@ -121,6 +148,7 @@ const dom = {
   coinPill: $("#coinPill"),
   comboPill: $("#comboPill"),
   petEmoji: $("#petEmoji"),
+  equippedAccessory: $("#equippedAccessory"),
   petName: $("#petName"),
   petMsg: $("#petMsg"),
   xpFill: $("#xpFill"),
@@ -131,6 +159,20 @@ const dom = {
   homeKnownCount: $("#homeKnownCount"),
   homeBestCombo: $("#homeBestCombo"),
   cardProgress: $("#cardProgress"),
+  claimMissionBtn: $("#claimMissionBtn"),
+  missionCardText: $("#missionCardText"),
+  missionCorrectText: $("#missionCorrectText"),
+  missionWritingText: $("#missionWritingText"),
+  missionCardFill: $("#missionCardFill"),
+  missionCorrectFill: $("#missionCorrectFill"),
+  missionWritingFill: $("#missionWritingFill"),
+  missionRewardText: $("#missionRewardText"),
+  shopCookieCount: $("#shopCookieCount"),
+  shopItemGrid: $("#shopItemGrid"),
+  shopThemeGrid: $("#shopThemeGrid"),
+  requestDaisoVoucherBtn: $("#requestDaisoVoucherBtn"),
+  shopVoucherList: $("#shopVoucherList"),
+  manageRewardList: $("#manageRewardList"),
   monsterCount: $("#monsterCount"),
   collectionHero: $("#collectionHero"),
   monsterGrid: $("#monsterGrid"),
@@ -188,7 +230,13 @@ let state = {
     sound: true,
     progress: {},
     knownCards: {},
-    questionHistory: {}
+    questionHistory: {},
+    dailyMission: makeDailyMission(),
+    ownedItems: {},
+    equippedItem: "",
+    ownedThemes: {},
+    equippedTheme: "",
+    rewardClaims: []
   },
   selectedCategoryId: "all",
   manageSearch: "",
@@ -196,6 +244,7 @@ let state = {
   cardIndex: 0,
   cardLocked: false,
   cardAwardedIds: new Set(),
+  lastMissionCardViewToken: "",
   gameMode: "choice",
   currentWord: null,
   questionLocked: false,
@@ -234,6 +283,8 @@ async function init() {
 
   await loadDefaultWords();
   loadLocalState();
+  ensureDailyMission();
+  saveLocal();
   render();
 
   await initFirebaseIfEnabled();
@@ -455,6 +506,12 @@ function syncPlayer() {
     combo: Number(state.player.combo || 0),
     bestCombo: Number(state.player.bestCombo || 0),
     knownCards: state.player.knownCards || {},
+    dailyMission: ensureDailyMission(),
+    ownedItems: state.player.ownedItems || {},
+    equippedItem: state.player.equippedItem || "",
+    ownedThemes: state.player.ownedThemes || {},
+    equippedTheme: state.player.equippedTheme || "",
+    rewardClaims: normalizeRewardClaims(state.player.rewardClaims),
     updatedAt: serverTimestamp()
   }, { merge: true }).catch(markSyncFailure);
 }
@@ -484,6 +541,11 @@ function bindEvents() {
   $("#nextCardBtn").addEventListener("click", () => moveCard(1));
   $("#knowBtn").addEventListener("click", awardCurrentCard);
   $("#hardBtn").addEventListener("click", markCurrentCardHard);
+  dom.claimMissionBtn.addEventListener("click", claimDailyMissionReward);
+  dom.shopItemGrid.addEventListener("click", handleShopItemClick);
+  dom.shopThemeGrid.addEventListener("click", handleShopThemeClick);
+  dom.requestDaisoVoucherBtn.addEventListener("click", requestDaisoVoucher);
+  dom.manageRewardList.addEventListener("click", handleRewardAdminClick);
 
   dom.cardCategory.addEventListener("change", () => selectCategory(dom.cardCategory.value));
   dom.gameCategory.addEventListener("change", () => {
@@ -667,9 +729,11 @@ function render() {
   dom.comboPill.textContent = `🔥 ${state.player.combo || 0}`;
   dom.soundToggle.textContent = state.player.sound ? "🔊 ON" : "🔇 OFF";
   renderProfileButton();
+  applyEquippedTheme();
 
   const pet = getCurrentMonster();
   dom.petEmoji.textContent = pet.emoji;
+  renderEquippedAccessory();
   dom.petName.textContent = pet.name;
   dom.petMsg.textContent = pet.message;
   dom.xpFill.style.width = `${pet.percent}%`;
@@ -685,6 +749,9 @@ function render() {
   renderCard();
   renderWordList();
   renderCollection();
+  renderDailyMission();
+  renderShop();
+  renderRewardClaims();
   renderRoundProgress();
 }
 
@@ -754,6 +821,8 @@ function renderCard() {
     dom.cardCategoryName.textContent = getCategoryLabel(state.selectedCategoryId);
     return;
   }
+
+  recordCardMissionView(word);
 
   dom.cardEmoji.textContent = word.emoji || "📘";
   dom.cardWord.textContent = word.word;
@@ -1251,6 +1320,9 @@ function skipQuestion() {
   }
 
   state.questionLocked = true;
+  if (state.gameMode === "type") {
+    recordDailyMission("writingAttempts");
+  }
   clearTimeout(nextTimer);
   state.player.combo = 0;
 
@@ -1268,7 +1340,12 @@ function checkAnswer(isCorrect, points, submittedAnswer = "") {
 
   state.questionLocked = true;
 
+  if (state.gameMode === "type") {
+    recordDailyMission("writingAttempts");
+  }
+
   if (isCorrect) {
+    recordDailyMission("gameCorrect");
     if (state.round.active) state.round.correct += 1;
     award(points, state.currentWord);
     dom.feedback.textContent = `정답! ${state.currentWord.word} 🎉`;
@@ -1328,6 +1405,359 @@ function renderAnswerReview(reason, submittedAnswer = "") {
     advanceRound();
   });
   speak(word.word);
+}
+
+function getShopItem(itemId) {
+  return SHOP_ITEMS.find((item) => item.id === itemId);
+}
+
+function getShopTheme(themeId) {
+  return SHOP_THEMES.find((theme) => theme.id === themeId);
+}
+
+function renderEquippedAccessory() {
+  if (!dom.equippedAccessory) return;
+  const item = getShopItem(state.player.equippedItem);
+  dom.equippedAccessory.textContent = item ? item.emoji : "";
+  dom.equippedAccessory.title = item ? `착용 중: ${item.name}` : "";
+}
+
+function applyEquippedTheme() {
+  const themeClasses = SHOP_THEMES.map((theme) => theme.className);
+  document.body.classList.remove(...themeClasses);
+  const theme = getShopTheme(state.player.equippedTheme);
+  if (theme) document.body.classList.add(theme.className);
+}
+
+function renderShop() {
+  if (!dom.shopItemGrid) return;
+
+  dom.shopCookieCount.textContent = `🍪 ${state.player.coin || 0}`;
+  dom.shopItemGrid.innerHTML = SHOP_ITEMS.map((item) => renderShopProduct(item, "item")).join("");
+  dom.shopThemeGrid.innerHTML = SHOP_THEMES.map((theme) => renderShopProduct(theme, "theme")).join("");
+  renderVoucherList(dom.shopVoucherList, false);
+}
+
+function renderShopProduct(product, type) {
+  const owned = type === "item"
+    ? Boolean(state.player.ownedItems?.[product.id])
+    : Boolean(state.player.ownedThemes?.[product.id]);
+  const equipped = type === "item"
+    ? state.player.equippedItem === product.id
+    : state.player.equippedTheme === product.id;
+  const action = owned ? "equip" : "buy";
+  const label = equipped ? "착용중" : owned ? "착용" : `${product.cost}쿠키 구매`;
+  const disabled = equipped ? "disabled" : "";
+
+  return `
+    <article class="shop-product ${owned ? "owned" : ""} ${equipped ? "equipped" : ""}">
+      <div class="shop-product-emoji">${escapeHtml(product.emoji)}</div>
+      <div>
+        <strong>${escapeHtml(product.name)}</strong>
+        <small>${owned ? "구매완료" : `🍪 ${product.cost}`}</small>
+      </div>
+      <button class="soft-btn ${owned ? "" : "good"}" data-shop-type="${type}" data-shop-action="${action}" data-shop-id="${escapeHtml(product.id)}" ${disabled}>${label}</button>
+    </article>
+  `;
+}
+
+function handleShopItemClick(event) {
+  const button = event.target.closest("[data-shop-id]");
+  if (!button) return;
+
+  const item = getShopItem(button.dataset.shopId);
+  if (!item) return;
+  if (button.dataset.shopAction === "buy") buyShopItem(item);
+  else equipShopItem(item.id);
+}
+
+function handleShopThemeClick(event) {
+  const button = event.target.closest("[data-shop-id]");
+  if (!button) return;
+
+  const theme = getShopTheme(button.dataset.shopId);
+  if (!theme) return;
+  if (button.dataset.shopAction === "buy") buyShopTheme(theme);
+  else equipShopTheme(theme.id);
+}
+
+function spendCookies(cost) {
+  if ((state.player.coin || 0) < cost) {
+    showToast("쿠키가 부족해요", `필요 쿠키 ${cost}개`);
+    playSfx("bad");
+    return false;
+  }
+
+  state.player.coin -= cost;
+  return true;
+}
+
+function buyShopItem(item) {
+  state.player.ownedItems ||= {};
+  if (state.player.ownedItems[item.id]) {
+    equipShopItem(item.id);
+    return;
+  }
+  if (!spendCookies(item.cost)) return;
+
+  state.player.ownedItems[item.id] = true;
+  state.player.equippedItem = item.id;
+  syncPlayer();
+  render();
+  showToast("구매 완료", `${item.emoji} ${item.name} 착용!`);
+}
+
+function equipShopItem(itemId) {
+  if (!state.player.ownedItems?.[itemId]) return;
+  state.player.equippedItem = itemId;
+  syncPlayer();
+  render();
+  showToast("착용 완료", getShopItem(itemId)?.name || "아이템");
+}
+
+function buyShopTheme(theme) {
+  state.player.ownedThemes ||= {};
+  if (state.player.ownedThemes[theme.id]) {
+    equipShopTheme(theme.id);
+    return;
+  }
+  if (!spendCookies(theme.cost)) return;
+
+  state.player.ownedThemes[theme.id] = true;
+  state.player.equippedTheme = theme.id;
+  syncPlayer();
+  render();
+  showToast("배경 구매", `${theme.emoji} ${theme.name}`);
+}
+
+function equipShopTheme(themeId) {
+  if (!state.player.ownedThemes?.[themeId]) return;
+  state.player.equippedTheme = themeId;
+  syncPlayer();
+  render();
+  showToast("배경 적용", getShopTheme(themeId)?.name || "배경");
+}
+
+function requestDaisoVoucher() {
+  if (!spendCookies(DAISO_VOUCHER_COOKIE_COST)) return;
+
+  state.player.rewardClaims = normalizeRewardClaims(state.player.rewardClaims);
+  state.player.rewardClaims.unshift({
+    id: makeRewardClaimId(),
+    type: "daiso_3000",
+    label: DAISO_VOUCHER_LABEL,
+    cost: 3000,
+    status: "requested",
+    requestedAt: new Date().toISOString(),
+    usedAt: "",
+    usedBy: ""
+  });
+  state.player.rewardClaims = state.player.rewardClaims.slice(0, 200);
+
+  syncPlayer();
+  render();
+  showToast("상품권 신청", "관리자 확인을 기다려 주세요");
+}
+
+function makeRewardClaimId() {
+  return `reward_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function renderVoucherList(target, admin = false) {
+  if (!target) return;
+
+  const claims = normalizeRewardClaims(state.player.rewardClaims);
+  if (!claims.length) {
+    target.innerHTML = `<div class="hint">상품권 신청 내역이 없어요.</div>`;
+    return;
+  }
+
+  target.innerHTML = claims.map((claim) => {
+    const used = claim.status === "used";
+    return `
+      <div class="voucher-row ${used ? "used" : "requested"}">
+        <div>
+          <b>${escapeHtml(claim.label)}</b>
+          <small>${formatDateTime(claim.requestedAt)} · 쿠키 ${DAISO_VOUCHER_COOKIE_COST}개</small>
+        </div>
+        <strong>${used ? "사용완료" : "신청됨"}</strong>
+        ${admin ? `<button class="soft-btn good" data-use-reward="${escapeHtml(claim.id)}" ${used ? "disabled" : ""}>사용완료</button>` : ""}
+      </div>
+    `;
+  }).join("");
+}
+
+function renderRewardClaims() {
+  renderVoucherList(dom.manageRewardList, true);
+}
+
+function handleRewardAdminClick(event) {
+  const button = event.target.closest("[data-use-reward]");
+  if (!button) return;
+  markRewardClaimUsed(button.dataset.useReward);
+}
+
+function markRewardClaimUsed(claimId) {
+  const claims = normalizeRewardClaims(state.player.rewardClaims);
+  const claim = claims.find((item) => item.id === claimId);
+  if (!claim || claim.status === "used") return;
+
+  claim.status = "used";
+  claim.usedAt = new Date().toISOString();
+  claim.usedBy = state.player.name || "관리자";
+  state.player.rewardClaims = claims;
+  syncPlayer();
+  renderRewardClaims();
+  renderShop();
+  showToast("사용완료", claim.label);
+}
+
+function normalizeRewardClaims(claims) {
+  if (!Array.isArray(claims)) return [];
+  return claims.slice(0, 200).map((claim) => ({
+    id: limitText(claim?.id, 80) || makeRewardClaimId(),
+    type: claim?.type === "daiso_3000" ? "daiso_3000" : "daiso_3000",
+    label: limitText(claim?.label, 40) || DAISO_VOUCHER_LABEL,
+    cost: safeCounter(claim?.cost) || 3000,
+    status: claim?.status === "used" ? "used" : "requested",
+    requestedAt: limitText(claim?.requestedAt, 40),
+    usedAt: limitText(claim?.usedAt, 40),
+    usedBy: limitText(claim?.usedBy, MAX_PLAYER_NAME_LENGTH)
+  }));
+}
+
+function formatDateTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "날짜 없음";
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+}
+
+function getTodayKey() {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function makeDailyMission() {
+  return {
+    date: getTodayKey(),
+    cardViews: 0,
+    gameCorrect: 0,
+    writingAttempts: 0,
+    rewarded: false
+  };
+}
+
+function normalizeDailyMission(mission) {
+  const today = getTodayKey();
+  if (!mission || typeof mission !== "object" || Array.isArray(mission) || mission.date !== today) {
+    return makeDailyMission();
+  }
+
+  return {
+    date: today,
+    cardViews: Math.min(DAILY_MISSION_TARGETS.cardViews, safeCounter(mission.cardViews)),
+    gameCorrect: Math.min(DAILY_MISSION_TARGETS.gameCorrect, safeCounter(mission.gameCorrect)),
+    writingAttempts: Math.min(DAILY_MISSION_TARGETS.writingAttempts, safeCounter(mission.writingAttempts)),
+    rewarded: mission.rewarded === true
+  };
+}
+
+function ensureDailyMission() {
+  state.player.dailyMission = normalizeDailyMission(state.player.dailyMission);
+  return state.player.dailyMission;
+}
+
+function isDailyMissionComplete(mission = ensureDailyMission()) {
+  return mission.cardViews >= DAILY_MISSION_TARGETS.cardViews
+    && mission.gameCorrect >= DAILY_MISSION_TARGETS.gameCorrect
+    && mission.writingAttempts >= DAILY_MISSION_TARGETS.writingAttempts;
+}
+
+function recordCardMissionView(word) {
+  if (state.screen !== "card" || !word?.id) return;
+
+  const mission = ensureDailyMission();
+  const token = `${mission.date}:${word.id}:${state.cardIndex}`;
+  if (state.lastMissionCardViewToken === token) return;
+
+  state.lastMissionCardViewToken = token;
+  recordDailyMission("cardViews");
+}
+
+function recordDailyMission(field) {
+  if (!Object.prototype.hasOwnProperty.call(DAILY_MISSION_TARGETS, field)) return;
+
+  const mission = ensureDailyMission();
+  const beforeComplete = isDailyMissionComplete(mission);
+  const target = DAILY_MISSION_TARGETS[field];
+  const current = safeCounter(mission[field]);
+  if (current >= target) return;
+
+  mission[field] = Math.min(target, current + 1);
+  const afterComplete = isDailyMissionComplete(mission);
+
+  syncPlayer();
+  renderDailyMission();
+
+  if (!beforeComplete && afterComplete && !mission.rewarded) {
+    showToast("미션 완료!", "홈에서 보상을 받아요");
+    playSfx("level");
+  }
+}
+
+function renderDailyMission() {
+  if (!dom.claimMissionBtn) return;
+
+  const mission = ensureDailyMission();
+  const complete = isDailyMissionComplete(mission);
+  const rows = [
+    ["cardViews", dom.missionCardText, dom.missionCardFill],
+    ["gameCorrect", dom.missionCorrectText, dom.missionCorrectFill],
+    ["writingAttempts", dom.missionWritingText, dom.missionWritingFill]
+  ];
+
+  rows.forEach(([field, textEl, fillEl]) => {
+    const target = DAILY_MISSION_TARGETS[field];
+    const value = Math.min(target, safeCounter(mission[field]));
+    if (textEl) textEl.textContent = `${value}/${target}`;
+    if (fillEl) fillEl.style.width = `${Math.round((value / target) * 100)}%`;
+  });
+
+  dom.claimMissionBtn.disabled = !complete || mission.rewarded;
+  dom.claimMissionBtn.textContent = mission.rewarded ? "보상 완료" : "보상 받기";
+  dom.claimMissionBtn.classList.toggle("ready", complete && !mission.rewarded);
+  if (dom.missionRewardText) {
+    dom.missionRewardText.textContent = mission.rewarded
+      ? "오늘 보상을 받았어요. 내일 다시 도전해요!"
+      : `완료 보상: 🍪 ${DAILY_MISSION_REWARD.coin} · XP ${DAILY_MISSION_REWARD.xp}`;
+  }
+}
+
+function claimDailyMissionReward() {
+  const mission = ensureDailyMission();
+  if (mission.rewarded) {
+    showToast("보상 완료", "오늘 보상은 이미 받았어요");
+    return;
+  }
+
+  if (!isDailyMissionComplete(mission)) {
+    showToast("미션 진행 중", "세 가지 미션을 모두 완료해 주세요");
+    return;
+  }
+
+  mission.rewarded = true;
+  state.player.coin += DAILY_MISSION_REWARD.coin;
+  state.player.xp += DAILY_MISSION_REWARD.xp;
+
+  syncPlayer();
+  render();
+  playSfx("level");
+  showToast("미션 보상!", `🍪 +${DAILY_MISSION_REWARD.coin} · XP +${DAILY_MISSION_REWARD.xp}`);
+  confetti();
+  floatScore(`+${DAILY_MISSION_REWARD.xp}XP`);
 }
 
 function award(points, word) {
@@ -2153,6 +2583,14 @@ function normalizePlayer(player) {
     ? player.knownCards
     : {};
   const questionHistory = normalizeQuestionHistory(player.questionHistory);
+  const dailyMission = normalizeDailyMission(player.dailyMission);
+  const ownedItems = player.ownedItems && typeof player.ownedItems === "object" && !Array.isArray(player.ownedItems)
+    ? player.ownedItems
+    : {};
+  const ownedThemes = player.ownedThemes && typeof player.ownedThemes === "object" && !Array.isArray(player.ownedThemes)
+    ? player.ownedThemes
+    : {};
+  const rewardClaims = normalizeRewardClaims(player.rewardClaims);
 
   return {
     ...player,
@@ -2165,7 +2603,13 @@ function normalizePlayer(player) {
     sound: player.sound !== false,
     progress,
     knownCards,
-    questionHistory
+    questionHistory,
+    dailyMission,
+    ownedItems,
+    equippedItem: ownedItems[player.equippedItem] && getShopItem(player.equippedItem) ? player.equippedItem : "",
+    ownedThemes,
+    equippedTheme: ownedThemes[player.equippedTheme] && getShopTheme(player.equippedTheme) ? player.equippedTheme : "",
+    rewardClaims
   };
 }
 
