@@ -3362,3 +3362,42 @@ body.theme-forest {
     font-size: 23px;
   }
 }
+
+/* v6.7 home overflow fix: keep action buttons tappable after mission/shop additions */
+#homeScreen.active {
+  grid-template-rows: auto auto auto !important;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 14px;
+  overscroll-behavior: contain;
+}
+
+#homeScreen .pet-card {
+  min-height: clamp(210px, 32vh, 268px);
+}
+
+#homeScreen .launch-panel {
+  overflow: visible;
+}
+
+#homeScreen .main-actions {
+  grid-auto-rows: minmax(76px, auto) !important;
+}
+
+#homeScreen .big-action {
+  min-height: 76px;
+}
+
+@media (max-height: 730px) {
+  #homeScreen.active {
+    gap: 8px;
+  }
+
+  #homeScreen .main-actions {
+    grid-auto-rows: minmax(66px, auto) !important;
+  }
+
+  #homeScreen .big-action {
+    min-height: 66px;
+  }
+}

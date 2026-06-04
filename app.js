@@ -518,7 +518,17 @@ function syncPlayer() {
 
 function markSyncFailure(error) {
   console.error(error);
-  dom.syncStatus.textContent = "동기화 실패 · 기기 저장됨";
+  dom.syncStatus.textContent = isFirebasePermissionError(error)
+    ? "Firebase 규칙 배포 필요 · 기기 저장됨"
+    : "동기화 실패 · 기기 저장됨";
+}
+
+function isFirebasePermissionError(error) {
+  const code = String(error?.code || "").toLowerCase();
+  const message = String(error?.message || "").toLowerCase();
+  return code.includes("permission-denied")
+    || message.includes("permission-denied")
+    || message.includes("missing or insufficient permissions");
 }
 
 function bindEvents() {
