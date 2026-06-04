@@ -3401,3 +3401,120 @@ body.theme-forest {
     min-height: 66px;
   }
 }
+
+/* v6.8 compact home learning row */
+#homeScreen .launch-panel {
+  grid-template-rows: auto auto auto;
+}
+
+#homeScreen .mission-card {
+  grid-template-columns: minmax(110px, 0.9fr) minmax(0, 1.5fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+  padding: 9px 10px;
+}
+
+#homeScreen .mission-head {
+  min-width: 0;
+}
+
+#homeScreen .mission-head strong {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+#homeScreen .mission-kicker,
+#homeScreen .mission-card p {
+  display: none;
+}
+
+#homeScreen .mission-claim {
+  min-width: 84px;
+  min-height: 34px;
+  padding: 7px 9px;
+  font-size: 12px;
+}
+
+#homeScreen .mission-list {
+  min-width: 0;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+#homeScreen .mission-list::-webkit-scrollbar {
+  display: none;
+}
+
+#homeScreen .mission-item {
+  flex: 0 0 auto;
+  min-width: 92px;
+  grid-template-columns: 1fr;
+  gap: 3px;
+  padding: 7px 8px;
+  border-radius: 14px;
+  background: rgba(104, 87, 245, 0.07);
+}
+
+#homeScreen .mission-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+
+#homeScreen .mission-item b {
+  justify-self: start;
+  font-size: 12px;
+}
+
+#homeScreen .mission-item i {
+  grid-column: auto;
+  width: 100%;
+  height: 4px;
+}
+
+#homeScreen .main-actions {
+  display: flex;
+  gap: 8px !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 1px 4px;
+  scrollbar-width: none;
+}
+
+#homeScreen .main-actions::-webkit-scrollbar {
+  display: none;
+}
+
+#homeScreen .big-action {
+  flex: 0 0 158px;
+  min-height: 78px;
+}
+
+@media (max-width: 395px) {
+  #homeScreen .mission-card {
+    grid-template-columns: 1fr auto;
+  }
+
+  #homeScreen .mission-list {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+
+  #homeScreen .big-action {
+    flex-basis: 148px;
+  }
+}
+
+@media (max-height: 730px) {
+  #homeScreen .mission-card {
+    padding: 7px 8px;
+  }
+
+  #homeScreen .big-action {
+    min-height: 70px;
+  }
+}
