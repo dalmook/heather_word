@@ -1552,6 +1552,13 @@ function getPetCareStats() {
   return { ...care, level, percent, next: level >= 50 ? 0 : nextLevelXp - care.xp };
 }
 
+function getPetGrowthStage(level) {
+  if (level >= 10) return { label: "반짝 단계", size: 96 };
+  if (level >= 6) return { label: "튼튼 단계", size: 90 };
+  if (level >= 3) return { label: "꼬마 단계", size: 84 };
+  return { label: "아기 단계", size: 76 };
+}
+
 function renderEquippedAccessory() {
   if (!dom.equippedAccessory) return;
   const item = getShopItem(state.player.equippedItem);
@@ -1770,12 +1777,14 @@ function renderPetCare() {
   const pet = getCarePet();
   const stats = getPetCareStats();
   const hasPet = Boolean(pet);
+  const stage = getPetGrowthStage(stats.level);
   const face = hasPet ? pet.emoji : "🥚";
 
   dom.petCareEmoji.textContent = face;
+  dom.petCareEmoji.style.setProperty("--pet-size", `${hasPet ? stage.size : 76}px`);
   dom.petCareEmoji.classList.toggle("sleepy", hasPet && stats.hunger < 25);
   dom.petCareName.textContent = hasPet ? pet.name : "아직 펫이 없어요";
-  dom.petCareLevel.textContent = hasPet ? `Lv.${stats.level}` : "입양 대기";
+  dom.petCareLevel.textContent = hasPet ? `Lv.${stats.level} · ${stage.label}` : "입양 대기";
   dom.petCareMessage.textContent = hasPet
     ? getPetCareMessage(stats)
     : "쿠키샵에서 마음에 드는 펫을 입양해 주세요.";
