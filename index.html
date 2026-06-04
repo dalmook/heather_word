@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#141b34" />
   <meta name="description" content="카테고리별 영어 단어와 스펠링을 연습하는 Heather Word" />
   <title>Heather Word · Spellingmon</title>
-  <link rel="stylesheet" href="./style.css?v=6.6" />
+  <link rel="stylesheet" href="./style.css?v=6.8" />
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -47,6 +47,7 @@
             <div>
               <span class="mission-kicker">DAILY QUEST</span>
               <strong id="missionTitle">오늘의 미션</strong>
+              <span class="learning-mini">오늘의 학습 · XP UP</span>
             </div>
             <button id="claimMissionBtn" class="mission-claim" disabled>보상 받기</button>
           </div>
@@ -106,38 +107,6 @@
       </div>
 
       <div class="launch-panel">
-        <div class="section-title">
-          <strong>오늘의 학습</strong>
-          <small>어려울수록 XP가 커져요</small>
-        </div>
-        <div class="mission-card" aria-labelledby="missionTitle">
-          <div class="mission-head">
-            <div>
-              <span class="mission-kicker">DAILY QUEST</span>
-              <strong id="missionTitle">오늘의 미션</strong>
-            </div>
-            <button id="claimMissionBtn" class="mission-claim" disabled>보상 받기</button>
-          </div>
-          <div class="mission-list">
-            <div class="mission-item">
-              <span>카드 5개 보기</span>
-              <b id="missionCardText">0/5</b>
-              <i><em id="missionCardFill"></em></i>
-            </div>
-            <div class="mission-item">
-              <span>게임 정답 5개</span>
-              <b id="missionCorrectText">0/5</b>
-              <i><em id="missionCorrectFill"></em></i>
-            </div>
-            <div class="mission-item">
-              <span>쓰기 모드 3번 도전</span>
-              <b id="missionWritingText">0/3</b>
-              <i><em id="missionWritingFill"></em></i>
-            </div>
-          </div>
-          <p id="missionRewardText">완료 보상: 🍪 20 · XP 1000</p>
-        </div>
-
         <div class="main-actions">
           <button class="big-action action-card" data-nav="card">
             <small class="action-badge">REVIEW</small>
@@ -286,9 +255,9 @@
           <div class="voucher-card">
             <div>
               <b>🎁 다이소 3천원 상품권</b>
-              <p>신청 시 쿠키 300개가 차감돼요.</p>
+              <p>신청 시 쿠키 3000개가 차감돼요.</p>
             </div>
-            <button id="requestDaisoVoucherBtn" class="soft-btn good">300쿠키 신청</button>
+            <button id="requestDaisoVoucherBtn" class="soft-btn good">3000쿠키 신청</button>
           </div>
           <div id="shopVoucherList" class="voucher-list"></div>
         </section>

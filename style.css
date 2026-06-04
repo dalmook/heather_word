@@ -3681,3 +3681,45 @@ body.theme-forest {
     min-height: 52px;
   }
 }
+
+/* v6.10 compact learning label moved into today's mission */
+#homeScreen .launch-panel {
+  grid-template-rows: minmax(0, 1fr);
+  padding-top: 10px;
+}
+
+#homeScreen .learning-mini {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 3px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.13);
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+#homeScreen .pet-card > .mission-card .mission-head > div {
+  display: grid;
+  align-content: center;
+}
+
+@media (max-height: 730px) {
+  #homeScreen .learning-mini {
+    margin-top: 1px;
+    padding: 1px 5px;
+    font-size: 8px;
+  }
+}
+
+
+/* v6.11 voucher purchaser visibility */
+.voucher-buyer {
+  color: #5d4bec;
+  font-weight: 950;
+}
