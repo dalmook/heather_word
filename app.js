@@ -50,6 +50,12 @@ const MODE_ROUNDS = Object.freeze({
   blank: { count: 10, label: "빈칸", bonus: 200 },
   type: { count: 10, label: "쓰기", bonus: 500 }
 });
+const MODE_GUIDES = Object.freeze({
+  choice: "뜻에 맞는 영어 단어를 고르세요.",
+  block: "알파벳 블록을 순서대로 눌러 단어를 완성하세요.",
+  blank: "보이는 힌트를 보고 빈칸까지 포함해 전체 단어를 입력하세요.",
+  type: "발음을 듣고 영어 단어 전체를 직접 써 보세요."
+});
 const MONSTER_BASE_NAMES = [
   "알몬", "삐약몬", "솜구름몬", "토끼몬", "판다몬",
   "여우몬", "유니콘몬", "드래곤몬", "피닉스몬", "스타몬",
@@ -121,6 +127,11 @@ const dom = {
   levelText: $("#levelText"),
   nextXpText: $("#nextXpText"),
   homeMonsterCount: $("#homeMonsterCount"),
+  homeWordCount: $("#homeWordCount"),
+  homeKnownCount: $("#homeKnownCount"),
+  homeBestCombo: $("#homeBestCombo"),
+  cardProgress: $("#cardProgress"),
+  modeGuide: $("#modeGuide"),
   monsterCount: $("#monsterCount"),
   collectionHero: $("#collectionHero"),
   monsterGrid: $("#monsterGrid"),
@@ -131,6 +142,7 @@ const dom = {
   wordCategoryInput: $("#wordCategoryInput"),
   bulkCategoryInput: $("#bulkCategoryInput"),
   bulkTextInput: $("#bulkTextInput"),
+  manageSearch: $("#manageSearch"),
   cardEmoji: $("#cardEmoji"),
   cardWord: $("#cardWord"),
   cardMeaning: $("#cardMeaning"),
@@ -180,6 +192,7 @@ let state = {
     questionHistory: {}
   },
   selectedCategoryId: "all",
+  manageSearch: "",
   screen: "home",
   cardIndex: 0,
   cardLocked: false,
@@ -479,6 +492,10 @@ function bindEvents() {
     startRound();
   });
   dom.listCategory.addEventListener("change", () => selectCategory(dom.listCategory.value));
+  dom.manageSearch.addEventListener("input", () => {
+    state.manageSearch = dom.manageSearch.value;
+    renderWordList();
+  });
 
   $("#addWordBtn").addEventListener("click", () => openWordDialog());
   $("#bulkAddBtn").addEventListener("click", openBulkDialog);
@@ -660,6 +677,9 @@ function render() {
   dom.levelText.textContent = `수집 ${pet.unlockedCount} / ${MONSTER_CATALOG.length}`;
   dom.nextXpText.textContent = pet.complete ? "도감 완성!" : `다음까지 ${pet.remaining}XP`;
   dom.homeMonsterCount.textContent = `${pet.unlockedCount} / ${MONSTER_CATALOG.length}`;
+  dom.homeWordCount.textContent = state.words.length;
+  dom.homeKnownCount.textContent = knownCardCount();
+  dom.homeBestCombo.textContent = state.player.bestCombo || 0;
 
   renderCategories();
   renderSelects();
@@ -687,8 +707,8 @@ function renderCategories() {
       : state.words.filter((word) => word.categoryId === category.id).length;
 
     return `
-      <button class="cat-btn ${state.selectedCategoryId === category.id ? "active" : ""}" data-cat="${escapeHtml(category.id)}">
-        ${escapeHtml(category.emoji)} ${escapeHtml(category.name)} ${count}
+      <button class="cat-btn ${state.selectedCategoryId === category.id ? "active" : ""}" data-cat="${escapeHtml(category.id)}" title="${escapeHtml(category.name)} 단어 ${count}개">
+        <span>${escapeHtml(category.emoji)} ${escapeHtml(category.name)}</span><b>${count}</b>
       </button>
     `;
   }).join("");
@@ -718,6 +738,10 @@ function renderSelects() {
 
 function renderCard() {
   const word = currentCardWord();
+  const list = filteredWords();
+  if (dom.cardProgress) {
+    dom.cardProgress.textContent = list.length ? `카드 ${state.cardIndex + 1} / ${list.length}` : "카드 0 / 0";
+  }
   [$("#cardSpeakBtn"), $("#prevCardBtn"), $("#nextCardBtn"), $("#knowBtn"), $("#hardBtn")].forEach((button) => {
     if (button) button.disabled = !word || state.cardLocked;
   });
@@ -748,14 +772,22 @@ function renderCard() {
 }
 
 function renderWordList() {
-  const list = filteredWords().slice(0, MAX_LIST_ROWS); // 관리 화면은 CSS 내부 스크롤로 전체 관리
+  const list = manageFilteredWords().slice(0, MAX_LIST_ROWS); // 관리 화면은 CSS 내부 스크롤로 전체 관리
+  const total = filteredWords().length;
+  const keyword = normalizedSearchTerm();
+
+  if (dom.manageSearch && dom.manageSearch.value !== state.manageSearch) {
+    dom.manageSearch.value = state.manageSearch;
+  }
 
   if (!list.length) {
-    dom.wordList.innerHTML = `<div class="hint">이 카테고리에 단어가 없어요.</div>`;
+    dom.wordList.innerHTML = `<div class="empty-list"><strong>${keyword ? "검색 결과가 없어요" : "이 카테고리에 단어가 없어요"}</strong><span>${keyword ? "다른 단어나 뜻으로 검색해 보세요." : "위의 추가 버튼으로 단어를 넣어 주세요."}</span></div>`;
     return;
   }
 
-  dom.wordList.innerHTML = list.map((word) => `
+  dom.wordList.innerHTML = `
+    <div class="list-summary">${keyword ? `검색 ${list.length}개 / ` : ""}총 ${total}개 단어</div>
+    ${list.map((word) => `
     <div class="word-row">
       <div style="font-size:30px">${escapeHtml(word.emoji || "📘")}</div>
       <div>
@@ -764,7 +796,8 @@ function renderWordList() {
       </div>
       <button class="delete-btn" data-delete="${escapeHtml(word.id)}">삭제</button>
     </div>
-  `).join("");
+  `).join("")}
+  `;
 
   dom.wordList.querySelectorAll("[data-delete]").forEach((button) => {
     button.addEventListener("click", () => deleteWord(button.dataset.delete));
@@ -774,6 +807,23 @@ function renderWordList() {
 function filteredWords() {
   if (state.selectedCategoryId === "all") return state.words;
   return state.words.filter((word) => word.categoryId === state.selectedCategoryId);
+}
+
+function normalizedSearchTerm() {
+  return String(state.manageSearch || "").trim().toLowerCase();
+}
+
+function manageFilteredWords() {
+  const keyword = normalizedSearchTerm();
+  const list = filteredWords();
+  if (!keyword) return list;
+
+  return list.filter((word) => [word.word, word.meaning, getCategoryLabel(word.categoryId)]
+    .some((value) => String(value || "").toLowerCase().includes(keyword)));
+}
+
+function knownCardCount() {
+  return state.words.reduce((count, word) => count + (isKnownCard(word) ? 1 : 0), 0);
 }
 
 function currentCardWord() {
@@ -989,6 +1039,7 @@ function renderRoundProgress() {
       : `${config.label} 0 / ${config.count}`;
   dom.roundCorrect.textContent = `정답 ${state.round.correct || 0}`;
   dom.roundBonus.textContent = `최대 +${config.bonus}`;
+  if (dom.modeGuide) dom.modeGuide.textContent = MODE_GUIDES[state.gameMode] || "10문제를 풀고 완주 보너스를 받아요.";
 
   Object.entries(MODE_ROUNDS).forEach(([mode, stage]) => {
     const selected = mode === state.gameMode;
