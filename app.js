@@ -100,6 +100,9 @@ const SHOP_FOODS = Object.freeze([
   { id: "star_meal", emoji: "🌟", name: "별빛 정식", cost: 360, xp: 86, hunger: 48, mood: 34 }
 ]);
 const DIRECT_PET_SNACK_COST = 60;
+const PET_MAX_LEVEL = 50;
+const PET_LEVEL_XP_BASE = 120;
+const PET_LEVEL_XP_GROWTH = 35;
 const DAISO_VOUCHER_LABEL = "다이소 3천원 상품권";
 const MANAGE_PASSWORD = "3341";
 const LEGACY_MONSTER_COUNT = 100;
@@ -1545,16 +1548,30 @@ function getCarePet() {
 
 function getPetCareStats() {
   const care = normalizePetCare(state.player.petCare);
-  const level = Math.min(50, Math.floor(care.xp / 100) + 1);
-  const currentLevelXp = (level - 1) * 100;
-  const nextLevelXp = level * 100;
-  const percent = level >= 50 ? 100 : Math.min(100, Math.floor(((care.xp - currentLevelXp) / (nextLevelXp - currentLevelXp)) * 100));
-  return { ...care, level, percent, next: level >= 50 ? 0 : nextLevelXp - care.xp };
+  let level = 1;
+  let currentLevelXp = 0;
+  let nextLevelXp = getPetLevelXpRequirement(level);
+
+  while (level < PET_MAX_LEVEL && care.xp >= nextLevelXp) {
+    level += 1;
+    currentLevelXp = nextLevelXp;
+    nextLevelXp += getPetLevelXpRequirement(level);
+  }
+
+  const levelSpan = Math.max(1, nextLevelXp - currentLevelXp);
+  const percent = level >= PET_MAX_LEVEL
+    ? 100
+    : Math.min(100, Math.floor(((care.xp - currentLevelXp) / levelSpan) * 100));
+  return { ...care, level, percent, next: level >= PET_MAX_LEVEL ? 0 : nextLevelXp - care.xp };
+}
+
+function getPetLevelXpRequirement(level) {
+  return PET_LEVEL_XP_BASE + ((level - 1) * PET_LEVEL_XP_GROWTH);
 }
 
 function getPetGrowthStage(level) {
-  if (level >= 10) return { label: "반짝 단계", size: 96 };
-  if (level >= 6) return { label: "튼튼 단계", size: 90 };
+  if (level >= 12) return { label: "반짝 단계", size: 96 };
+  if (level >= 7) return { label: "튼튼 단계", size: 90 };
   if (level >= 3) return { label: "꼬마 단계", size: 84 };
   return { label: "아기 단계", size: 76 };
 }
