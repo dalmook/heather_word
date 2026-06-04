@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#141b34" />
   <meta name="description" content="카테고리별 영어 단어와 스펠링을 연습하는 Heather Word" />
   <title>Heather Word · Spellingmon</title>
-  <link rel="stylesheet" href="./style.css?v=7.1" />
+  <link rel="stylesheet" href="./style.css?v=7.2" />
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -132,6 +132,12 @@
             <b>쿠키샵</b>
             <em>꾸미기 · 상품권</em>
           </button>
+          <button class="big-action action-pet" data-nav="pet">
+            <small class="action-badge">PET</small>
+            <span>🐾</span>
+            <b>펫키우기</b>
+            <em>먹이 · 성장</em>
+          </button>
           <button class="big-action action-manage" data-nav="manage">
             <small class="action-badge">LIBRARY</small>
             <span>⚙️</span>
@@ -222,6 +228,44 @@
       <div id="monsterGrid" class="monster-grid" aria-label="몬스터 목록"></div>
     </section>
 
+    <section id="petScreen" class="screen">
+      <div class="screen-head">
+        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
+        <h2>🐾 펫키우기</h2>
+        <button id="petShopBtn" class="round-btn" aria-label="쿠키샵으로 이동">🍪</button>
+      </div>
+
+      <div class="pet-care-card">
+        <div class="pet-care-room">
+          <div id="petCareEmoji" class="pet-care-emoji">🥚</div>
+          <div class="pet-care-sparkles" aria-hidden="true">✦ ✧ ✦</div>
+        </div>
+        <div class="pet-care-copy">
+          <span id="petCareLevel" class="pet-care-level">입양 대기</span>
+          <h2 id="petCareName">아직 펫이 없어요</h2>
+          <p id="petCareMessage">쿠키샵에서 마음에 드는 펫을 입양해 주세요.</p>
+        </div>
+        <div class="pet-care-bars">
+          <div><span id="petCareXpText">펫 입양 필요</span><i><em id="petCareXpFill"></em></i></div>
+          <div><span id="petCareMoodText">-</span><i><em id="petCareMoodFill"></em></i></div>
+          <div><span id="petCareHungerText">-</span><i><em id="petCareHungerFill"></em></i></div>
+        </div>
+      </div>
+
+      <div class="pet-care-actions">
+        <button id="petFeedCookieBtn" class="soft-btn good">🍪 60쿠키 간식</button>
+        <button id="petPlayBtn" class="soft-btn">💗 쓰다듬기</button>
+      </div>
+
+      <section class="pet-food-panel">
+        <div class="section-title">
+          <strong>먹이 보관함</strong>
+          <small>쿠키샵에서 산 먹이를 줄 수 있어요</small>
+        </div>
+        <div id="petFoodList" class="pet-food-list"></div>
+      </section>
+    </section>
+
 
     <section id="shopScreen" class="screen">
       <div class="screen-head">
@@ -245,6 +289,22 @@
             <small>홈 배경이 바뀌어요</small>
           </div>
           <div id="shopThemeGrid" class="shop-grid"></div>
+        </section>
+
+        <section class="shop-section">
+          <div class="section-title">
+            <strong>펫 입양</strong>
+            <small>입양한 펫은 펫키우기에서 돌볼 수 있어요</small>
+          </div>
+          <div id="shopPetGrid" class="shop-grid"></div>
+        </section>
+
+        <section class="shop-section">
+          <div class="section-title">
+            <strong>펫 먹이</strong>
+            <small>먹이를 사서 보관함에 넣어요</small>
+          </div>
+          <div id="shopFoodGrid" class="shop-grid"></div>
         </section>
 
         <section class="shop-section">
@@ -357,6 +417,6 @@
   <input id="importFile" type="file" accept="application/json" hidden />
 
   <script src="./firebase-config.js"></script>
-  <script type="module" src="./app.js?v=6.7"></script>
+  <script type="module" src="./app.js?v=6.8"></script>
 </body>
 </html>

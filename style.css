@@ -3407,6 +3407,14 @@ body.theme-legend {
   background: #ffe3ab;
 }
 
+.action-pet {
+  background: #eefdf7 !important;
+}
+
+.action-pet span {
+  background: #c8f7df;
+}
+
 #manageScreen.active {
   grid-template-rows: 52px auto 48px minmax(0, 1fr) auto !important;
 }
@@ -3722,7 +3730,7 @@ body.theme-legend {
 }
 
 #homeScreen .action-manage {
-  grid-column: 1 / -1;
+  grid-column: auto;
 }
 
 @media (max-width: 395px) {
@@ -3800,6 +3808,264 @@ body.theme-legend {
 .voucher-buyer {
   color: #5d4bec;
   font-weight: 950;
+}
+
+/* v6.13 tamagotchi-style pet care */
+#petScreen.active {
+  grid-template-rows: 52px minmax(0, 1fr) auto minmax(132px, auto) !important;
+  gap: 10px;
+}
+
+.pet-care-card {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(136px, 1fr) auto auto;
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid #e6ebfb;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.96), transparent 28%),
+    linear-gradient(155deg, #f0fdf4, #eef2ff 52%, #fff7ed);
+  box-shadow: var(--shadow-soft);
+}
+
+.pet-care-room {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 136px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(191, 219, 254, 0.72) 0 58%, rgba(187, 247, 208, 0.76) 59% 100%);
+}
+
+.pet-care-room::after {
+  content: "";
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: 20px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.12);
+  filter: blur(4px);
+}
+
+.pet-care-emoji {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(76px, 18vh, 118px);
+  line-height: 1;
+  filter: drop-shadow(0 18px 18px rgba(15, 23, 42, 0.18));
+  animation: petBob 2.2s ease-in-out infinite;
+}
+
+.pet-care-emoji.happy {
+  animation: petHappy 0.65s ease-in-out 1;
+}
+
+.pet-care-emoji.sleepy {
+  filter: grayscale(0.25) drop-shadow(0 18px 18px rgba(15, 23, 42, 0.16));
+  transform: rotate(-5deg);
+}
+
+.pet-care-sparkles {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  color: rgba(93, 75, 236, 0.42);
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.pet-care-copy {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  text-align: center;
+}
+
+.pet-care-level {
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: #5d4bec;
+  font-size: 12px;
+  font-weight: 950;
+  background: #eeecff;
+}
+
+.pet-care-copy h2 {
+  font-size: 24px;
+}
+
+.pet-care-copy p {
+  color: #69748d;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.pet-care-bars {
+  display: grid;
+  gap: 7px;
+}
+
+.pet-care-bars div {
+  display: grid;
+  gap: 4px;
+}
+
+.pet-care-bars span {
+  color: #4d5670;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.pet-care-bars i {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e8ebf5;
+}
+
+.pet-care-bars em {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6857f5, #42e9a8, #ff963c);
+  transition: width 0.2s ease;
+}
+
+.pet-care-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.pet-food-panel {
+  min-height: 0;
+  padding: 12px;
+  border: 1px solid #e6ebfb;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow-soft);
+}
+
+.pet-food-list {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.pet-food-btn {
+  min-height: 74px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 3px 7px;
+  align-items: center;
+  padding: 9px;
+  border-radius: 18px;
+  color: #1d2540;
+  text-align: left;
+  background: #f8f9fe;
+  box-shadow: none;
+}
+
+.pet-food-btn span {
+  grid-row: 1 / 3;
+  display: grid;
+  place-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 13px;
+  font-size: 23px;
+  background: #fff;
+}
+
+.pet-food-btn b,
+.pet-food-btn small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pet-food-btn b {
+  font-size: 12px;
+}
+
+.pet-food-btn small {
+  color: #758097;
+  font-size: 10px;
+}
+
+.pet-food-btn:disabled {
+  color: #9aa4b8;
+  background: #eef1f7;
+  cursor: default;
+}
+
+.empty-pet-food {
+  grid-column: 1 / -1;
+  min-height: 82px;
+  display: grid;
+  place-content: center;
+  border: 1px dashed #d8dbef;
+  border-radius: 18px;
+  color: #758097;
+  font-size: 13px;
+  font-weight: 850;
+  text-align: center;
+}
+
+@keyframes petBob {
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+@keyframes petHappy {
+  30% {
+    transform: translateY(-18px) rotate(-8deg) scale(1.08);
+  }
+
+  65% {
+    transform: translateY(2px) rotate(7deg) scale(0.98);
+  }
+}
+
+@media (max-width: 395px) {
+  .pet-food-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-height: 700px) {
+  #petScreen.active {
+    grid-template-rows: 46px minmax(0, 1fr) auto minmax(106px, auto) !important;
+    gap: 7px;
+  }
+
+  .pet-care-card {
+    grid-template-rows: minmax(104px, 1fr) auto auto;
+    gap: 7px;
+    padding: 10px;
+  }
+
+  .pet-care-room {
+    min-height: 104px;
+  }
+
+  .pet-care-emoji {
+    font-size: clamp(64px, 15vh, 88px);
+  }
+
+  .pet-care-copy h2 {
+    font-size: 20px;
+  }
 }
 
 

@@ -85,6 +85,21 @@ const SHOP_THEMES = Object.freeze([
   { id: "crystal", emoji: "💎", name: "보석 배경", cost: 1160, className: "theme-crystal" },
   { id: "legend", emoji: "✨", name: "전설 배경", cost: 1300, className: "theme-legend" }
 ]);
+const SHOP_PETS = Object.freeze([
+  { id: "cookie_puppy", emoji: "🐶", name: "쿠키강아지", cost: 900, trait: "기분 보너스" },
+  { id: "mellow_cat", emoji: "🐱", name: "마시멜로냥", cost: 980, trait: "포만감 보너스" },
+  { id: "star_bunny", emoji: "🐰", name: "별토끼", cost: 1100, trait: "성장 보너스" },
+  { id: "cloud_penguin", emoji: "🐧", name: "구름펭귄", cost: 1250, trait: "간식 보너스" },
+  { id: "jelly_dragon", emoji: "🐲", name: "젤리드래곤", cost: 1500, trait: "전설 펫" }
+]);
+const SHOP_FOODS = Object.freeze([
+  { id: "milk", emoji: "🥛", name: "튼튼 우유", cost: 80, xp: 18, hunger: 18, mood: 6 },
+  { id: "cookie", emoji: "🍪", name: "쿠키 간식", cost: 120, xp: 26, hunger: 24, mood: 10 },
+  { id: "berry", emoji: "🍓", name: "딸기 컵", cost: 160, xp: 34, hunger: 20, mood: 18 },
+  { id: "cake", emoji: "🍰", name: "축하 케이크", cost: 240, xp: 54, hunger: 34, mood: 24 },
+  { id: "star_meal", emoji: "🌟", name: "별빛 정식", cost: 360, xp: 86, hunger: 48, mood: 34 }
+]);
+const DIRECT_PET_SNACK_COST = 60;
 const DAISO_VOUCHER_LABEL = "다이소 3천원 상품권";
 const MANAGE_PASSWORD = "3341";
 const LEGACY_MONSTER_COUNT = 100;
@@ -163,6 +178,7 @@ const dom = {
     game: $("#gameScreen"),
     rank: $("#rankScreen"),
     collection: $("#collectionScreen"),
+    pet: $("#petScreen"),
     shop: $("#shopScreen"),
     manage: $("#manageScreen")
   },
@@ -194,6 +210,22 @@ const dom = {
   shopCookieCount: $("#shopCookieCount"),
   shopItemGrid: $("#shopItemGrid"),
   shopThemeGrid: $("#shopThemeGrid"),
+  shopPetGrid: $("#shopPetGrid"),
+  shopFoodGrid: $("#shopFoodGrid"),
+  petCareEmoji: $("#petCareEmoji"),
+  petCareName: $("#petCareName"),
+  petCareLevel: $("#petCareLevel"),
+  petCareMessage: $("#petCareMessage"),
+  petCareXpFill: $("#petCareXpFill"),
+  petCareMoodFill: $("#petCareMoodFill"),
+  petCareHungerFill: $("#petCareHungerFill"),
+  petCareXpText: $("#petCareXpText"),
+  petCareMoodText: $("#petCareMoodText"),
+  petCareHungerText: $("#petCareHungerText"),
+  petFoodList: $("#petFoodList"),
+  petFeedCookieBtn: $("#petFeedCookieBtn"),
+  petPlayBtn: $("#petPlayBtn"),
+  petShopBtn: $("#petShopBtn"),
   requestDaisoVoucherBtn: $("#requestDaisoVoucherBtn"),
   shopVoucherList: $("#shopVoucherList"),
   manageRewardList: $("#manageRewardList"),
@@ -260,6 +292,9 @@ let state = {
     equippedItem: "",
     ownedThemes: {},
     equippedTheme: "",
+    ownedPets: {},
+    equippedPet: "",
+    petCare: makePetCare(),
     rewardClaims: []
   },
   rewardAdminClaims: [],
@@ -538,6 +573,9 @@ function syncPlayer() {
     equippedItem: state.player.equippedItem || "",
     ownedThemes: state.player.ownedThemes || {},
     equippedTheme: state.player.equippedTheme || "",
+    ownedPets: state.player.ownedPets || {},
+    equippedPet: state.player.equippedPet || "",
+    petCare: normalizePetCare(state.player.petCare),
     rewardClaims: normalizeRewardClaims(state.player.rewardClaims),
     updatedAt: serverTimestamp()
   }, { merge: true }).catch(markSyncFailure);
@@ -581,6 +619,12 @@ function bindEvents() {
   dom.claimMissionBtn.addEventListener("click", claimDailyMissionReward);
   dom.shopItemGrid.addEventListener("click", handleShopItemClick);
   dom.shopThemeGrid.addEventListener("click", handleShopThemeClick);
+  dom.shopPetGrid.addEventListener("click", handleShopPetClick);
+  dom.shopFoodGrid.addEventListener("click", handleShopFoodClick);
+  dom.petFoodList.addEventListener("click", handlePetFoodClick);
+  dom.petFeedCookieBtn.addEventListener("click", feedPetWithCookies);
+  dom.petPlayBtn.addEventListener("click", playWithCarePet);
+  dom.petShopBtn.addEventListener("click", () => navigate("shop"));
   dom.requestDaisoVoucherBtn.addEventListener("click", requestDaisoVoucher);
   dom.manageRewardList.addEventListener("click", handleRewardAdminClick);
 
@@ -789,6 +833,7 @@ function render() {
   renderCollection();
   renderDailyMission();
   renderShop();
+  renderPetCare();
   renderRewardClaims();
   renderRoundProgress();
 }
@@ -1453,6 +1498,60 @@ function getShopTheme(themeId) {
   return SHOP_THEMES.find((theme) => theme.id === themeId);
 }
 
+function getShopPet(petId) {
+  return SHOP_PETS.find((pet) => pet.id === petId);
+}
+
+function getShopFood(foodId) {
+  return SHOP_FOODS.find((food) => food.id === foodId);
+}
+
+function makePetCare() {
+  return {
+    xp: 0,
+    mood: 70,
+    hunger: 45,
+    foods: {}
+  };
+}
+
+function normalizePetCare(care) {
+  const raw = care && typeof care === "object" && !Array.isArray(care) ? care : {};
+  const foods = raw.foods && typeof raw.foods === "object" && !Array.isArray(raw.foods)
+    ? Object.fromEntries(
+      Object.entries(raw.foods)
+        .map(([key, value]) => [key, safeCounter(value)])
+        .filter(([, value]) => value > 0)
+    )
+    : {};
+
+  return {
+    xp: safeCounter(raw.xp),
+    mood: clampStat(raw.mood, 70),
+    hunger: clampStat(raw.hunger, 45),
+    foods
+  };
+}
+
+function clampStat(value, fallback = 0) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return fallback;
+  return Math.max(0, Math.min(100, Math.floor(number)));
+}
+
+function getCarePet() {
+  return getShopPet(state.player.equippedPet);
+}
+
+function getPetCareStats() {
+  const care = normalizePetCare(state.player.petCare);
+  const level = Math.min(50, Math.floor(care.xp / 100) + 1);
+  const currentLevelXp = (level - 1) * 100;
+  const nextLevelXp = level * 100;
+  const percent = level >= 50 ? 100 : Math.min(100, Math.floor(((care.xp - currentLevelXp) / (nextLevelXp - currentLevelXp)) * 100));
+  return { ...care, level, percent, next: level >= 50 ? 0 : nextLevelXp - care.xp };
+}
+
 function renderEquippedAccessory() {
   if (!dom.equippedAccessory) return;
   const item = getShopItem(state.player.equippedItem);
@@ -1473,6 +1572,8 @@ function renderShop() {
   dom.shopCookieCount.textContent = `🍪 ${state.player.coin || 0}`;
   dom.shopItemGrid.innerHTML = SHOP_ITEMS.map((item) => renderShopProduct(item, "item")).join("");
   dom.shopThemeGrid.innerHTML = SHOP_THEMES.map((theme) => renderShopProduct(theme, "theme")).join("");
+  dom.shopPetGrid.innerHTML = SHOP_PETS.map(renderPetProduct).join("");
+  dom.shopFoodGrid.innerHTML = SHOP_FOODS.map(renderFoodProduct).join("");
   renderVoucherList(dom.shopVoucherList, false);
 }
 
@@ -1499,6 +1600,38 @@ function renderShopProduct(product, type) {
   `;
 }
 
+function renderPetProduct(pet) {
+  const owned = Boolean(state.player.ownedPets?.[pet.id]);
+  const equipped = state.player.equippedPet === pet.id;
+  const action = owned ? "equip" : "buy";
+  const label = equipped ? "함께 지내는 중" : owned ? "함께 지내기" : `${pet.cost}쿠키 입양`;
+
+  return `
+    <article class="shop-product pet-product ${owned ? "owned" : ""} ${equipped ? "equipped" : ""}">
+      <div class="shop-product-emoji">${escapeHtml(pet.emoji)}</div>
+      <div>
+        <strong>${escapeHtml(pet.name)}</strong>
+        <small>${owned ? pet.trait : `🍪 ${pet.cost} · ${pet.trait}`}</small>
+      </div>
+      <button class="soft-btn ${owned ? "" : "good"}" data-pet-action="${action}" data-pet-id="${escapeHtml(pet.id)}" ${equipped ? "disabled" : ""}>${label}</button>
+    </article>
+  `;
+}
+
+function renderFoodProduct(food) {
+  const count = safeCounter(state.player.petCare?.foods?.[food.id]);
+  return `
+    <article class="shop-product food-product">
+      <div class="shop-product-emoji">${escapeHtml(food.emoji)}</div>
+      <div>
+        <strong>${escapeHtml(food.name)}</strong>
+        <small>보유 ${count}개 · 성장 +${food.xp}</small>
+      </div>
+      <button class="soft-btn good" data-food-id="${escapeHtml(food.id)}">🍪 ${food.cost} 구매</button>
+    </article>
+  `;
+}
+
 function handleShopItemClick(event) {
   const button = event.target.closest("[data-shop-id]");
   if (!button) return;
@@ -1517,6 +1650,25 @@ function handleShopThemeClick(event) {
   if (!theme) return;
   if (button.dataset.shopAction === "buy") buyShopTheme(theme);
   else equipShopTheme(theme.id);
+}
+
+function handleShopPetClick(event) {
+  const button = event.target.closest("[data-pet-id]");
+  if (!button) return;
+
+  const pet = getShopPet(button.dataset.petId);
+  if (!pet) return;
+  if (button.dataset.petAction === "buy") buyShopPet(pet);
+  else equipShopPet(pet.id);
+}
+
+function handleShopFoodClick(event) {
+  const button = event.target.closest("[data-food-id]");
+  if (!button) return;
+
+  const food = getShopFood(button.dataset.foodId);
+  if (!food) return;
+  buyPetFood(food);
 }
 
 function spendCookies(cost) {
@@ -1574,6 +1726,163 @@ function equipShopTheme(themeId) {
   syncPlayer();
   render();
   showToast("배경 적용", getShopTheme(themeId)?.name || "배경");
+}
+
+function buyShopPet(pet) {
+  state.player.ownedPets ||= {};
+  if (state.player.ownedPets[pet.id]) {
+    equipShopPet(pet.id);
+    return;
+  }
+  if (!spendCookies(pet.cost)) return;
+
+  state.player.ownedPets[pet.id] = true;
+  state.player.equippedPet = pet.id;
+  state.player.petCare = normalizePetCare(state.player.petCare);
+  state.player.petCare.mood = Math.max(state.player.petCare.mood, 80);
+  state.player.petCare.hunger = Math.max(state.player.petCare.hunger, 55);
+  syncPlayer();
+  render();
+  showToast("펫 입양!", `${pet.emoji} ${pet.name}와 함께해요`);
+}
+
+function equipShopPet(petId) {
+  if (!state.player.ownedPets?.[petId]) return;
+  state.player.equippedPet = petId;
+  syncPlayer();
+  render();
+  showToast("펫 변경", getShopPet(petId)?.name || "펫");
+}
+
+function buyPetFood(food) {
+  if (!spendCookies(food.cost)) return;
+
+  state.player.petCare = normalizePetCare(state.player.petCare);
+  state.player.petCare.foods[food.id] = safeCounter(state.player.petCare.foods[food.id]) + 1;
+  syncPlayer();
+  render();
+  showToast("먹이 구매", `${food.emoji} ${food.name} 보관함에 넣었어요`);
+}
+
+function renderPetCare() {
+  if (!dom.petCareEmoji) return;
+
+  const pet = getCarePet();
+  const stats = getPetCareStats();
+  const hasPet = Boolean(pet);
+  const face = hasPet ? pet.emoji : "🥚";
+
+  dom.petCareEmoji.textContent = face;
+  dom.petCareEmoji.classList.toggle("sleepy", hasPet && stats.hunger < 25);
+  dom.petCareName.textContent = hasPet ? pet.name : "아직 펫이 없어요";
+  dom.petCareLevel.textContent = hasPet ? `Lv.${stats.level}` : "입양 대기";
+  dom.petCareMessage.textContent = hasPet
+    ? getPetCareMessage(stats)
+    : "쿠키샵에서 마음에 드는 펫을 입양해 주세요.";
+  dom.petCareXpFill.style.width = `${hasPet ? stats.percent : 0}%`;
+  dom.petCareMoodFill.style.width = `${hasPet ? stats.mood : 0}%`;
+  dom.petCareHungerFill.style.width = `${hasPet ? stats.hunger : 0}%`;
+  dom.petCareXpText.textContent = hasPet ? `성장 ${stats.percent}% · 다음까지 ${stats.next}XP` : "펫 입양 필요";
+  dom.petCareMoodText.textContent = hasPet ? `기분 ${stats.mood}` : "-";
+  dom.petCareHungerText.textContent = hasPet ? `포만감 ${stats.hunger}` : "-";
+  dom.petFeedCookieBtn.disabled = !hasPet;
+  dom.petPlayBtn.disabled = !hasPet;
+
+  dom.petFoodList.innerHTML = hasPet
+    ? SHOP_FOODS.map(renderCareFood).join("")
+    : `<div class="empty-pet-food">쿠키샵에서 펫과 먹이를 살 수 있어요.</div>`;
+}
+
+function renderCareFood(food) {
+  const count = safeCounter(state.player.petCare?.foods?.[food.id]);
+  return `
+    <button class="pet-food-btn" data-care-food-id="${escapeHtml(food.id)}" ${count ? "" : "disabled"}>
+      <span>${escapeHtml(food.emoji)}</span>
+      <b>${escapeHtml(food.name)}</b>
+      <small>${count}개 · +${food.xp}XP</small>
+    </button>
+  `;
+}
+
+function getPetCareMessage(stats) {
+  if (stats.hunger < 25) return "배가 고파서 간식을 기다리고 있어요.";
+  if (stats.mood < 30) return "조금 심심해 보여요. 쓰다듬어 주세요.";
+  if (stats.percent >= 85) return "곧 한 단계 더 자랄 것 같아요!";
+  if (stats.level >= 10) return "많이 자라서 반짝반짝 자신감이 넘쳐요.";
+  return "오늘도 쿠키 에너지로 쑥쑥 자라고 있어요.";
+}
+
+function handlePetFoodClick(event) {
+  const button = event.target.closest("[data-care-food-id]");
+  if (!button) return;
+
+  const food = getShopFood(button.dataset.careFoodId);
+  if (food) feedPet(food);
+}
+
+function feedPet(food) {
+  const pet = getCarePet();
+  if (!pet) {
+    showToast("펫이 없어요", "쿠키샵에서 먼저 입양해 주세요");
+    return;
+  }
+
+  state.player.petCare = normalizePetCare(state.player.petCare);
+  const count = safeCounter(state.player.petCare.foods[food.id]);
+  if (!count) {
+    showToast("먹이가 없어요", "쿠키샵에서 먹이를 구매해 주세요");
+    return;
+  }
+
+  state.player.petCare.foods[food.id] = count - 1;
+  if (state.player.petCare.foods[food.id] <= 0) delete state.player.petCare.foods[food.id];
+  growPet(food);
+  showToast("냠냠!", `${food.emoji} ${food.name} · 성장 +${food.xp}`);
+}
+
+function feedPetWithCookies() {
+  const pet = getCarePet();
+  if (!pet) {
+    showToast("펫이 없어요", "쿠키샵에서 먼저 입양해 주세요");
+    return;
+  }
+  if (!spendCookies(DIRECT_PET_SNACK_COST)) return;
+
+  growPet({ xp: 12, hunger: 10, mood: 8 });
+  showToast("쿠키 간식", `🍪 ${DIRECT_PET_SNACK_COST}개로 바로 먹였어요`);
+}
+
+function growPet(food) {
+  state.player.petCare = normalizePetCare(state.player.petCare);
+  state.player.petCare.xp += safeCounter(food.xp);
+  state.player.petCare.hunger = clampStat(state.player.petCare.hunger + safeCounter(food.hunger));
+  state.player.petCare.mood = clampStat(state.player.petCare.mood + safeCounter(food.mood));
+  syncPlayer();
+  render();
+  petCareBurst();
+}
+
+function playWithCarePet() {
+  const pet = getCarePet();
+  if (!pet) {
+    showToast("펫이 없어요", "쿠키샵에서 먼저 입양해 주세요");
+    return;
+  }
+
+  state.player.petCare = normalizePetCare(state.player.petCare);
+  state.player.petCare.mood = clampStat(state.player.petCare.mood + 14);
+  state.player.petCare.hunger = clampStat(state.player.petCare.hunger - 5);
+  syncPlayer();
+  render();
+  showToast("쓰담쓰담", `${pet.emoji} ${pet.name} 기분이 좋아졌어요`);
+  petCareBurst();
+}
+
+function petCareBurst() {
+  if (!dom.petCareEmoji) return;
+  dom.petCareEmoji.classList.add("happy");
+  setTimeout(() => dom.petCareEmoji.classList.remove("happy"), 700);
+  heartBurst();
 }
 
 function requestDaisoVoucher() {
@@ -2718,6 +3027,10 @@ function normalizePlayer(player) {
   const ownedThemes = player.ownedThemes && typeof player.ownedThemes === "object" && !Array.isArray(player.ownedThemes)
     ? player.ownedThemes
     : {};
+  const ownedPets = player.ownedPets && typeof player.ownedPets === "object" && !Array.isArray(player.ownedPets)
+    ? player.ownedPets
+    : {};
+  const petCare = normalizePetCare(player.petCare);
   const rewardClaims = normalizeRewardClaims(player.rewardClaims);
 
   return {
@@ -2737,6 +3050,9 @@ function normalizePlayer(player) {
     equippedItem: ownedItems[player.equippedItem] && getShopItem(player.equippedItem) ? player.equippedItem : "",
     ownedThemes,
     equippedTheme: ownedThemes[player.equippedTheme] && getShopTheme(player.equippedTheme) ? player.equippedTheme : "",
+    ownedPets,
+    equippedPet: ownedPets[player.equippedPet] && getShopPet(player.equippedPet) ? player.equippedPet : "",
+    petCare,
     rewardClaims
   };
 }

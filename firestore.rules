@@ -56,6 +56,16 @@ service cloud.firestore {
         && mission.rewarded is bool;
     }
 
+    function validPetCare(care) {
+      return care is map
+        && care.keys().hasOnly(['xp', 'mood', 'hunger', 'foods'])
+        && care.xp is number && care.xp >= 0 && care.xp <= 100000000
+        && care.mood is number && care.mood >= 0 && care.mood <= 100
+        && care.hunger is number && care.hunger >= 0 && care.hunger <= 100
+        && care.foods is map
+        && care.foods.size() <= 50;
+    }
+
     function rewardClaimAdminUpdate() {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rewardClaims', 'updatedAt']);
     }
@@ -65,7 +75,8 @@ service cloud.firestore {
       return data.keys().hasOnly([
           'name', 'score', 'coin', 'xp', 'combo', 'bestCombo',
           'sound', 'knownCards', 'progress', 'dailyMission',
-          'ownedItems', 'equippedItem', 'ownedThemes', 'equippedTheme', 'rewardClaims',
+          'ownedItems', 'equippedItem', 'ownedThemes', 'equippedTheme',
+          'ownedPets', 'equippedPet', 'petCare', 'rewardClaims',
           'updatedAt'
         ])
         && data.name is string
@@ -85,6 +96,9 @@ service cloud.firestore {
         && (!('equippedItem' in data) || (data.equippedItem is string && data.equippedItem.size() <= 80))
         && (!('ownedThemes' in data) || (data.ownedThemes is map && data.ownedThemes.size() <= 100))
         && (!('equippedTheme' in data) || (data.equippedTheme is string && data.equippedTheme.size() <= 80))
+        && (!('ownedPets' in data) || (data.ownedPets is map && data.ownedPets.size() <= 100))
+        && (!('equippedPet' in data) || (data.equippedPet is string && data.equippedPet.size() <= 80))
+        && (!('petCare' in data) || validPetCare(data.petCare))
         && (!('rewardClaims' in data) || (data.rewardClaims is list && data.rewardClaims.size() <= 200))
         && (!('updatedAt' in data) || data.updatedAt is timestamp);
     }
