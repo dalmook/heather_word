@@ -167,6 +167,7 @@ const dom = {
   missionCorrectFill: $("#missionCorrectFill"),
   missionWritingFill: $("#missionWritingFill"),
   missionRewardText: $("#missionRewardText"),
+  missionSummary: $("#missionSummary"),
   shopCookieCount: $("#shopCookieCount"),
   shopItemGrid: $("#shopItemGrid"),
   shopThemeGrid: $("#shopThemeGrid"),
@@ -1817,12 +1818,18 @@ function renderDailyMission() {
     ["writingAttempts", dom.missionWritingText, dom.missionWritingFill]
   ];
 
+  const missionProgress = {};
   rows.forEach(([field, textEl, fillEl]) => {
     const target = DAILY_MISSION_TARGETS[field];
     const value = Math.min(target, safeCounter(mission[field]));
-    if (textEl) textEl.textContent = `${value}/${target}`;
+    missionProgress[field] = `${value}/${target}`;
+    if (textEl) textEl.textContent = missionProgress[field];
     if (fillEl) fillEl.style.width = `${Math.round((value / target) * 100)}%`;
   });
+
+  if (dom.missionSummary) {
+    dom.missionSummary.textContent = `카드${missionProgress.cardViews} · 게임${missionProgress.gameCorrect} · 쓰기${missionProgress.writingAttempts}`;
+  }
 
   dom.claimMissionBtn.disabled = !complete || mission.rewarded;
   dom.claimMissionBtn.textContent = mission.rewarded ? "보상 완료" : "보상 받기";
