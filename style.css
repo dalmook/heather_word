@@ -3518,3 +3518,166 @@ body.theme-forest {
     min-height: 70px;
   }
 }
+
+/* v6.9 move daily mission into adventure card and show all action buttons */
+#homeScreen .pet-card > .mission-card {
+  position: absolute;
+  z-index: 3;
+  top: 42px;
+  left: 14px;
+  right: 142px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 7px;
+  margin: 0;
+  padding: 7px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  background: rgba(13, 18, 43, 0.34);
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+}
+
+#homeScreen .pet-card > .mission-card .mission-head {
+  display: contents;
+}
+
+#homeScreen .pet-card > .mission-card .mission-head > div {
+  min-width: 0;
+}
+
+#homeScreen .pet-card > .mission-card .mission-kicker,
+#homeScreen .pet-card > .mission-card p {
+  display: none;
+}
+
+#homeScreen .pet-card > .mission-card .mission-head strong {
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: -0.04em;
+}
+
+#homeScreen .pet-card > .mission-card .mission-claim {
+  min-width: 62px;
+  min-height: 26px;
+  padding: 4px 7px;
+  border-radius: 10px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+#homeScreen .pet-card > .mission-card .mission-claim.ready {
+  color: #fff;
+  background: linear-gradient(125deg, #ff963c, #f04d94);
+}
+
+#homeScreen .pet-card > .mission-card .mission-list {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  overflow: visible;
+}
+
+#homeScreen .pet-card > .mission-card .mission-item {
+  min-width: 0;
+  padding: 5px;
+  gap: 2px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.10);
+}
+
+#homeScreen .pet-card > .mission-card .mission-item span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 9px;
+  letter-spacing: -0.04em;
+}
+
+#homeScreen .pet-card > .mission-card .mission-item b {
+  color: #fff;
+  font-size: 11px;
+}
+
+#homeScreen .pet-card > .mission-card .mission-item i {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+#homeScreen .launch-panel {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+#homeScreen .main-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(58px, 1fr) !important;
+  gap: 8px !important;
+  overflow: visible;
+  padding: 0;
+}
+
+#homeScreen .big-action {
+  flex: initial;
+  min-height: 58px;
+  grid-template-columns: 38px 1fr;
+  column-gap: 8px;
+  padding: 8px;
+}
+
+#homeScreen .big-action span {
+  width: 38px;
+  height: 38px;
+  border-radius: 13px;
+  font-size: 21px !important;
+}
+
+#homeScreen .big-action b {
+  margin-bottom: 8px;
+  font-size: 15px !important;
+}
+
+#homeScreen .big-action em {
+  left: 54px;
+  bottom: 7px;
+  font-size: 10px !important;
+}
+
+#homeScreen .action-manage {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 395px) {
+  #homeScreen .pet-card > .mission-card {
+    right: 118px;
+    top: 40px;
+  }
+
+  #homeScreen .pet-card > .mission-card .mission-list {
+    gap: 3px;
+  }
+
+  #homeScreen .pet-card > .mission-card .mission-item span {
+    font-size: 8px;
+  }
+}
+
+@media (max-height: 730px) {
+  #homeScreen .pet-card > .mission-card {
+    top: 38px;
+    padding: 5px 6px;
+  }
+
+  #homeScreen .pet-card > .mission-card .mission-list {
+    display: none;
+  }
+
+  #homeScreen .main-actions {
+    grid-auto-rows: minmax(52px, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  #homeScreen .big-action {
+    min-height: 52px;
+  }
+}
