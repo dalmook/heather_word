@@ -50,6 +50,12 @@ const MODE_ROUNDS = Object.freeze({
   blank: { count: 10, label: "빈칸", bonus: 200 },
   type: { count: 10, label: "쓰기", bonus: 500 }
 });
+const MODE_GUIDES = Object.freeze({
+  choice: "뜻에 맞는 영어 단어를 고르세요.",
+  block: "알파벳 블록을 순서대로 눌러 단어를 완성하세요.",
+  blank: "보이는 힌트를 보고 빈칸까지 포함해 전체 단어를 입력하세요.",
+  type: "발음을 듣고 영어 단어 전체를 직접 써 보세요."
+});
 const MONSTER_BASE_NAMES = [
   "알몬", "삐약몬", "솜구름몬", "토끼몬", "판다몬",
   "여우몬", "유니콘몬", "드래곤몬", "피닉스몬", "스타몬",
@@ -1032,6 +1038,7 @@ function renderRoundProgress() {
       : `${config.label} 0 / ${config.count}`;
   dom.roundCorrect.textContent = `정답 ${state.round.correct || 0}`;
   dom.roundBonus.textContent = `최대 +${config.bonus}`;
+  if (dom.modeGuide) dom.modeGuide.textContent = MODE_GUIDES[state.gameMode] || "10문제를 풀고 완주 보너스를 받아요.";
 
   Object.entries(MODE_ROUNDS).forEach(([mode, stage]) => {
     const selected = mode === state.gameMode;
