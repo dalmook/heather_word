@@ -46,7 +46,7 @@ const DAILY_MISSION_REWARD = Object.freeze({
   coin: 20,
   xp: 1000
 });
-const DAISO_VOUCHER_COOKIE_COST = 300;
+const DAISO_VOUCHER_COOKIE_COST = 3000;
 const SHOP_ITEMS = Object.freeze([
   { id: "ribbon", emoji: "🎀", name: "리본", cost: 30 },
   { id: "crown", emoji: "👑", name: "왕관", cost: 50 },
@@ -167,6 +167,7 @@ const dom = {
   missionCorrectFill: $("#missionCorrectFill"),
   missionWritingFill: $("#missionWritingFill"),
   missionRewardText: $("#missionRewardText"),
+  missionSummary: $("#missionSummary"),
   shopCookieCount: $("#shopCookieCount"),
   shopItemGrid: $("#shopItemGrid"),
   shopThemeGrid: $("#shopThemeGrid"),
@@ -238,6 +239,9 @@ let state = {
     equippedTheme: "",
     rewardClaims: []
   },
+  rewardAdminClaims: [],
+  rewardAdminPlayers: [],
+  rewardAdminLoaded: false,
   selectedCategoryId: "all",
   manageSearch: "",
   screen: "home",
@@ -641,6 +645,7 @@ function navigate(screen) {
   updateTypingModeClass();
 
   if (screen === "rank") loadRanking();
+  if (screen === "manage") loadRewardAdminClaims();
   if (screen === "game") startRound("choice");
   render();
 }
@@ -1556,9 +1561,11 @@ function requestDaisoVoucher() {
     id: makeRewardClaimId(),
     type: "daiso_3000",
     label: DAISO_VOUCHER_LABEL,
-    cost: 3000,
+    cost: DAISO_VOUCHER_COOKIE_COST,
     status: "requested",
     requestedAt: new Date().toISOString(),
+    requestedBy: state.player.name || "Player",
+    requestedByUid: state.firebaseUser?.uid || "local",
     usedAt: "",
     usedBy: ""
   });
@@ -1567,16 +1574,23 @@ function requestDaisoVoucher() {
   syncPlayer();
   render();
   showToast("상품권 신청", "관리자 확인을 기다려 주세요");
+  if (state.screen === "manage") loadRewardAdminClaims();
 }
 
 function makeRewardClaimId() {
   return `reward_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function renderVoucherList(target, admin = false) {
+function renderVoucherList(target, admin = false, claimsOverride = null) {
   if (!target) return;
 
-  const claims = normalizeRewardClaims(state.player.rewardClaims);
+  const claims = Array.isArray(claimsOverride)
+    ? claimsOverride
+    : normalizeRewardClaims(state.player.rewardClaims).map((claim) => ({
+      ...claim,
+      ownerId: state.firebaseUser?.uid || "local",
+      ownerName: state.player.name || "Player"
+    }));
   if (!claims.length) {
     target.innerHTML = `<div class="hint">상품권 신청 내역이 없어요.</div>`;
     return;
@@ -1584,42 +1598,115 @@ function renderVoucherList(target, admin = false) {
 
   target.innerHTML = claims.map((claim) => {
     const used = claim.status === "used";
+    const buyer = claim.requestedBy || claim.ownerName || "Player";
+    const ownerId = claim.ownerId || state.firebaseUser?.uid || "local";
+    const canUse = !used && (!state.firebaseReady || !admin || ownerId);
     return `
       <div class="voucher-row ${used ? "used" : "requested"}">
         <div>
           <b>${escapeHtml(claim.label)}</b>
-          <small>${formatDateTime(claim.requestedAt)} · 쿠키 ${DAISO_VOUCHER_COOKIE_COST}개</small>
+          <small><span class="voucher-buyer">신청자 ${escapeHtml(buyer)}</span> · ${formatDateTime(claim.requestedAt)} · 쿠키 ${safeCounter(claim.cost) || DAISO_VOUCHER_COOKIE_COST}개${used && claim.usedBy ? ` · 처리 ${escapeHtml(claim.usedBy)}` : ""}</small>
         </div>
         <strong>${used ? "사용완료" : "신청됨"}</strong>
-        ${admin ? `<button class="soft-btn good" data-use-reward="${escapeHtml(claim.id)}" ${used ? "disabled" : ""}>사용완료</button>` : ""}
+        ${admin ? `<button class="soft-btn good" data-use-reward="${escapeHtml(claim.id)}" data-reward-owner="${escapeHtml(ownerId)}" ${canUse ? "" : "disabled"}>사용완료</button>` : ""}
       </div>
     `;
   }).join("");
 }
 
 function renderRewardClaims() {
+  if (state.screen === "manage" && state.firebaseReady) {
+    if (!state.rewardAdminLoaded) {
+      dom.manageRewardList.innerHTML = `<div class="hint">상품권 신청 내역을 불러오는 중이에요.</div>`;
+      return;
+    }
+    renderVoucherList(dom.manageRewardList, true, state.rewardAdminClaims);
+    return;
+  }
+
   renderVoucherList(dom.manageRewardList, true);
+}
+
+async function loadRewardAdminClaims() {
+  if (!dom.manageRewardList) return;
+
+  if (!state.firebaseReady) {
+    state.rewardAdminLoaded = true;
+    state.rewardAdminPlayers = [{ id: "local", data: state.player }];
+    state.rewardAdminClaims = normalizeRewardClaims(state.player.rewardClaims).map((claim) => ({
+      ...claim,
+      ownerId: "local",
+      ownerName: state.player.name || "Player"
+    }));
+    renderRewardClaims();
+    return;
+  }
+
+  state.rewardAdminLoaded = false;
+  renderRewardClaims();
+
+  try {
+    const playersRef = collection(firebase.db, "classes", firebase.classId, "players");
+    const snap = await getDocs(playersRef);
+    state.rewardAdminPlayers = snap.docs.map((item) => ({ id: item.id, data: item.data() }));
+    state.rewardAdminClaims = state.rewardAdminPlayers.flatMap((playerEntry) => {
+      const player = playerEntry.data || {};
+      const ownerName = limitText(player.name, MAX_PLAYER_NAME_LENGTH) || "Player";
+      return normalizeRewardClaims(player.rewardClaims).map((claim) => ({
+        ...claim,
+        ownerId: playerEntry.id,
+        ownerName,
+        requestedBy: claim.requestedBy || ownerName,
+        requestedByUid: claim.requestedByUid || playerEntry.id
+      }));
+    }).sort((a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime());
+    state.rewardAdminLoaded = true;
+    renderRewardClaims();
+  } catch (error) {
+    markSyncFailure(error);
+    state.rewardAdminLoaded = true;
+    dom.manageRewardList.innerHTML = `<div class="hint">상품권 신청 내역을 불러오지 못했어요.</div>`;
+  }
 }
 
 function handleRewardAdminClick(event) {
   const button = event.target.closest("[data-use-reward]");
   if (!button) return;
-  markRewardClaimUsed(button.dataset.useReward);
+  markRewardClaimUsed(button.dataset.useReward, button.dataset.rewardOwner);
 }
 
-function markRewardClaimUsed(claimId) {
-  const claims = normalizeRewardClaims(state.player.rewardClaims);
+async function markRewardClaimUsed(claimId, ownerId = state.firebaseUser?.uid || "local") {
+  const ownerEntry = state.rewardAdminPlayers.find((item) => item.id === ownerId);
+  const sourcePlayer = ownerEntry?.data || state.player;
+  const claims = normalizeRewardClaims(sourcePlayer.rewardClaims);
   const claim = claims.find((item) => item.id === claimId);
   if (!claim || claim.status === "used") return;
 
   claim.status = "used";
   claim.usedAt = new Date().toISOString();
   claim.usedBy = state.player.name || "관리자";
-  state.player.rewardClaims = claims;
-  syncPlayer();
-  renderRewardClaims();
+
+  if (state.firebaseReady && ownerId && ownerId !== "local") {
+    try {
+      await setDoc(doc(firebase.db, "classes", firebase.classId, "players", ownerId), {
+        rewardClaims: claims,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      if (ownerId === state.firebaseUser?.uid) state.player.rewardClaims = claims;
+      await loadRewardAdminClaims();
+    } catch (error) {
+      markSyncFailure(error);
+      showToast("처리 실패", "상품권 사용완료 저장에 실패했어요");
+      return;
+    }
+  } else {
+    state.player.rewardClaims = claims;
+    syncPlayer();
+    renderRewardClaims();
+  }
+
   renderShop();
-  showToast("사용완료", claim.label);
+  showToast("사용완료", `${claim.label} · ${claim.requestedBy || claim.ownerName || "Player"}`);
 }
 
 function normalizeRewardClaims(claims) {
@@ -1628,9 +1715,11 @@ function normalizeRewardClaims(claims) {
     id: limitText(claim?.id, 80) || makeRewardClaimId(),
     type: claim?.type === "daiso_3000" ? "daiso_3000" : "daiso_3000",
     label: limitText(claim?.label, 40) || DAISO_VOUCHER_LABEL,
-    cost: safeCounter(claim?.cost) || 3000,
+    cost: safeCounter(claim?.cost) || DAISO_VOUCHER_COOKIE_COST,
     status: claim?.status === "used" ? "used" : "requested",
     requestedAt: limitText(claim?.requestedAt, 40),
+    requestedBy: limitText(claim?.requestedBy, MAX_PLAYER_NAME_LENGTH),
+    requestedByUid: limitText(claim?.requestedByUid, 80),
     usedAt: limitText(claim?.usedAt, 40),
     usedBy: limitText(claim?.usedBy, MAX_PLAYER_NAME_LENGTH)
   }));
@@ -1729,12 +1818,18 @@ function renderDailyMission() {
     ["writingAttempts", dom.missionWritingText, dom.missionWritingFill]
   ];
 
+  const missionProgress = {};
   rows.forEach(([field, textEl, fillEl]) => {
     const target = DAILY_MISSION_TARGETS[field];
     const value = Math.min(target, safeCounter(mission[field]));
-    if (textEl) textEl.textContent = `${value}/${target}`;
+    missionProgress[field] = `${value}/${target}`;
+    if (textEl) textEl.textContent = missionProgress[field];
     if (fillEl) fillEl.style.width = `${Math.round((value / target) * 100)}%`;
   });
+
+  if (dom.missionSummary) {
+    dom.missionSummary.textContent = `카드${missionProgress.cardViews} · 게임${missionProgress.gameCorrect} · 쓰기${missionProgress.writingAttempts}`;
+  }
 
   dom.claimMissionBtn.disabled = !complete || mission.rewarded;
   dom.claimMissionBtn.textContent = mission.rewarded ? "보상 완료" : "보상 받기";
