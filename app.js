@@ -121,6 +121,10 @@ const dom = {
   levelText: $("#levelText"),
   nextXpText: $("#nextXpText"),
   homeMonsterCount: $("#homeMonsterCount"),
+  homeWordCount: $("#homeWordCount"),
+  homeKnownCount: $("#homeKnownCount"),
+  homeBestCombo: $("#homeBestCombo"),
+  cardProgress: $("#cardProgress"),
   monsterCount: $("#monsterCount"),
   collectionHero: $("#collectionHero"),
   monsterGrid: $("#monsterGrid"),
@@ -131,6 +135,7 @@ const dom = {
   wordCategoryInput: $("#wordCategoryInput"),
   bulkCategoryInput: $("#bulkCategoryInput"),
   bulkTextInput: $("#bulkTextInput"),
+  manageSearch: $("#manageSearch"),
   cardEmoji: $("#cardEmoji"),
   cardWord: $("#cardWord"),
   cardMeaning: $("#cardMeaning"),
@@ -180,6 +185,7 @@ let state = {
     questionHistory: {}
   },
   selectedCategoryId: "all",
+  manageSearch: "",
   screen: "home",
   cardIndex: 0,
   cardLocked: false,
@@ -479,6 +485,10 @@ function bindEvents() {
     startRound();
   });
   dom.listCategory.addEventListener("change", () => selectCategory(dom.listCategory.value));
+  dom.manageSearch.addEventListener("input", () => {
+    state.manageSearch = dom.manageSearch.value;
+    renderWordList();
+  });
 
   $("#addWordBtn").addEventListener("click", () => openWordDialog());
   $("#bulkAddBtn").addEventListener("click", openBulkDialog);
@@ -660,6 +670,9 @@ function render() {
   dom.levelText.textContent = `수집 ${pet.unlockedCount} / ${MONSTER_CATALOG.length}`;
   dom.nextXpText.textContent = pet.complete ? "도감 완성!" : `다음까지 ${pet.remaining}XP`;
   dom.homeMonsterCount.textContent = `${pet.unlockedCount} / ${MONSTER_CATALOG.length}`;
+  dom.homeWordCount.textContent = state.words.length;
+  dom.homeKnownCount.textContent = knownCardCount();
+  dom.homeBestCombo.textContent = state.player.bestCombo || 0;
 
   renderCategories();
   renderSelects();
@@ -687,8 +700,8 @@ function renderCategories() {
       : state.words.filter((word) => word.categoryId === category.id).length;
 
     return `
-      <button class="cat-btn ${state.selectedCategoryId === category.id ? "active" : ""}" data-cat="${escapeHtml(category.id)}">
-        ${escapeHtml(category.emoji)} ${escapeHtml(category.name)} ${count}
+      <button class="cat-btn ${state.selectedCategoryId === category.id ? "active" : ""}" data-cat="${escapeHtml(category.id)}" title="${escapeHtml(category.name)} 단어 ${count}개">
+        <span>${escapeHtml(category.emoji)} ${escapeHtml(category.name)}</span><b>${count}</b>
       </button>
     `;
   }).join("");
@@ -718,6 +731,10 @@ function renderSelects() {
 
 function renderCard() {
   const word = currentCardWord();
+  const list = filteredWords();
+  if (dom.cardProgress) {
+    dom.cardProgress.textContent = list.length ? `카드 ${state.cardIndex + 1} / ${list.length}` : "카드 0 / 0";
+  }
   [$("#cardSpeakBtn"), $("#prevCardBtn"), $("#nextCardBtn"), $("#knowBtn"), $("#hardBtn")].forEach((button) => {
     if (button) button.disabled = !word || state.cardLocked;
   });
@@ -748,14 +765,22 @@ function renderCard() {
 }
 
 function renderWordList() {
-  const list = filteredWords().slice(0, MAX_LIST_ROWS); // 관리 화면은 CSS 내부 스크롤로 전체 관리
+  const list = manageFilteredWords().slice(0, MAX_LIST_ROWS); // 관리 화면은 CSS 내부 스크롤로 전체 관리
+  const total = filteredWords().length;
+  const keyword = normalizedSearchTerm();
+
+  if (dom.manageSearch && dom.manageSearch.value !== state.manageSearch) {
+    dom.manageSearch.value = state.manageSearch;
+  }
 
   if (!list.length) {
-    dom.wordList.innerHTML = `<div class="hint">이 카테고리에 단어가 없어요.</div>`;
+    dom.wordList.innerHTML = `<div class="empty-list"><strong>${keyword ? "검색 결과가 없어요" : "이 카테고리에 단어가 없어요"}</strong><span>${keyword ? "다른 단어나 뜻으로 검색해 보세요." : "위의 추가 버튼으로 단어를 넣어 주세요."}</span></div>`;
     return;
   }
 
-  dom.wordList.innerHTML = list.map((word) => `
+  dom.wordList.innerHTML = `
+    <div class="list-summary">${keyword ? `검색 ${list.length}개 / ` : ""}총 ${total}개 단어</div>
+    ${list.map((word) => `
     <div class="word-row">
       <div style="font-size:30px">${escapeHtml(word.emoji || "📘")}</div>
       <div>
@@ -764,7 +789,8 @@ function renderWordList() {
       </div>
       <button class="delete-btn" data-delete="${escapeHtml(word.id)}">삭제</button>
     </div>
-  `).join("");
+  `).join("")}
+  `;
 
   dom.wordList.querySelectorAll("[data-delete]").forEach((button) => {
     button.addEventListener("click", () => deleteWord(button.dataset.delete));
@@ -774,6 +800,23 @@ function renderWordList() {
 function filteredWords() {
   if (state.selectedCategoryId === "all") return state.words;
   return state.words.filter((word) => word.categoryId === state.selectedCategoryId);
+}
+
+function normalizedSearchTerm() {
+  return String(state.manageSearch || "").trim().toLowerCase();
+}
+
+function manageFilteredWords() {
+  const keyword = normalizedSearchTerm();
+  const list = filteredWords();
+  if (!keyword) return list;
+
+  return list.filter((word) => [word.word, word.meaning, getCategoryLabel(word.categoryId)]
+    .some((value) => String(value || "").toLowerCase().includes(keyword)));
+}
+
+function knownCardCount() {
+  return state.words.reduce((count, word) => count + (isKnownCard(word) ? 1 : 0), 0);
 }
 
 function currentCardWord() {
