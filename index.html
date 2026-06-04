@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#141b34" />
   <meta name="description" content="카테고리별 영어 단어와 스펠링을 연습하는 Heather Word" />
   <title>Heather Word · Spellingmon</title>
-  <link rel="stylesheet" href="./style.css?v=6.3" />
+  <link rel="stylesheet" href="./style.css?v=6.4" />
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -26,9 +26,9 @@
       </div>
 
       <div class="score-box">
-        <span id="scorePill">⭐ 0</span>
-        <span id="coinPill">🍪 0</span>
-        <span id="comboPill">🔥 0</span>
+        <span id="scorePill" title="점수">⭐ 0</span>
+        <span id="coinPill" title="쿠키">🍪 0</span>
+        <span id="comboPill" title="연속 정답">🔥 0</span>
       </div>
     </header>
 
@@ -59,6 +59,12 @@
           <div class="xpbar">
             <i id="xpFill"></i>
           </div>
+        </div>
+
+        <div class="home-stats" aria-label="학습 현황">
+          <div><b id="homeWordCount">0</b><span>단어</span></div>
+          <div><b id="homeKnownCount">0</b><span>완료</span></div>
+          <div><b id="homeBestCombo">0</b><span>최고콤보</span></div>
         </div>
       </div>
 
@@ -111,6 +117,8 @@
         <button id="cardSpeakBtn" class="round-btn" aria-label="단어 발음 듣기">🔊</button>
       </div>
 
+      <div id="cardProgress" class="card-progress" aria-live="polite">카드 0 / 0</div>
+
       <div class="word-card">
         <div id="cardEmoji" class="card-emoji">🍎</div>
         <div id="cardWord" class="card-word">apple</div>
@@ -139,12 +147,13 @@
         <b id="roundBonus">완주 +10</b>
       </div>
 
-      <div class="mode-tabs">
+      <div class="mode-tabs" aria-label="게임 모드 선택">
         <button class="mode-btn active" data-mode="choice"><span>뜻</span><small id="modeProgressChoice">0/10 · +1</small></button>
         <button class="mode-btn" data-mode="block"><span>블록</span><small id="modeProgressBlock">0/10 · +15</small></button>
         <button class="mode-btn" data-mode="blank"><span>빈칸</span><small id="modeProgressBlank">0/10 · +40</small></button>
         <button class="mode-btn" data-mode="type"><span>쓰기</span><small id="modeProgressType">0/10 · +100</small></button>
       </div>
+      <p id="modeGuide" class="mode-guide">뜻에 맞는 영어 단어를 고르세요.</p>
 
       <div id="gameBox" class="game-box"></div>
       <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
@@ -199,7 +208,10 @@
         <button id="importBtn" class="manage-btn">📥 복원</button>
       </div>
 
-      <select id="listCategory" class="select"></select>
+      <div class="manage-filter">
+        <select id="listCategory" class="select"></select>
+        <input id="manageSearch" class="input" placeholder="단어 또는 뜻 검색" autocomplete="off" />
+      </div>
       <div id="wordList" class="word-list"></div>
     </section>
   </main>
@@ -265,6 +277,6 @@
   <input id="importFile" type="file" accept="application/json" hidden />
 
   <script src="./firebase-config.js"></script>
-  <script type="module" src="./app.js?v=6.3"></script>
+  <script type="module" src="./app.js?v=6.4"></script>
 </body>
 </html>
