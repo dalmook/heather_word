@@ -46,21 +46,44 @@ const DAILY_MISSION_REWARD = Object.freeze({
   coin: 20,
   xp: 1000
 });
-const DAISO_VOUCHER_COOKIE_COST = 3000;
+const DAISO_VOUCHER_COOKIE_COST = 5000;
 const SHOP_ITEMS = Object.freeze([
-  { id: "ribbon", emoji: "🎀", name: "리본", cost: 30 },
-  { id: "crown", emoji: "👑", name: "왕관", cost: 50 },
-  { id: "sunglasses", emoji: "😎", name: "선글라스", cost: 60 },
-  { id: "magic_hat", emoji: "🎩", name: "마법모자", cost: 70 },
-  { id: "wings", emoji: "🪽", name: "날개", cost: 100 },
-  { id: "star_pin", emoji: "⭐", name: "별핀", cost: 40 }
+  { id: "ribbon", emoji: "🎀", name: "리본", cost: 120 },
+  { id: "star_pin", emoji: "⭐", name: "별핀", cost: 150 },
+  { id: "flower_crown", emoji: "🌼", name: "꽃왕관", cost: 180 },
+  { id: "heart_pin", emoji: "💖", name: "하트핀", cost: 220 },
+  { id: "sunglasses", emoji: "😎", name: "선글라스", cost: 260 },
+  { id: "magic_hat", emoji: "🎩", name: "마법모자", cost: 320 },
+  { id: "party_hat", emoji: "🥳", name: "파티모자", cost: 360 },
+  { id: "headphones", emoji: "🎧", name: "헤드폰", cost: 420 },
+  { id: "school_bag", emoji: "🎒", name: "책가방", cost: 480 },
+  { id: "medal", emoji: "🏅", name: "금메달", cost: 540 },
+  { id: "crown", emoji: "👑", name: "왕관", cost: 620 },
+  { id: "wings", emoji: "🪽", name: "날개", cost: 700 },
+  { id: "crystal", emoji: "💎", name: "반짝보석", cost: 780 },
+  { id: "rainbow_aura", emoji: "🌈", name: "무지개오라", cost: 860 },
+  { id: "rocket_pack", emoji: "🚀", name: "로켓팩", cost: 960 },
+  { id: "moon_charm", emoji: "🌙", name: "달빛참", cost: 1040 },
+  { id: "trophy", emoji: "🏆", name: "챔피언컵", cost: 1120 },
+  { id: "legend_crown", emoji: "✨", name: "전설왕관", cost: 1250 }
 ]);
 const SHOP_THEMES = Object.freeze([
-  { id: "night", emoji: "🌙", name: "밤하늘 배경", cost: 80, className: "theme-night" },
-  { id: "beach", emoji: "🏖️", name: "바다 배경", cost: 80, className: "theme-beach" },
-  { id: "cherry", emoji: "🌸", name: "벚꽃 배경", cost: 100, className: "theme-cherry" },
-  { id: "space", emoji: "🚀", name: "우주 배경", cost: 120, className: "theme-space" },
-  { id: "forest", emoji: "🌿", name: "숲 배경", cost: 90, className: "theme-forest" }
+  { id: "night", emoji: "🌙", name: "밤하늘 배경", cost: 300, className: "theme-night" },
+  { id: "beach", emoji: "🏖️", name: "바다 배경", cost: 320, className: "theme-beach" },
+  { id: "forest", emoji: "🌿", name: "숲 배경", cost: 340, className: "theme-forest" },
+  { id: "cherry", emoji: "🌸", name: "벚꽃 배경", cost: 380, className: "theme-cherry" },
+  { id: "candy", emoji: "🍬", name: "캔디 배경", cost: 420, className: "theme-candy" },
+  { id: "classroom", emoji: "📚", name: "교실 배경", cost: 460, className: "theme-classroom" },
+  { id: "sunset", emoji: "🌇", name: "노을 배경", cost: 520, className: "theme-sunset" },
+  { id: "rainbow", emoji: "🌈", name: "무지개 배경", cost: 580, className: "theme-rainbow" },
+  { id: "snow", emoji: "❄️", name: "눈꽃 배경", cost: 640, className: "theme-snow" },
+  { id: "garden", emoji: "🌷", name: "정원 배경", cost: 700, className: "theme-garden" },
+  { id: "library", emoji: "📖", name: "도서관 배경", cost: 760, className: "theme-library" },
+  { id: "space", emoji: "🚀", name: "우주 배경", cost: 840, className: "theme-space" },
+  { id: "palace", emoji: "🏰", name: "궁전 배경", cost: 920, className: "theme-palace" },
+  { id: "aurora", emoji: "🌌", name: "오로라 배경", cost: 1040, className: "theme-aurora" },
+  { id: "crystal", emoji: "💎", name: "보석 배경", cost: 1160, className: "theme-crystal" },
+  { id: "legend", emoji: "✨", name: "전설 배경", cost: 1300, className: "theme-legend" }
 ]);
 const DAISO_VOUCHER_LABEL = "다이소 3천원 상품권";
 const MANAGE_PASSWORD = "3341";
