@@ -2898,24 +2898,15 @@ button:focus-visible,
   box-shadow: var(--shadow-soft);
 }
 
-.card-emoji,
-.question-emoji {
-  display: grid !important;
-  place-content: center;
-}
-
-.game-box .question-emoji {
-  display: grid !important;
-}
-
-body.typing-mode .question-emoji,
-body.keyboard-open .question-emoji {
-  display: none !important;
-}
-
 #gameScreen.active {
   grid-template-rows: 52px auto auto minmax(0, 1fr) auto !important;
 }
+
+body.typing-mode .mode-guide,
+body.keyboard-open .mode-guide {
+  display: none !important;
+}
+
 
 .mode-guide {
   justify-content: flex-start;
