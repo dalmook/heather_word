@@ -3723,3 +3723,187 @@ body.theme-forest {
   color: #5d4bec;
   font-weight: 950;
 }
+
+
+/* v6.12 compact game layout for shorter phones */
+#gameScreen .feedback:empty {
+  min-height: 0;
+  padding: 0;
+}
+
+#gameScreen .game-box {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.block-game .game-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  padding-top: 8px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), #fff 34%);
+}
+
+@media (max-height: 760px) {
+  #gameScreen.active {
+    grid-template-rows: 46px 38px 58px minmax(0, 1fr) auto !important;
+    gap: 6px;
+  }
+
+  #gameScreen .screen-head {
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 8px;
+  }
+
+  #gameScreen .back-btn,
+  #gameScreen .round-btn {
+    min-width: 44px;
+    height: 44px;
+    border-radius: 15px;
+  }
+
+  #gameScreen .select {
+    min-height: 44px;
+    padding-left: 12px;
+    padding-right: 34px;
+    font-size: 15px;
+  }
+
+  #gameScreen .round-bar {
+    min-height: 38px;
+    padding: 6px 9px;
+  }
+
+  #gameScreen .mode-tabs {
+    gap: 6px;
+  }
+
+  #gameScreen .mode-btn {
+    min-height: 58px;
+    padding: 6px 3px;
+    border-radius: 16px;
+  }
+
+  #gameScreen .mode-btn span {
+    font-size: 12px;
+  }
+
+  #gameScreen .mode-btn small {
+    font-size: 11px;
+  }
+
+  #gameScreen .game-box {
+    padding: 10px;
+    border-radius: 24px;
+    gap: 6px;
+    align-content: start;
+  }
+
+  #gameScreen .question-meaning {
+    font-size: clamp(28px, 5.5vh, 42px);
+    line-height: 1.08;
+  }
+
+  .game-box.block-game {
+    grid-template-rows: auto minmax(24px, auto) minmax(0, auto) auto;
+    padding-bottom: 10px;
+  }
+
+  .block-game .question-top {
+    gap: 4px;
+  }
+
+  .block-game .tag {
+    margin-top: 4px;
+    padding: 4px 9px;
+    font-size: 11px;
+  }
+
+  .block-game .bank {
+    gap: 5px;
+    padding: 6px;
+    border-radius: 17px;
+  }
+
+  .block-game .tile {
+    min-width: 36px;
+    height: 40px;
+    border-radius: 13px;
+    font-size: 21px;
+    box-shadow: 0 4px 0 #d97706;
+  }
+
+  .block-game .answer-bank .tile {
+    box-shadow: 0 4px 0 #2563eb;
+  }
+
+  .block-game .game-actions {
+    gap: 6px;
+    margin-top: 0;
+  }
+
+  .block-game .game-actions .soft-btn {
+    min-height: 44px;
+    padding: 9px 8px;
+    border-radius: 16px;
+    font-size: 15px;
+  }
+}
+
+@media (max-height: 640px) {
+  .topbar {
+    height: 58px;
+    padding: 6px 9px;
+    border-radius: 22px;
+  }
+
+  .app-shell {
+    grid-template-rows: 58px 1fr;
+    gap: 6px;
+    padding-top: 8px;
+  }
+
+  #gameScreen.active {
+    grid-template-rows: 42px 34px 52px minmax(0, 1fr) auto !important;
+    gap: 5px;
+  }
+
+  #gameScreen .back-btn,
+  #gameScreen .round-btn {
+    min-width: 40px;
+    height: 40px;
+  }
+
+  #gameScreen .select {
+    min-height: 40px;
+  }
+
+  #gameScreen .mode-btn {
+    min-height: 52px;
+  }
+
+  #gameScreen .game-box {
+    padding: 8px;
+  }
+
+  #gameScreen .question-meaning {
+    font-size: clamp(24px, 5vh, 34px);
+  }
+
+  .block-game .tag {
+    display: none;
+  }
+
+  .block-game .tile {
+    min-width: 32px;
+    height: 36px;
+    font-size: 19px;
+  }
+
+  .block-game .game-actions .soft-btn {
+    min-height: 40px;
+    font-size: 14px;
+  }
+}
