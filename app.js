@@ -131,7 +131,6 @@ const dom = {
   homeKnownCount: $("#homeKnownCount"),
   homeBestCombo: $("#homeBestCombo"),
   cardProgress: $("#cardProgress"),
-  modeGuide: $("#modeGuide"),
   monsterCount: $("#monsterCount"),
   collectionHero: $("#collectionHero"),
   monsterGrid: $("#monsterGrid"),
