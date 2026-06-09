@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
@@ -274,7 +274,7 @@
       </div>
 
       <div class="shop-scroll">
-        <section class="shop-section">
+        <section class="shop-section legacy-shop-items" hidden>
           <div class="section-title">
             <strong>캐릭터 꾸미기</strong>
             <small>구매 후 착용할 수 있어요</small>
@@ -283,16 +283,22 @@
         </section>
 
         <section class="shop-section avatar-shop-section">
-          <div class="section-title">
-            <strong>아바타 꾸미기</strong>
-            <small>얼굴, 머리, 옷, 악세사리를 골라요.</small>
+          <div class="section-title avatar-room-title">
+            <strong>아바타 드레스룸</strong>
+            <small>카드를 눌러 미리 입어보고, 구매하거나 착용해요.</small>
           </div>
-          <div id="shopAvatarPreview" class="avatar-preview shop-avatar-preview" role="img" aria-label="아바타 미리보기"></div>
+          <div class="avatar-room">
+            <div class="avatar-room-bg" aria-hidden="true"></div>
+            <div class="avatar-room-shelf" aria-hidden="true"></div>
+            <div id="shopAvatarPreview" class="avatar-preview shop-avatar-preview" role="img" aria-label="아바타 미리보기"></div>
+            <div class="avatar-room-floor" aria-hidden="true"></div>
+          </div>
+          <div id="shopAvatarParts" class="avatar-parts" aria-label="현재 미리보기 파츠"></div>
           <div id="shopAvatarTabs" class="avatar-tabs" aria-label="아바타 꾸미기 분류"></div>
           <div id="shopAvatarGrid" class="shop-grid avatar-shop-grid"></div>
         </section>
 
-        <section class="shop-section legacy-shop-items" hidden>
+        <section class="shop-section">
           <div class="section-title">
             <strong>배경 꾸미기</strong>
             <small>홈 배경이 바뀌어요</small>
@@ -429,3 +435,4 @@
   <script type="module" src="./app.js?v=6.8"></script>
 </body>
 </html>
+

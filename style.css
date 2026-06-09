@@ -4381,3 +4381,311 @@ body.theme-legend {
     grid-template-columns: 1fr;
   }
 }
+
+/* v6.8 dressroom avatar polish */
+#homeScreen .pet-glow {
+  width: clamp(142px, 38vw, 176px) !important;
+  height: clamp(142px, 38vw, 176px) !important;
+  margin: -8px auto 4px !important;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.98) 0 44%, rgba(254, 240, 138, 0.72) 45% 59%, rgba(196, 181, 253, 0.82) 60% 74%, transparent 75%),
+    radial-gradient(circle at 50% 72%, rgba(236, 72, 153, 0.16), transparent 58%);
+  box-shadow: 0 18px 34px rgba(124, 58, 237, 0.18);
+}
+
+#homeScreen .home-avatar {
+  width: clamp(132px, 35vw, 166px);
+  height: clamp(132px, 35vw, 166px);
+}
+
+.avatar-shop-section {
+  position: relative;
+  padding: 12px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 247, 237, 0.94));
+}
+
+.avatar-room-title small {
+  color: #8b5cf6;
+}
+
+.avatar-room {
+  position: relative;
+  height: clamp(226px, 45vh, 300px);
+  margin: 8px 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 22px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(180deg, #fff7fb 0 52%, #fdebd3 53% 100%);
+  box-shadow: inset 0 -18px 32px rgba(217, 119, 6, 0.08), 0 14px 28px rgba(124, 58, 237, 0.12);
+}
+
+.avatar-room-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.32) 1px, transparent 1px) 0 0 / 28px 28px,
+    radial-gradient(circle at 22% 18%, rgba(252, 211, 77, 0.5), transparent 12%),
+    radial-gradient(circle at 82% 20%, rgba(125, 211, 252, 0.45), transparent 15%),
+    linear-gradient(135deg, #ffe4f0, #eef2ff 48%, #fff7d6);
+}
+
+.avatar-room-bg::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: 18px;
+  width: 58px;
+  height: 74px;
+  border-radius: 16px;
+  background:
+    linear-gradient(90deg, #fef3c7 0 48%, #fca5a5 49% 100%);
+  box-shadow: 0 12px 20px rgba(124, 58, 237, 0.12);
+  opacity: 0.84;
+}
+
+.avatar-room-bg::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  top: 22px;
+  width: 66px;
+  height: 48px;
+  border-radius: 18px 18px 10px 10px;
+  background:
+    radial-gradient(circle at 20% 40%, #f9a8d4 0 9px, transparent 10px),
+    radial-gradient(circle at 50% 30%, #fef08a 0 8px, transparent 9px),
+    radial-gradient(circle at 78% 45%, #93c5fd 0 9px, transparent 10px),
+    #fff;
+  box-shadow: 0 12px 20px rgba(31, 41, 55, 0.1);
+}
+
+.avatar-room-shelf {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 64px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 8px 18px rgba(168, 85, 247, 0.14);
+}
+
+.avatar-room-floor {
+  position: absolute;
+  left: -12%;
+  right: -12%;
+  bottom: -26px;
+  height: 96px;
+  border-radius: 50% 50% 0 0;
+  background:
+    radial-gradient(ellipse at 50% 24%, rgba(255, 255, 255, 0.74), transparent 45%),
+    linear-gradient(135deg, #fde68a, #fed7aa);
+  box-shadow: inset 0 16px 24px rgba(255, 255, 255, 0.36);
+}
+
+.shop-avatar-preview {
+  z-index: 3;
+  width: clamp(178px, 52vw, 238px) !important;
+  height: clamp(178px, 52vw, 238px) !important;
+  margin: 0 !important;
+  filter: drop-shadow(0 22px 22px rgba(88, 28, 135, 0.22));
+}
+
+.avatar-preview.drafting .avatar-layer {
+  filter: saturate(1.08);
+}
+
+.avatar-parts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.avatar-part-pill {
+  min-width: 0;
+  padding: 7px 9px;
+  border: 1px solid #ebe7ff;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.avatar-part-pill span {
+  display: block;
+  color: #8b5cf6;
+  font-size: 10px;
+  font-weight: 950;
+}
+
+.avatar-part-pill b {
+  display: block;
+  overflow: hidden;
+  color: #1d2540;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avatar-part-pill.draft {
+  border-color: #f9a8d4;
+  background: #fff1f7;
+}
+
+.avatar-shop-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.avatar-product {
+  position: relative;
+  grid-template-columns: 68px minmax(0, 1fr);
+  min-height: 128px;
+  align-content: start;
+  border-radius: 18px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.avatar-product.previewing {
+  outline: 3px solid rgba(236, 72, 153, 0.28);
+}
+
+.avatar-product.rarity-rare { border-color: #93c5fd; }
+.avatar-product.rarity-epic { border-color: #c4b5fd; }
+.avatar-product.rarity-legend {
+  border-color: #facc15;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, #facc15, #fb7185, #60a5fa) border-box;
+}
+
+.avatar-item-preview {
+  width: 68px;
+  height: 68px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 42%, #fff 0 44%, rgba(254, 240, 138, 0.72) 45% 60%, transparent 61%),
+    linear-gradient(135deg, #fef3c7, #dbeafe);
+  box-shadow: inset 0 -8px 14px rgba(124, 58, 237, 0.08);
+}
+
+.avatar-item-preview img {
+  width: 66px;
+  height: 66px;
+}
+
+.avatar-product-copy {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+  align-content: start;
+}
+
+.rarity-badge {
+  width: fit-content;
+  padding: 2px 6px;
+  border-radius: 999px;
+  color: #64748b;
+  background: #f1f5f9;
+  font-size: 9px;
+  font-weight: 1000;
+}
+
+.rarity-badge.rarity-rare {
+  color: #1d4ed8;
+  background: #dbeafe;
+}
+
+.rarity-badge.rarity-epic {
+  color: #6d28d9;
+  background: #ede9fe;
+}
+
+.rarity-badge.rarity-legend {
+  color: #7a3d00;
+  background: linear-gradient(135deg, #fef08a, #fdba74, #f9a8d4);
+}
+
+.avatar-product.equipped::after {
+  content: "착용중";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  color: #fff;
+  background: #ec4899;
+  font-size: 10px;
+  font-weight: 950;
+}
+
+.avatar-product .soft-btn {
+  min-height: 36px;
+  border-radius: 13px;
+}
+
+.avatar-sparkle::after,
+.avatar-equipped-pop::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  z-index: 5;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 30% 20%, #fff 0 3px, transparent 4px),
+    radial-gradient(circle at 68% 28%, #fef08a 0 4px, transparent 5px),
+    radial-gradient(circle at 76% 66%, #f9a8d4 0 4px, transparent 5px),
+    radial-gradient(circle at 24% 70%, #93c5fd 0 4px, transparent 5px);
+  animation: avatarSparkle .8s ease-out both;
+}
+
+.avatar-equipped-pop .shop-avatar-preview,
+.avatar-equipped-pop.avatar-preview {
+  animation: avatarPop .55s ease-out both !important;
+}
+
+@keyframes avatarSparkle {
+  0% { opacity: 0; transform: scale(.86) rotate(-8deg); }
+  40% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.18) rotate(8deg); }
+}
+
+@keyframes avatarPop {
+  0% { transform: translateY(0) scale(1); }
+  42% { transform: translateY(-12px) scale(1.04); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 395px) {
+  .avatar-room {
+    height: 236px;
+  }
+
+  .shop-avatar-preview {
+    width: 190px !important;
+    height: 190px !important;
+  }
+
+  .avatar-tabs {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+
+  .avatar-tab {
+    min-height: 34px;
+    padding: 0 4px;
+    font-size: 11px;
+  }
+
+  .avatar-shop-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .avatar-product {
+    min-height: 112px;
+  }
+}

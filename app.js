@@ -66,29 +66,49 @@ const AVATAR_SLOT_LABELS = Object.freeze({
   outfit: "옷",
   accessory: "악세사리"
 });
+const AVATAR_RARITY_LABELS = Object.freeze({
+  basic: "BASIC",
+  rare: "RARE",
+  epic: "EPIC",
+  legend: "LEGEND"
+});
 const AVATAR_ITEMS = Object.freeze([
-  { id: "body_basic_01", slot: "body", name: "기본 몸", cost: 0, src: "./assets/avatar/body/body01.svg" },
-  { id: "face_round_01", slot: "face", name: "방긋 얼굴", cost: 0, src: "./assets/avatar/face/face01.svg" },
-  { id: "face_smile_02", slot: "face", name: "반짝 미소", cost: 180, src: "./assets/avatar/face/face02.svg" },
-  { id: "face_wink_03", slot: "face", name: "윙크 얼굴", cost: 260, src: "./assets/avatar/face/face03.svg" },
-  { id: "hair_basic_01", slot: "hair", name: "동글 앞머리", cost: 0, src: "./assets/avatar/hair/hair01.svg" },
-  { id: "hair_bob_02", slot: "hair", name: "보송 단발", cost: 220, src: "./assets/avatar/hair/hair02.svg" },
-  { id: "hair_twintail_03", slot: "hair", name: "쌍둥 머리", cost: 320, src: "./assets/avatar/hair/hair03.svg" },
-  { id: "hair_star_04", slot: "hair", name: "별빛 머리", cost: 420, src: "./assets/avatar/hair/hair04.svg" },
-  { id: "hair_curl_05", slot: "hair", name: "몽글 웨이브", cost: 520, src: "./assets/avatar/hair/hair05.svg" },
-  { id: "outfit_basic_01", slot: "outfit", name: "기본 티셔츠", cost: 0, src: "./assets/avatar/outfit/outfit01.svg" },
-  { id: "outfit_school_02", slot: "outfit", name: "학교 조끼", cost: 260, src: "./assets/avatar/outfit/outfit02.svg" },
-  { id: "outfit_cookie_03", slot: "outfit", name: "쿠키 후드", cost: 360, src: "./assets/avatar/outfit/outfit03.svg" },
-  { id: "outfit_rainbow_04", slot: "outfit", name: "무지개 원피스", cost: 460, src: "./assets/avatar/outfit/outfit04.svg" },
-  { id: "outfit_hero_05", slot: "outfit", name: "용감 망토", cost: 620, src: "./assets/avatar/outfit/outfit05.svg" },
-  { id: "accessory_ribbon_01", slot: "accessory", name: "딸기 리본", cost: 150, src: "./assets/avatar/accessory/ribbon01.svg" },
-  { id: "accessory_glasses_02", slot: "accessory", name: "동글 안경", cost: 180, src: "./assets/avatar/accessory/glasses01.svg" },
-  { id: "accessory_star_03", slot: "accessory", name: "별 머리핀", cost: 210, src: "./assets/avatar/accessory/star01.svg" },
-  { id: "accessory_crown_04", slot: "accessory", name: "작은 왕관", cost: 300, src: "./assets/avatar/accessory/crown01.svg" },
-  { id: "accessory_bag_05", slot: "accessory", name: "하트 가방", cost: 340, src: "./assets/avatar/accessory/bag01.svg" },
-  { id: "accessory_headset_06", slot: "accessory", name: "리듬 헤드셋", cost: 420, src: "./assets/avatar/accessory/headset01.svg" },
-  { id: "accessory_wings_07", slot: "accessory", name: "구름 날개", cost: 520, src: "./assets/avatar/accessory/wings01.svg" },
-  { id: "accessory_magic_08", slot: "accessory", name: "마법 지팡이", cost: 680, src: "./assets/avatar/accessory/magic01.svg" }
+  { id: "body_basic_01", slot: "body", name: "기본 바디", cost: 0, rarity: "basic", src: "./assets/avatar/body/body01.svg" },
+  { id: "face_round_01", slot: "face", name: "방긋 얼굴", cost: 0, rarity: "basic", src: "./assets/avatar/face/face01.svg" },
+  { id: "face_smile_02", slot: "face", name: "반짝 미소", cost: 180, rarity: "basic", src: "./assets/avatar/face/face02.svg" },
+  { id: "face_wink_03", slot: "face", name: "윙크 얼굴", cost: 260, rarity: "rare", src: "./assets/avatar/face/face03.svg" },
+  { id: "face_shy_04", slot: "face", name: "수줍은 볼", cost: 360, rarity: "rare", src: "./assets/avatar/face/face04.svg" },
+  { id: "face_sparkle_05", slot: "face", name: "프린세스 눈빛", cost: 520, rarity: "epic", src: "./assets/avatar/face/face05.svg" },
+  { id: "hair_basic_01", slot: "hair", name: "동글 앞머리", cost: 0, rarity: "basic", src: "./assets/avatar/hair/hair01.svg" },
+  { id: "hair_bob_02", slot: "hair", name: "보송 단발", cost: 220, rarity: "basic", src: "./assets/avatar/hair/hair02.svg" },
+  { id: "hair_twintail_03", slot: "hair", name: "리본 트윈테일", cost: 320, rarity: "rare", src: "./assets/avatar/hair/hair03.svg" },
+  { id: "hair_star_04", slot: "hair", name: "별빛 블루", cost: 420, rarity: "rare", src: "./assets/avatar/hair/hair04.svg" },
+  { id: "hair_curl_05", slot: "hair", name: "몽글 웨이브", cost: 520, rarity: "epic", src: "./assets/avatar/hair/hair05.svg" },
+  { id: "hair_princess_06", slot: "hair", name: "프린세스 롱", cost: 680, rarity: "epic", src: "./assets/avatar/hair/hair06.svg" },
+  { id: "hair_mint_07", slot: "hair", name: "민트 포니", cost: 760, rarity: "epic", src: "./assets/avatar/hair/hair07.svg" },
+  { id: "hair_rainbow_08", slot: "hair", name: "무지개 헤어", cost: 980, rarity: "legend", src: "./assets/avatar/hair/hair08.svg" },
+  { id: "outfit_basic_01", slot: "outfit", name: "기본 티셔츠", cost: 0, rarity: "basic", src: "./assets/avatar/outfit/outfit01.svg" },
+  { id: "outfit_school_02", slot: "outfit", name: "학교 조끼", cost: 260, rarity: "basic", src: "./assets/avatar/outfit/outfit02.svg" },
+  { id: "outfit_cookie_03", slot: "outfit", name: "쿠키 후드", cost: 360, rarity: "rare", src: "./assets/avatar/outfit/outfit03.svg" },
+  { id: "outfit_rainbow_04", slot: "outfit", name: "무지개 원피스", cost: 460, rarity: "rare", src: "./assets/avatar/outfit/outfit04.svg" },
+  { id: "outfit_hero_05", slot: "outfit", name: "용감 망토", cost: 620, rarity: "epic", src: "./assets/avatar/outfit/outfit05.svg" },
+  { id: "outfit_princess_06", slot: "outfit", name: "핑크 드레스", cost: 760, rarity: "epic", src: "./assets/avatar/outfit/outfit06.svg" },
+  { id: "outfit_magic_07", slot: "outfit", name: "마법학교 로브", cost: 840, rarity: "epic", src: "./assets/avatar/outfit/outfit07.svg" },
+  { id: "outfit_ballet_08", slot: "outfit", name: "발레 리본", cost: 920, rarity: "epic", src: "./assets/avatar/outfit/outfit08.svg" },
+  { id: "outfit_star_09", slot: "outfit", name: "별무대 의상", cost: 1060, rarity: "legend", src: "./assets/avatar/outfit/outfit09.svg" },
+  { id: "outfit_queen_10", slot: "outfit", name: "여왕 드레스", cost: 1280, rarity: "legend", src: "./assets/avatar/outfit/outfit10.svg" },
+  { id: "accessory_ribbon_01", slot: "accessory", name: "딸기 리본", cost: 150, rarity: "basic", src: "./assets/avatar/accessory/ribbon01.svg" },
+  { id: "accessory_glasses_02", slot: "accessory", name: "동글 안경", cost: 180, rarity: "basic", src: "./assets/avatar/accessory/glasses01.svg" },
+  { id: "accessory_star_03", slot: "accessory", name: "별 머리핀", cost: 210, rarity: "rare", src: "./assets/avatar/accessory/star01.svg" },
+  { id: "accessory_crown_04", slot: "accessory", name: "작은 왕관", cost: 300, rarity: "rare", src: "./assets/avatar/accessory/crown01.svg" },
+  { id: "accessory_bag_05", slot: "accessory", name: "하트 가방", cost: 340, rarity: "rare", src: "./assets/avatar/accessory/bag01.svg" },
+  { id: "accessory_headset_06", slot: "accessory", name: "리듬 헤드셋", cost: 420, rarity: "rare", src: "./assets/avatar/accessory/headset01.svg" },
+  { id: "accessory_wings_07", slot: "accessory", name: "구름 날개", cost: 520, rarity: "epic", src: "./assets/avatar/accessory/wings01.svg" },
+  { id: "accessory_magic_08", slot: "accessory", name: "마법 지팡이", cost: 680, rarity: "epic", src: "./assets/avatar/accessory/magic01.svg" },
+  { id: "accessory_tiara_09", slot: "accessory", name: "진주 티아라", cost: 760, rarity: "epic", src: "./assets/avatar/accessory/tiara01.svg" },
+  { id: "accessory_cape_10", slot: "accessory", name: "별빛 케이프", cost: 840, rarity: "epic", src: "./assets/avatar/accessory/cape01.svg" },
+  { id: "accessory_aura_11", slot: "accessory", name: "반짝 오라", cost: 980, rarity: "legend", src: "./assets/avatar/accessory/aura01.svg" },
+  { id: "accessory_royal_12", slot: "accessory", name: "로열 세트", cost: 1180, rarity: "legend", src: "./assets/avatar/accessory/royal01.svg" }
 ]);
 const AVATAR_ITEM_MAP = Object.freeze(Object.fromEntries(AVATAR_ITEMS.map((item) => [item.id, item])));
 const SHOP_ITEMS = Object.freeze([
@@ -263,6 +283,7 @@ const dom = {
   shopAvatarPreview: $("#shopAvatarPreview"),
   shopAvatarTabs: $("#shopAvatarTabs"),
   shopAvatarGrid: $("#shopAvatarGrid"),
+  shopAvatarParts: $("#shopAvatarParts"),
   petCareEmoji: $("#petCareEmoji"),
   petCareName: $("#petCareName"),
   petCareLevel: $("#petCareLevel"),
@@ -356,6 +377,7 @@ let state = {
   selectedCategoryId: "all",
   manageSearch: "",
   shopAvatarSlot: "face",
+  avatarPreviewDraft: null,
   screen: "home",
   cardIndex: 0,
   cardLocked: false,
@@ -1566,7 +1588,13 @@ function renderAvatar(targetElement, equippedAvatar = state.player.equippedAvata
     return;
   }
 
-  const avatar = normalizeEquippedAvatar(equippedAvatar, state.player.ownedAvatarItems);
+  const avatarSource = {
+    ...(equippedAvatar || {}),
+    ...(options.draftAvatar || {})
+  };
+  const avatar = normalizeEquippedAvatar(avatarSource, state.player.ownedAvatarItems, {
+    allowUnowned: Boolean(options.draftAvatar) || Boolean(options.allowUnowned)
+  });
   const layerOrder = ["body", "outfit", "face", "hair", "accessory"];
   const layers = layerOrder
     .map((slot) => avatar[slot])
@@ -1576,6 +1604,7 @@ function renderAvatar(targetElement, equippedAvatar = state.player.equippedAvata
 
   targetElement.classList.add("avatar-preview");
   if (options.compact) targetElement.classList.add("compact");
+  targetElement.classList.toggle("drafting", Boolean(options.draftAvatar));
   targetElement.innerHTML = layers.map((item) => (
     `<img class="avatar-layer avatar-layer-${escapeHtml(item.slot)}" src="${escapeHtml(item.src)}" alt="">`
   )).join("");
@@ -1689,7 +1718,16 @@ function renderShop() {
 function renderAvatarShop() {
   if (!dom.shopAvatarGrid) return;
 
-  renderAvatar(dom.shopAvatarPreview, state.player.equippedAvatar, { compact: true });
+  const draft = state.avatarPreviewDraft || null;
+  const previewAvatar = {
+    ...normalizeEquippedAvatar(state.player.equippedAvatar, state.player.ownedAvatarItems),
+    ...(draft || {})
+  };
+  renderAvatar(dom.shopAvatarPreview, state.player.equippedAvatar, {
+    draftAvatar: draft,
+    allowUnowned: true
+  });
+  renderAvatarParts(previewAvatar, draft);
   dom.shopAvatarTabs.innerHTML = Object.entries(AVATAR_SLOT_LABELS).map(([slot, label]) => (
     `<button class="avatar-tab ${state.shopAvatarSlot === slot ? "active" : ""}" data-avatar-slot="${escapeHtml(slot)}">${escapeHtml(label)}</button>`
   )).join("");
@@ -1698,21 +1736,41 @@ function renderAvatarShop() {
     .join("");
 }
 
+function renderAvatarParts(previewAvatar, draft) {
+  if (!dom.shopAvatarParts) return;
+
+  const slots = ["face", "hair", "outfit", "accessory"];
+  dom.shopAvatarParts.innerHTML = slots.map((slot) => {
+    const item = getAvatarItem(previewAvatar?.[slot]);
+    const isDraft = Boolean(draft?.[slot]);
+    return `
+      <div class="avatar-part-pill ${isDraft ? "draft" : ""}">
+        <span>${escapeHtml(AVATAR_SLOT_LABELS[slot])}</span>
+        <b>${escapeHtml(item?.name || "없음")}</b>
+      </div>
+    `;
+  }).join("");
+}
+
 function renderAvatarProduct(item) {
   const owned = Boolean(state.player.ownedAvatarItems?.[item.id]);
   const equipped = state.player.equippedAvatar?.[item.slot] === item.id;
+  const previewing = state.avatarPreviewDraft?.[item.slot] === item.id;
   const canBuy = (state.player.coin || 0) >= item.cost;
   const action = owned ? "equip" : "buy";
   const label = equipped ? "착용 중" : owned ? "착용" : `${item.cost}쿠키 구매`;
   const disabled = equipped || (!owned && !canBuy) ? "disabled" : "";
   const status = equipped ? "현재 착용" : owned ? "보유 중" : canBuy ? `가격 ${item.cost}` : `쿠키 부족 ${item.cost}`;
+  const rarity = item.rarity || "basic";
+  const rarityLabel = AVATAR_RARITY_LABELS[rarity] || "BASIC";
 
   return `
-    <article class="shop-product avatar-product ${owned ? "owned" : ""} ${equipped ? "equipped" : ""}">
+    <article class="shop-product avatar-product rarity-${escapeHtml(rarity)} ${owned ? "owned" : ""} ${equipped ? "equipped" : ""} ${previewing ? "previewing" : ""}" data-avatar-preview-id="${escapeHtml(item.id)}">
       <div class="avatar-item-preview">
         <img src="${escapeHtml(item.src)}" alt="">
       </div>
-      <div>
+      <div class="avatar-product-copy">
+        <span class="rarity-badge rarity-${escapeHtml(rarity)}">${escapeHtml(rarityLabel)}</span>
         <strong>${escapeHtml(item.name)}</strong>
         <small>${escapeHtml(status)}</small>
       </div>
@@ -1720,7 +1778,6 @@ function renderAvatarProduct(item) {
     </article>
   `;
 }
-
 function renderShopProduct(product, type) {
   const owned = type === "item"
     ? Boolean(state.player.ownedItems?.[product.id])
@@ -1820,15 +1877,23 @@ function handleAvatarTabClick(event) {
   if (!button) return;
 
   state.shopAvatarSlot = button.dataset.avatarSlot || "face";
+  state.avatarPreviewDraft = null;
   renderAvatarShop();
 }
 
 function handleAvatarShopClick(event) {
   const button = event.target.closest("[data-avatar-id]");
-  if (!button) return;
-
-  const item = getAvatarItem(button.dataset.avatarId);
+  const card = event.target.closest("[data-avatar-preview-id]");
+  const item = getAvatarItem(button?.dataset.avatarId || card?.dataset.avatarPreviewId);
   if (!item) return;
+
+  state.avatarPreviewDraft = { [item.slot]: item.id };
+
+  if (!button) {
+    renderAvatarShop();
+    return;
+  }
+
   if (button.dataset.avatarAction === "buy") buyAvatarItem(item);
   else equipAvatarItem(item.id);
 }
@@ -1869,8 +1934,10 @@ function buyAvatarItem(item) {
 
   state.player.ownedAvatarItems[item.id] = true;
   equipAvatarItem(item.id, false);
+  state.avatarPreviewDraft = null;
   syncPlayer();
   render();
+  pulseAvatarRoom("sparkle");
   showToast("구매 완료", `${item.name} 착용!`);
 }
 
@@ -1882,14 +1949,27 @@ function equipAvatarItem(itemId, shouldSync = true) {
     ...normalizeEquippedAvatar(state.player.equippedAvatar, state.player.ownedAvatarItems),
     [item.slot]: item.id
   };
+  state.avatarPreviewDraft = null;
 
   if (shouldSync) {
     syncPlayer();
     render();
+    pulseAvatarRoom("equip");
     showToast("착용 완료", item.name);
   }
 }
 
+function pulseAvatarRoom(type = "equip") {
+  const target = dom.shopAvatarPreview?.closest(".avatar-room") || dom.shopAvatarPreview || dom.avatarPreview;
+  if (!target) return;
+
+  target.classList.remove("avatar-sparkle", "avatar-equipped-pop");
+  void target.offsetWidth;
+  target.classList.add(type === "sparkle" ? "avatar-sparkle" : "avatar-equipped-pop");
+  setTimeout(() => {
+    target.classList.remove("avatar-sparkle", "avatar-equipped-pop");
+  }, 850);
+}
 function equipShopItem(itemId) {
   if (!state.player.ownedItems?.[itemId]) return;
   state.player.equippedItem = itemId;
@@ -3219,18 +3299,18 @@ function normalizeOwnedAvatarItems(items) {
   return { ...DEFAULT_OWNED_AVATAR_ITEMS, ...owned };
 }
 
-function normalizeEquippedAvatar(avatar, ownedItems = DEFAULT_OWNED_AVATAR_ITEMS) {
+function normalizeEquippedAvatar(avatar, ownedItems = DEFAULT_OWNED_AVATAR_ITEMS, options = {}) {
   const source = avatar && typeof avatar === "object" && !Array.isArray(avatar) ? avatar : {};
   const normalized = { ...DEFAULT_AVATAR };
 
   for (const slot of Object.keys(DEFAULT_AVATAR)) {
     const itemId = String(source[slot] || "");
     const item = getAvatarItem(itemId);
-    if (item && item.slot === slot && ownedItems[itemId]) normalized[slot] = itemId;
+    if (item && item.slot === slot && (ownedItems[itemId] || options.allowUnowned)) normalized[slot] = itemId;
   }
 
   if (source.accessory === "") normalized.accessory = "";
-  if (normalized.accessory && !ownedItems[normalized.accessory]) normalized.accessory = "";
+  if (normalized.accessory && !ownedItems[normalized.accessory] && !options.allowUnowned) normalized.accessory = "";
   return normalized;
 }
 
@@ -3317,3 +3397,6 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 }
+
+
+
