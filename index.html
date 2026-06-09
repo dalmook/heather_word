@@ -72,8 +72,7 @@
         </div>
 
         <div class="pet-glow">
-          <div id="petEmoji" class="pet-emoji">🥚</div>
-          <div id="equippedAccessory" class="equipped-accessory" aria-hidden="true"></div>
+          <div id="avatarPreview" class="avatar-preview home-avatar" role="img" aria-label="현재 착용 중인 아바타"></div>
         </div>
 
         <div class="pet-copy">
@@ -283,7 +282,17 @@
           <div id="shopItemGrid" class="shop-grid"></div>
         </section>
 
-        <section class="shop-section">
+        <section class="shop-section avatar-shop-section">
+          <div class="section-title">
+            <strong>아바타 꾸미기</strong>
+            <small>얼굴, 머리, 옷, 악세사리를 골라요.</small>
+          </div>
+          <div id="shopAvatarPreview" class="avatar-preview shop-avatar-preview" role="img" aria-label="아바타 미리보기"></div>
+          <div id="shopAvatarTabs" class="avatar-tabs" aria-label="아바타 꾸미기 분류"></div>
+          <div id="shopAvatarGrid" class="shop-grid avatar-shop-grid"></div>
+        </section>
+
+        <section class="shop-section legacy-shop-items" hidden>
           <div class="section-title">
             <strong>배경 꾸미기</strong>
             <small>홈 배경이 바뀌어요</small>

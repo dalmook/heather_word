@@ -47,6 +47,50 @@ const DAILY_MISSION_REWARD = Object.freeze({
   xp: 1000
 });
 const DAISO_VOUCHER_COOKIE_COST = 5000;
+const DEFAULT_AVATAR = Object.freeze({
+  body: "body_basic_01",
+  face: "face_round_01",
+  hair: "hair_basic_01",
+  outfit: "outfit_basic_01",
+  accessory: ""
+});
+const DEFAULT_OWNED_AVATAR_ITEMS = Object.freeze({
+  body_basic_01: true,
+  face_round_01: true,
+  hair_basic_01: true,
+  outfit_basic_01: true
+});
+const AVATAR_SLOT_LABELS = Object.freeze({
+  face: "얼굴",
+  hair: "머리",
+  outfit: "옷",
+  accessory: "악세사리"
+});
+const AVATAR_ITEMS = Object.freeze([
+  { id: "body_basic_01", slot: "body", name: "기본 몸", cost: 0, src: "./assets/avatar/body/body01.svg" },
+  { id: "face_round_01", slot: "face", name: "방긋 얼굴", cost: 0, src: "./assets/avatar/face/face01.svg" },
+  { id: "face_smile_02", slot: "face", name: "반짝 미소", cost: 180, src: "./assets/avatar/face/face02.svg" },
+  { id: "face_wink_03", slot: "face", name: "윙크 얼굴", cost: 260, src: "./assets/avatar/face/face03.svg" },
+  { id: "hair_basic_01", slot: "hair", name: "동글 앞머리", cost: 0, src: "./assets/avatar/hair/hair01.svg" },
+  { id: "hair_bob_02", slot: "hair", name: "보송 단발", cost: 220, src: "./assets/avatar/hair/hair02.svg" },
+  { id: "hair_twintail_03", slot: "hair", name: "쌍둥 머리", cost: 320, src: "./assets/avatar/hair/hair03.svg" },
+  { id: "hair_star_04", slot: "hair", name: "별빛 머리", cost: 420, src: "./assets/avatar/hair/hair04.svg" },
+  { id: "hair_curl_05", slot: "hair", name: "몽글 웨이브", cost: 520, src: "./assets/avatar/hair/hair05.svg" },
+  { id: "outfit_basic_01", slot: "outfit", name: "기본 티셔츠", cost: 0, src: "./assets/avatar/outfit/outfit01.svg" },
+  { id: "outfit_school_02", slot: "outfit", name: "학교 조끼", cost: 260, src: "./assets/avatar/outfit/outfit02.svg" },
+  { id: "outfit_cookie_03", slot: "outfit", name: "쿠키 후드", cost: 360, src: "./assets/avatar/outfit/outfit03.svg" },
+  { id: "outfit_rainbow_04", slot: "outfit", name: "무지개 원피스", cost: 460, src: "./assets/avatar/outfit/outfit04.svg" },
+  { id: "outfit_hero_05", slot: "outfit", name: "용감 망토", cost: 620, src: "./assets/avatar/outfit/outfit05.svg" },
+  { id: "accessory_ribbon_01", slot: "accessory", name: "딸기 리본", cost: 150, src: "./assets/avatar/accessory/ribbon01.svg" },
+  { id: "accessory_glasses_02", slot: "accessory", name: "동글 안경", cost: 180, src: "./assets/avatar/accessory/glasses01.svg" },
+  { id: "accessory_star_03", slot: "accessory", name: "별 머리핀", cost: 210, src: "./assets/avatar/accessory/star01.svg" },
+  { id: "accessory_crown_04", slot: "accessory", name: "작은 왕관", cost: 300, src: "./assets/avatar/accessory/crown01.svg" },
+  { id: "accessory_bag_05", slot: "accessory", name: "하트 가방", cost: 340, src: "./assets/avatar/accessory/bag01.svg" },
+  { id: "accessory_headset_06", slot: "accessory", name: "리듬 헤드셋", cost: 420, src: "./assets/avatar/accessory/headset01.svg" },
+  { id: "accessory_wings_07", slot: "accessory", name: "구름 날개", cost: 520, src: "./assets/avatar/accessory/wings01.svg" },
+  { id: "accessory_magic_08", slot: "accessory", name: "마법 지팡이", cost: 680, src: "./assets/avatar/accessory/magic01.svg" }
+]);
+const AVATAR_ITEM_MAP = Object.freeze(Object.fromEntries(AVATAR_ITEMS.map((item) => [item.id, item])));
 const SHOP_ITEMS = Object.freeze([
   { id: "ribbon", emoji: "🎀", name: "리본", cost: 120 },
   { id: "star_pin", emoji: "⭐", name: "별핀", cost: 150 },
@@ -190,6 +234,7 @@ const dom = {
   coinPill: $("#coinPill"),
   comboPill: $("#comboPill"),
   petEmoji: $("#petEmoji"),
+  avatarPreview: $("#avatarPreview"),
   equippedAccessory: $("#equippedAccessory"),
   petName: $("#petName"),
   petMsg: $("#petMsg"),
@@ -215,6 +260,9 @@ const dom = {
   shopThemeGrid: $("#shopThemeGrid"),
   shopPetGrid: $("#shopPetGrid"),
   shopFoodGrid: $("#shopFoodGrid"),
+  shopAvatarPreview: $("#shopAvatarPreview"),
+  shopAvatarTabs: $("#shopAvatarTabs"),
+  shopAvatarGrid: $("#shopAvatarGrid"),
   petCareEmoji: $("#petCareEmoji"),
   petCareName: $("#petCareName"),
   petCareLevel: $("#petCareLevel"),
@@ -293,6 +341,8 @@ let state = {
     dailyMission: makeDailyMission(),
     ownedItems: {},
     equippedItem: "",
+    ownedAvatarItems: { ...DEFAULT_OWNED_AVATAR_ITEMS },
+    equippedAvatar: { ...DEFAULT_AVATAR },
     ownedThemes: {},
     equippedTheme: "",
     ownedPets: {},
@@ -305,6 +355,7 @@ let state = {
   rewardAdminLoaded: false,
   selectedCategoryId: "all",
   manageSearch: "",
+  shopAvatarSlot: "face",
   screen: "home",
   cardIndex: 0,
   cardLocked: false,
@@ -574,6 +625,8 @@ function syncPlayer() {
     dailyMission: ensureDailyMission(),
     ownedItems: state.player.ownedItems || {},
     equippedItem: state.player.equippedItem || "",
+    ownedAvatarItems: state.player.ownedAvatarItems || { ...DEFAULT_OWNED_AVATAR_ITEMS },
+    equippedAvatar: state.player.equippedAvatar || { ...DEFAULT_AVATAR },
     ownedThemes: state.player.ownedThemes || {},
     equippedTheme: state.player.equippedTheme || "",
     ownedPets: state.player.ownedPets || {},
@@ -624,6 +677,8 @@ function bindEvents() {
   dom.shopThemeGrid.addEventListener("click", handleShopThemeClick);
   dom.shopPetGrid.addEventListener("click", handleShopPetClick);
   dom.shopFoodGrid.addEventListener("click", handleShopFoodClick);
+  dom.shopAvatarTabs?.addEventListener("click", handleAvatarTabClick);
+  dom.shopAvatarGrid?.addEventListener("click", handleAvatarShopClick);
   dom.petFoodList.addEventListener("click", handlePetFoodClick);
   dom.petFeedCookieBtn.addEventListener("click", feedPetWithCookies);
   dom.petPlayBtn.addEventListener("click", playWithCarePet);
@@ -684,7 +739,7 @@ function bindEvents() {
     syncPlayer();
   });
 
-  dom.petEmoji.addEventListener("click", petReaction);
+  (dom.avatarPreview || dom.petEmoji).addEventListener("click", petReaction);
 
   document.addEventListener("click", (event) => {
     if (event.target.closest("button")) playSfx("click");
@@ -817,7 +872,7 @@ function render() {
   applyEquippedTheme();
 
   const pet = getCurrentMonster();
-  dom.petEmoji.textContent = pet.emoji;
+  renderAvatar(dom.avatarPreview, state.player.equippedAvatar);
   renderEquippedAccessory();
   dom.petName.textContent = pet.name;
   dom.petMsg.textContent = pet.message;
@@ -1497,6 +1552,35 @@ function getShopItem(itemId) {
   return SHOP_ITEMS.find((item) => item.id === itemId);
 }
 
+function getAvatarItemsBySlot(slot) {
+  return AVATAR_ITEMS.filter((item) => item.slot === slot);
+}
+
+function getAvatarItem(itemId) {
+  return AVATAR_ITEM_MAP[itemId] || null;
+}
+
+function renderAvatar(targetElement, equippedAvatar = state.player.equippedAvatar, options = {}) {
+  if (!targetElement) {
+    if (dom.petEmoji) dom.petEmoji.textContent = getCurrentMonster().emoji;
+    return;
+  }
+
+  const avatar = normalizeEquippedAvatar(equippedAvatar, state.player.ownedAvatarItems);
+  const layerOrder = ["body", "outfit", "face", "hair", "accessory"];
+  const layers = layerOrder
+    .map((slot) => avatar[slot])
+    .filter(Boolean)
+    .map((itemId) => getAvatarItem(itemId))
+    .filter(Boolean);
+
+  targetElement.classList.add("avatar-preview");
+  if (options.compact) targetElement.classList.add("compact");
+  targetElement.innerHTML = layers.map((item) => (
+    `<img class="avatar-layer avatar-layer-${escapeHtml(item.slot)}" src="${escapeHtml(item.src)}" alt="">`
+  )).join("");
+}
+
 function getShopTheme(themeId) {
   return SHOP_THEMES.find((theme) => theme.id === themeId);
 }
@@ -1598,7 +1682,43 @@ function renderShop() {
   dom.shopThemeGrid.innerHTML = SHOP_THEMES.map((theme) => renderShopProduct(theme, "theme")).join("");
   dom.shopPetGrid.innerHTML = SHOP_PETS.map(renderPetProduct).join("");
   dom.shopFoodGrid.innerHTML = SHOP_FOODS.map(renderFoodProduct).join("");
+  renderAvatarShop();
   renderVoucherList(dom.shopVoucherList, false);
+}
+
+function renderAvatarShop() {
+  if (!dom.shopAvatarGrid) return;
+
+  renderAvatar(dom.shopAvatarPreview, state.player.equippedAvatar, { compact: true });
+  dom.shopAvatarTabs.innerHTML = Object.entries(AVATAR_SLOT_LABELS).map(([slot, label]) => (
+    `<button class="avatar-tab ${state.shopAvatarSlot === slot ? "active" : ""}" data-avatar-slot="${escapeHtml(slot)}">${escapeHtml(label)}</button>`
+  )).join("");
+  dom.shopAvatarGrid.innerHTML = getAvatarItemsBySlot(state.shopAvatarSlot)
+    .map(renderAvatarProduct)
+    .join("");
+}
+
+function renderAvatarProduct(item) {
+  const owned = Boolean(state.player.ownedAvatarItems?.[item.id]);
+  const equipped = state.player.equippedAvatar?.[item.slot] === item.id;
+  const canBuy = (state.player.coin || 0) >= item.cost;
+  const action = owned ? "equip" : "buy";
+  const label = equipped ? "착용 중" : owned ? "착용" : `${item.cost}쿠키 구매`;
+  const disabled = equipped || (!owned && !canBuy) ? "disabled" : "";
+  const status = equipped ? "현재 착용" : owned ? "보유 중" : canBuy ? `가격 ${item.cost}` : `쿠키 부족 ${item.cost}`;
+
+  return `
+    <article class="shop-product avatar-product ${owned ? "owned" : ""} ${equipped ? "equipped" : ""}">
+      <div class="avatar-item-preview">
+        <img src="${escapeHtml(item.src)}" alt="">
+      </div>
+      <div>
+        <strong>${escapeHtml(item.name)}</strong>
+        <small>${escapeHtml(status)}</small>
+      </div>
+      <button class="soft-btn ${owned ? "" : "good"}" data-avatar-action="${action}" data-avatar-id="${escapeHtml(item.id)}" ${disabled}>${escapeHtml(label)}</button>
+    </article>
+  `;
 }
 
 function renderShopProduct(product, type) {
@@ -1695,6 +1815,24 @@ function handleShopFoodClick(event) {
   buyPetFood(food);
 }
 
+function handleAvatarTabClick(event) {
+  const button = event.target.closest("[data-avatar-slot]");
+  if (!button) return;
+
+  state.shopAvatarSlot = button.dataset.avatarSlot || "face";
+  renderAvatarShop();
+}
+
+function handleAvatarShopClick(event) {
+  const button = event.target.closest("[data-avatar-id]");
+  if (!button) return;
+
+  const item = getAvatarItem(button.dataset.avatarId);
+  if (!item) return;
+  if (button.dataset.avatarAction === "buy") buyAvatarItem(item);
+  else equipAvatarItem(item.id);
+}
+
 function spendCookies(cost) {
   if ((state.player.coin || 0) < cost) {
     showToast("쿠키가 부족해요", `필요 쿠키 ${cost}개`);
@@ -1719,6 +1857,37 @@ function buyShopItem(item) {
   syncPlayer();
   render();
   showToast("구매 완료", `${item.emoji} ${item.name} 착용!`);
+}
+
+function buyAvatarItem(item) {
+  state.player.ownedAvatarItems ||= { ...DEFAULT_OWNED_AVATAR_ITEMS };
+  if (state.player.ownedAvatarItems[item.id]) {
+    equipAvatarItem(item.id);
+    return;
+  }
+  if (!spendCookies(item.cost)) return;
+
+  state.player.ownedAvatarItems[item.id] = true;
+  equipAvatarItem(item.id, false);
+  syncPlayer();
+  render();
+  showToast("구매 완료", `${item.name} 착용!`);
+}
+
+function equipAvatarItem(itemId, shouldSync = true) {
+  const item = getAvatarItem(itemId);
+  if (!item || !state.player.ownedAvatarItems?.[itemId]) return;
+
+  state.player.equippedAvatar = {
+    ...normalizeEquippedAvatar(state.player.equippedAvatar, state.player.ownedAvatarItems),
+    [item.slot]: item.id
+  };
+
+  if (shouldSync) {
+    syncPlayer();
+    render();
+    showToast("착용 완료", item.name);
+  }
 }
 
 function equipShopItem(itemId) {
@@ -3038,6 +3207,33 @@ function safeCounter(value) {
   return Number.isFinite(number) && number >= 0 ? Math.floor(number) : 0;
 }
 
+function normalizeOwnedAvatarItems(items) {
+  const owned = items && typeof items === "object" && !Array.isArray(items)
+    ? Object.fromEntries(
+      Object.entries(items)
+        .filter(([id, value]) => value === true && Boolean(getAvatarItem(id)))
+        .map(([id]) => [id, true])
+    )
+    : {};
+
+  return { ...DEFAULT_OWNED_AVATAR_ITEMS, ...owned };
+}
+
+function normalizeEquippedAvatar(avatar, ownedItems = DEFAULT_OWNED_AVATAR_ITEMS) {
+  const source = avatar && typeof avatar === "object" && !Array.isArray(avatar) ? avatar : {};
+  const normalized = { ...DEFAULT_AVATAR };
+
+  for (const slot of Object.keys(DEFAULT_AVATAR)) {
+    const itemId = String(source[slot] || "");
+    const item = getAvatarItem(itemId);
+    if (item && item.slot === slot && ownedItems[itemId]) normalized[slot] = itemId;
+  }
+
+  if (source.accessory === "") normalized.accessory = "";
+  if (normalized.accessory && !ownedItems[normalized.accessory]) normalized.accessory = "";
+  return normalized;
+}
+
 function normalizePlayer(player) {
   const progress = player.progress && typeof player.progress === "object" && !Array.isArray(player.progress)
     ? player.progress
@@ -3056,6 +3252,8 @@ function normalizePlayer(player) {
   const ownedPets = player.ownedPets && typeof player.ownedPets === "object" && !Array.isArray(player.ownedPets)
     ? player.ownedPets
     : {};
+  const ownedAvatarItems = normalizeOwnedAvatarItems(player.ownedAvatarItems);
+  const equippedAvatar = normalizeEquippedAvatar(player.equippedAvatar, ownedAvatarItems);
   const petCare = normalizePetCare(player.petCare);
   const rewardClaims = normalizeRewardClaims(player.rewardClaims);
 
@@ -3074,6 +3272,8 @@ function normalizePlayer(player) {
     dailyMission,
     ownedItems,
     equippedItem: ownedItems[player.equippedItem] && getShopItem(player.equippedItem) ? player.equippedItem : "",
+    ownedAvatarItems,
+    equippedAvatar,
     ownedThemes,
     equippedTheme: ownedThemes[player.equippedTheme] && getShopTheme(player.equippedTheme) ? player.equippedTheme : "",
     ownedPets,
