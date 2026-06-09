@@ -4611,7 +4611,7 @@ body.theme-legend {
 }
 
 .avatar-product.equipped::after {
-  content: "착용중";
+  content: "\CC29\C6A9\C911";
   position: absolute;
   top: 8px;
   right: 8px;
@@ -4688,4 +4688,39 @@ body.theme-legend {
   .avatar-product {
     min-height: 112px;
   }
+}
+
+/* v6.8.1 dressroom overlap/click fix */
+.legacy-shop-items[hidden],
+[hidden] {
+  display: none !important;
+}
+
+.avatar-shop-section {
+  display: grid;
+  gap: 10px;
+  isolation: isolate;
+  overflow: visible;
+}
+
+.avatar-room,
+.avatar-parts,
+.avatar-tabs,
+.avatar-shop-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.avatar-room-bg,
+.avatar-room-shelf,
+.avatar-room-floor {
+  pointer-events: none;
+}
+
+.shop-avatar-preview {
+  pointer-events: auto;
+}
+
+.avatar-product.equipped::after {
+  content: "\CC29\C6A9\C911";
 }
