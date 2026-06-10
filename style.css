@@ -4840,3 +4840,83 @@ body.theme-legend {
     height: 238px !important;
   }
 }
+
+/* v7.3.1 home action labels: prevent badge/title/subtitle overlap after adding dress room */
+#homeScreen .main-actions {
+  grid-auto-rows: minmax(74px, auto) !important;
+  align-items: stretch;
+}
+
+#homeScreen .big-action {
+  min-height: 74px;
+  grid-template-columns: 38px minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  align-items: center;
+  row-gap: 1px;
+  padding: 9px 8px;
+  overflow: hidden;
+}
+
+#homeScreen .big-action .action-badge,
+#homeScreen .big-action b,
+#homeScreen .big-action em {
+  grid-column: 2;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#homeScreen .big-action .action-badge {
+  grid-row: 1;
+  margin: 0;
+  line-height: 1;
+}
+
+#homeScreen .big-action b {
+  grid-row: 2;
+  margin: 0;
+  line-height: 1.04;
+  letter-spacing: -0.07em;
+}
+
+#homeScreen .big-action em {
+  position: static;
+  grid-row: 3;
+  line-height: 1.12;
+  letter-spacing: -0.06em;
+}
+
+#homeScreen .big-action span {
+  grid-row: 1 / 4;
+  align-self: center;
+  flex: none;
+}
+
+@media (max-width: 395px) {
+  #homeScreen .main-actions {
+    grid-auto-rows: minmax(72px, auto) !important;
+  }
+
+  #homeScreen .big-action {
+    min-height: 72px;
+    grid-template-columns: 36px minmax(0, 1fr);
+    column-gap: 7px;
+  }
+
+  #homeScreen .big-action span {
+    width: 36px;
+    height: 36px;
+    font-size: 20px !important;
+  }
+
+  #homeScreen .big-action b {
+    font-size: 14px !important;
+  }
+
+  #homeScreen .big-action em {
+    font-size: 9px !important;
+  }
+}
