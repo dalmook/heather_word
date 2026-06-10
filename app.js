@@ -61,10 +61,11 @@ const DEFAULT_OWNED_AVATAR_ITEMS = Object.freeze({
   outfit_basic_01: true
 });
 const AVATAR_SLOT_LABELS = Object.freeze({
+  body: "바디",
   face: "얼굴",
-  hair: "머리",
-  outfit: "옷",
-  accessory: "악세사리"
+  hair: "헤어",
+  outfit: "의상",
+  accessory: "소품"
 });
 const AVATAR_RARITY_LABELS = Object.freeze({
   basic: "BASIC",
@@ -74,6 +75,10 @@ const AVATAR_RARITY_LABELS = Object.freeze({
 });
 const AVATAR_ITEMS = Object.freeze([
   { id: "body_basic_01", slot: "body", name: "기본 바디", cost: 0, rarity: "basic", src: "./assets/avatar/body/body01.svg" },
+  { id: "body_peach_02", slot: "body", name: "피치 바디", cost: 120, rarity: "basic", src: "./assets/avatar/body/body02.svg" },
+  { id: "body_honey_03", slot: "body", name: "허니 바디", cost: 160, rarity: "basic", src: "./assets/avatar/body/body03.svg" },
+  { id: "body_mocha_04", slot: "body", name: "모카 바디", cost: 180, rarity: "rare", src: "./assets/avatar/body/body04.svg" },
+  { id: "body_lavender_05", slot: "body", name: "라벤더 판타지 바디", cost: 420, rarity: "epic", src: "./assets/avatar/body/body05.svg" },
   { id: "face_round_01", slot: "face", name: "방긋 얼굴", cost: 0, rarity: "basic", src: "./assets/avatar/face/face01.svg" },
   { id: "face_smile_02", slot: "face", name: "반짝 미소", cost: 180, rarity: "basic", src: "./assets/avatar/face/face02.svg" },
   { id: "face_wink_03", slot: "face", name: "윙크 얼굴", cost: 260, rarity: "rare", src: "./assets/avatar/face/face03.svg" },
@@ -246,6 +251,7 @@ const dom = {
     rank: $("#rankScreen"),
     collection: $("#collectionScreen"),
     pet: $("#petScreen"),
+    dress: $("#dressScreen"),
     shop: $("#shopScreen"),
     manage: $("#manageScreen")
   },
@@ -280,10 +286,11 @@ const dom = {
   shopThemeGrid: $("#shopThemeGrid"),
   shopPetGrid: $("#shopPetGrid"),
   shopFoodGrid: $("#shopFoodGrid"),
-  shopAvatarPreview: $("#shopAvatarPreview"),
-  shopAvatarTabs: $("#shopAvatarTabs"),
-  shopAvatarGrid: $("#shopAvatarGrid"),
-  shopAvatarParts: $("#shopAvatarParts"),
+  dressCookieCount: $("#dressCookieCount"),
+  dressAvatarPreview: $("#dressAvatarPreview"),
+  dressAvatarTabs: $("#dressAvatarTabs"),
+  dressAvatarGrid: $("#dressAvatarGrid"),
+  dressAvatarParts: $("#dressAvatarParts"),
   petCareEmoji: $("#petCareEmoji"),
   petCareName: $("#petCareName"),
   petCareLevel: $("#petCareLevel"),
@@ -376,7 +383,7 @@ let state = {
   rewardAdminLoaded: false,
   selectedCategoryId: "all",
   manageSearch: "",
-  shopAvatarSlot: "face",
+  shopAvatarSlot: "outfit",
   avatarPreviewDraft: null,
   screen: "home",
   cardIndex: 0,
@@ -699,8 +706,8 @@ function bindEvents() {
   dom.shopThemeGrid.addEventListener("click", handleShopThemeClick);
   dom.shopPetGrid.addEventListener("click", handleShopPetClick);
   dom.shopFoodGrid.addEventListener("click", handleShopFoodClick);
-  dom.shopAvatarTabs?.addEventListener("click", handleAvatarTabClick);
-  dom.shopAvatarGrid?.addEventListener("click", handleAvatarShopClick);
+  dom.dressAvatarTabs?.addEventListener("click", handleAvatarTabClick);
+  dom.dressAvatarGrid?.addEventListener("click", handleAvatarShopClick);
   dom.petFoodList.addEventListener("click", handlePetFoodClick);
   dom.petFeedCookieBtn.addEventListener("click", feedPetWithCookies);
   dom.petPlayBtn.addEventListener("click", playWithCarePet);
@@ -1716,31 +1723,32 @@ function renderShop() {
 }
 
 function renderAvatarShop() {
-  if (!dom.shopAvatarGrid) return;
+  if (!dom.dressAvatarGrid) return;
 
   const draft = state.avatarPreviewDraft || null;
   const previewAvatar = {
     ...normalizeEquippedAvatar(state.player.equippedAvatar, state.player.ownedAvatarItems),
     ...(draft || {})
   };
-  renderAvatar(dom.shopAvatarPreview, state.player.equippedAvatar, {
+  if (dom.dressCookieCount) dom.dressCookieCount.textContent = `🍪 ${state.player.coin || 0}`;
+  renderAvatar(dom.dressAvatarPreview, state.player.equippedAvatar, {
     draftAvatar: draft,
     allowUnowned: true
   });
   renderAvatarParts(previewAvatar, draft);
-  dom.shopAvatarTabs.innerHTML = Object.entries(AVATAR_SLOT_LABELS).map(([slot, label]) => (
+  dom.dressAvatarTabs.innerHTML = Object.entries(AVATAR_SLOT_LABELS).map(([slot, label]) => (
     `<button class="avatar-tab ${state.shopAvatarSlot === slot ? "active" : ""}" data-avatar-slot="${escapeHtml(slot)}">${escapeHtml(label)}</button>`
   )).join("");
-  dom.shopAvatarGrid.innerHTML = getAvatarItemsBySlot(state.shopAvatarSlot)
+  dom.dressAvatarGrid.innerHTML = getAvatarItemsBySlot(state.shopAvatarSlot)
     .map(renderAvatarProduct)
     .join("");
 }
 
 function renderAvatarParts(previewAvatar, draft) {
-  if (!dom.shopAvatarParts) return;
+  if (!dom.dressAvatarParts) return;
 
-  const slots = ["face", "hair", "outfit", "accessory"];
-  dom.shopAvatarParts.innerHTML = slots.map((slot) => {
+  const slots = ["body", "face", "hair", "outfit", "accessory"];
+  dom.dressAvatarParts.innerHTML = slots.map((slot) => {
     const item = getAvatarItem(previewAvatar?.[slot]);
     const isDraft = Boolean(draft?.[slot]);
     return `
@@ -1960,7 +1968,7 @@ function equipAvatarItem(itemId, shouldSync = true) {
 }
 
 function pulseAvatarRoom(type = "equip") {
-  const target = dom.shopAvatarPreview?.closest(".avatar-room") || dom.shopAvatarPreview || dom.avatarPreview;
+  const target = dom.dressAvatarPreview?.closest(".avatar-room") || dom.dressAvatarPreview || dom.avatarPreview;
   if (!target) return;
 
   target.classList.remove("avatar-sparkle", "avatar-equipped-pop");
