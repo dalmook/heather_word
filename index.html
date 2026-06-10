@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#141b34" />
   <meta name="description" content="카테고리별 영어 단어와 스펠링을 연습하는 Heather Word" />
   <title>Heather Word · Spellingmon</title>
-  <link rel="stylesheet" href="./style.css?v=7.2" />
+  <link rel="stylesheet" href="./style.css?v=7.3" />
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -125,11 +125,17 @@
             <b>랭킹</b>
             <em>내 기록</em>
           </button>
+          <button class="big-action action-dress" data-nav="dress">
+            <small class="action-badge">DRESS</small>
+            <span>👗</span>
+            <b>드레스룸</b>
+            <em>전신 아바타 꾸미기</em>
+          </button>
           <button class="big-action action-shop" data-nav="shop">
             <small class="action-badge">SHOP</small>
             <span>🍪</span>
             <b>쿠키샵</b>
-            <em>꾸미기 · 상품권</em>
+            <em>배경 · 펫 · 상품권</em>
           </button>
           <button class="big-action action-pet" data-nav="pet">
             <small class="action-badge">PET</small>
@@ -266,6 +272,43 @@
     </section>
 
 
+
+    <section id="dressScreen" class="screen">
+      <div class="screen-head dress-head">
+        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
+        <div>
+          <h2>👗 아바타 드레스룸</h2>
+          <p>쿠키샵과 분리된 전신 코디 공간이에요.</p>
+        </div>
+        <strong id="dressCookieCount" class="shop-cookie-count">0</strong>
+      </div>
+
+      <div class="dress-scroll">
+        <section class="dress-hero-card avatar-shop-section">
+          <div class="section-title avatar-room-title">
+            <strong>전신 스타일링 스튜디오</strong>
+            <small>피부톤부터 헤어, 얼굴, 옷, 소품까지 한눈에 꾸며요.</small>
+          </div>
+          <div class="avatar-room dress-room">
+            <div class="avatar-room-bg" aria-hidden="true"></div>
+            <div class="avatar-room-shelf" aria-hidden="true"></div>
+            <div id="dressAvatarPreview" class="avatar-preview shop-avatar-preview" role="img" aria-label="아바타 전신 미리보기"></div>
+            <div class="avatar-room-floor" aria-hidden="true"></div>
+          </div>
+          <div id="dressAvatarParts" class="avatar-parts" aria-label="현재 미리보기 파츠"></div>
+        </section>
+
+        <section class="dress-closet-panel avatar-shop-section">
+          <div class="section-title avatar-room-title">
+            <strong>옷장 카테고리</strong>
+            <small>카드를 누르면 바로 미리 입어볼 수 있어요.</small>
+          </div>
+          <div id="dressAvatarTabs" class="avatar-tabs dress-tabs" aria-label="아바타 꾸미기 분류"></div>
+          <div id="dressAvatarGrid" class="shop-grid avatar-shop-grid dress-avatar-grid"></div>
+        </section>
+      </div>
+    </section>
+
     <section id="shopScreen" class="screen">
       <div class="screen-head">
         <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
@@ -280,22 +323,6 @@
             <small>구매 후 착용할 수 있어요</small>
           </div>
           <div id="shopItemGrid" class="shop-grid"></div>
-        </section>
-
-        <section class="shop-section avatar-shop-section">
-          <div class="section-title avatar-room-title">
-            <strong>아바타 드레스룸</strong>
-            <small>카드를 눌러 미리 입어보고, 구매하거나 착용해요.</small>
-          </div>
-          <div class="avatar-room">
-            <div class="avatar-room-bg" aria-hidden="true"></div>
-            <div class="avatar-room-shelf" aria-hidden="true"></div>
-            <div id="shopAvatarPreview" class="avatar-preview shop-avatar-preview" role="img" aria-label="아바타 미리보기"></div>
-            <div class="avatar-room-floor" aria-hidden="true"></div>
-          </div>
-          <div id="shopAvatarParts" class="avatar-parts" aria-label="현재 미리보기 파츠"></div>
-          <div id="shopAvatarTabs" class="avatar-tabs" aria-label="아바타 꾸미기 분류"></div>
-          <div id="shopAvatarGrid" class="shop-grid avatar-shop-grid"></div>
         </section>
 
         <section class="shop-section">
