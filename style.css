@@ -4920,3 +4920,203 @@ body.theme-legend {
     font-size: 9px !important;
   }
 }
+
+/* v7.4 Phaser full-body dress room */
+.phaser-dress-room {
+  min-height: min(520px, calc(var(--vh, 100vh) - 196px));
+  height: clamp(420px, 62vh, 560px);
+  padding: 0;
+  background: linear-gradient(180deg, #fff7fb, #eef2ff);
+}
+
+.avatar-game {
+  position: absolute;
+  inset: 10px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  min-height: 360px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #fff7fb, #dbeafe);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+}
+
+.avatar-game canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 360px;
+  max-height: 520px;
+  object-fit: contain;
+  border-radius: 22px;
+  touch-action: manipulation;
+}
+
+.avatar-game-status {
+  position: relative;
+  z-index: 4;
+  max-width: 280px;
+  margin: auto;
+  padding: 12px 14px;
+  border-radius: 18px;
+  color: #7c2d12;
+  background: rgba(255, 247, 237, 0.94);
+  border: 1px solid rgba(251, 191, 36, 0.48);
+  font-weight: 900;
+  text-align: center;
+  box-shadow: 0 14px 30px rgba(124, 58, 237, 0.16);
+}
+
+.fallback-avatar-preview {
+  display: none !important;
+}
+
+.avatar-game.failed + .avatar-game-status + .fallback-avatar-preview,
+.avatar-game-status:not([hidden]) + .fallback-avatar-preview {
+  display: grid !important;
+  z-index: 3;
+}
+
+.dress-action-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.dress-action-row .soft-btn {
+  min-height: 44px;
+  border-radius: 16px;
+  font-size: 13px;
+}
+
+.avatar-generated-layer {
+  display: grid;
+  place-items: center;
+  font-size: 42px;
+  opacity: 0.92;
+}
+
+.avatar-layer-shoes { z-index: 2; }
+.avatar-layer-bottom { z-index: 3; }
+.avatar-layer-outfit,
+.avatar-layer-top { z-index: 4; }
+.avatar-layer-face { z-index: 5; }
+.avatar-layer-hair { z-index: 6; }
+.avatar-layer-accessory { z-index: 7; }
+.avatar-layer-effect { z-index: 8; }
+
+.avatar-product.locked {
+  opacity: 0.58;
+  filter: grayscale(0.22);
+}
+
+.avatar-product.locked .avatar-item-preview::after {
+  content: "🔒";
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.72);
+  font-size: 12px;
+}
+
+.avatar-item-preview {
+  position: relative;
+}
+
+.avatar-item-preview span {
+  font-size: 30px;
+  filter: drop-shadow(0 6px 10px rgba(124, 58, 237, 0.18));
+}
+
+.shop-avatar-tabs {
+  margin-top: 8px;
+}
+
+@media (max-width: 395px) {
+  .phaser-dress-room {
+    min-height: 390px;
+    height: 430px;
+  }
+
+  .avatar-game {
+    inset: 8px;
+    min-height: 350px;
+  }
+
+  .dress-action-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* v7.4.1 dressroom visibility and avatar overlap fix */
+.dress-scroll {
+  height: calc(var(--vh, 100dvh) - 118px);
+  padding-bottom: max(96px, env(safe-area-inset-bottom));
+}
+
+.phaser-dress-room {
+  min-height: 0;
+  height: clamp(320px, 46vh, 430px);
+}
+
+.avatar-game {
+  min-height: 0;
+}
+
+.avatar-game canvas {
+  max-height: 460px;
+}
+
+.dress-action-row {
+  position: sticky;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  z-index: 8;
+  padding: 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 14px 30px rgba(88, 28, 135, 0.16);
+  backdrop-filter: blur(10px);
+}
+
+#homeScreen .avatar-generated-layer,
+.fallback-avatar-preview .avatar-generated-layer {
+  display: none;
+}
+
+@media (max-width: 430px) {
+  .dress-scroll {
+    height: calc(var(--vh, 100dvh) - 104px);
+    padding: 10px 10px max(110px, env(safe-area-inset-bottom));
+  }
+
+  .dress-hero-card,
+  .dress-closet-panel {
+    border-radius: 22px;
+    padding: 10px;
+  }
+
+  .phaser-dress-room {
+    height: clamp(300px, 42vh, 360px);
+  }
+
+  .avatar-game {
+    inset: 6px;
+  }
+
+  .dress-action-row .soft-btn {
+    min-height: 42px;
+  }
+}
+
+@media (max-width: 395px) {
+  .phaser-dress-room {
+    min-height: 0;
+    height: 330px;
+  }
+}
