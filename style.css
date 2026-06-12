@@ -5120,3 +5120,31 @@ body.theme-legend {
     height: 330px;
   }
 }
+
+/* v7.4.2 dressroom direct purchase states */
+.dress-avatar-grid .avatar-product.for-sale {
+  opacity: 1;
+  border-style: solid;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(135deg, rgba(52, 211, 153, 0.72), rgba(96, 165, 250, 0.72), rgba(244, 114, 182, 0.72)) border-box;
+}
+
+.dress-avatar-grid .avatar-product.for-sale .avatar-item-preview::after {
+  content: "🍪";
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 247, 237, 0.92);
+  font-size: 12px;
+  box-shadow: 0 6px 12px rgba(146, 64, 14, 0.18);
+}
+
+.dress-avatar-grid .avatar-product.for-sale .soft-btn:not(:disabled) {
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.18);
+}

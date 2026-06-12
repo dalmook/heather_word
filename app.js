@@ -1913,15 +1913,27 @@ function renderAvatarProduct(item) {
   const equipped = state.player.equippedAvatar?.[item.slot] === item.id;
   const previewing = state.avatarPreviewDraft?.[item.slot] === item.id;
   const canBuy = (state.player.coin || 0) >= item.cost;
-  const action = owned ? "equip" : "locked";
-  const label = equipped ? "착용 중" : owned ? "바로 착용" : "쿠키샵에서 구매";
-  const disabled = equipped || !owned ? "disabled" : "";
-  const status = equipped ? "현재 착용" : owned ? "보유 중" : canBuy ? `쿠키샵 가격 ${item.cost}` : `잠김 · ${item.cost}쿠키`;
+  const action = owned ? "equip" : "buy";
+  const label = equipped
+    ? "착용 중"
+    : owned
+      ? "바로 착용"
+      : item.cost > 0
+        ? `${item.cost}쿠키 구매`
+        : "무료 받기";
+  const disabled = equipped || (!owned && !canBuy) ? "disabled" : "";
+  const status = equipped
+    ? "현재 착용"
+    : owned
+      ? "보유 중 · 누르면 바로 적용"
+      : canBuy
+        ? `드레스룸 구매 가능 · ${item.cost}쿠키`
+        : `쿠키 부족 · ${item.cost}쿠키`;
   const rarity = item.rarity || "basic";
   const rarityLabel = AVATAR_RARITY_LABELS[rarity] || "BASIC";
 
   return `
-    <article class="shop-product avatar-product rarity-${escapeHtml(rarity)} ${owned ? "owned" : "locked"} ${equipped ? "equipped" : ""} ${previewing ? "previewing" : ""}" data-avatar-preview-id="${escapeHtml(item.id)}">
+    <article class="shop-product avatar-product rarity-${escapeHtml(rarity)} ${owned ? "owned" : "for-sale"} ${equipped ? "equipped" : ""} ${previewing ? "previewing" : ""}" data-avatar-preview-id="${escapeHtml(item.id)}">
       <div class="avatar-item-preview">
         ${item.src ? `<img src="${escapeHtml(item.src)}" alt="">` : `<span>${escapeHtml(item.icon || "✨")}</span>`}
       </div>
@@ -2044,25 +2056,35 @@ function handleAvatarShopClick(event) {
   const item = getAvatarItem(button?.dataset.avatarId || card?.dataset.avatarPreviewId);
   if (!item) return;
 
-  if (!state.player.ownedAvatarItems?.[item.id]) {
-    state.avatarPreviewDraft = ["top", "bottom"].includes(item.slot)
-      ? { [item.slot]: item.id, outfit: "" }
-      : { [item.slot]: item.id };
+  state.avatarPreviewDraft = makeAvatarDraft(item);
+
+  if (!button) {
+    const owned = Boolean(state.player.ownedAvatarItems?.[item.id]);
+    const canBuy = (state.player.coin || 0) >= item.cost;
     renderAvatarShop();
-    showToast("잠긴 아이템", "쿠키샵에서 구매하면 착용할 수 있어요");
+    showToast(
+      owned ? "입어보기" : "구매 전 미리보기",
+      owned
+        ? "버튼을 누르면 바로 적용돼요"
+        : canBuy
+          ? "마음에 들면 드레스룸에서 바로 구매할 수 있어요"
+          : `쿠키가 ${item.cost - (state.player.coin || 0)}개 더 필요해요`
+    );
     return;
   }
 
-  state.avatarPreviewDraft = ["top", "bottom"].includes(item.slot)
+  if (button.dataset.avatarAction === "buy") {
+    buyAvatarItem(item);
+    return;
+  }
+
+  equipAvatarItem(item.id);
+}
+
+function makeAvatarDraft(item) {
+  return ["top", "bottom"].includes(item.slot)
     ? { [item.slot]: item.id, outfit: "" }
     : { [item.slot]: item.id };
-
-  if (!button || button.dataset.avatarAction === "equip") {
-    equipAvatarItem(item.id);
-    return;
-  }
-
-  showToast("잠긴 아이템", "쿠키샵에서 먼저 구매해 주세요");
 }
 
 function handleShopAvatarPurchaseClick(event) {
