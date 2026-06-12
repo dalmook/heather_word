@@ -1650,6 +1650,7 @@ function renderAvatar(targetElement, equippedAvatar = state.player.equippedAvata
   // so the home hero never stacks mismatched emoji/shape layers over SVG parts.
   const layerOrder = ["body", "outfit", "face", "hair", "accessory"];
   const layers = layerOrder
+    .filter((slot) => !(avatar.outfit && ["top", "bottom"].includes(slot)))
     .map((slot) => avatar[slot])
     .filter(Boolean)
     .map((itemId) => getAvatarItem(itemId))
