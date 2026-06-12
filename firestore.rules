@@ -98,12 +98,17 @@ service cloud.firestore {
         && (!('ownedAvatarItems' in data) || (data.ownedAvatarItems is map && data.ownedAvatarItems.size() <= 80))
         && (!('equippedAvatar' in data) || (
           data.equippedAvatar is map
-          && data.equippedAvatar.keys().hasOnly(['body', 'face', 'hair', 'outfit', 'accessory'])
+          && data.equippedAvatar.keys().hasOnly(['background', 'body', 'face', 'hair', 'top', 'bottom', 'outfit', 'shoes', 'accessory', 'effect'])
+          && (!('background' in data.equippedAvatar) || (data.equippedAvatar.background is string && data.equippedAvatar.background.size() <= 80))
           && (!('body' in data.equippedAvatar) || (data.equippedAvatar.body is string && data.equippedAvatar.body.size() <= 80))
           && (!('face' in data.equippedAvatar) || (data.equippedAvatar.face is string && data.equippedAvatar.face.size() <= 80))
           && (!('hair' in data.equippedAvatar) || (data.equippedAvatar.hair is string && data.equippedAvatar.hair.size() <= 80))
+          && (!('top' in data.equippedAvatar) || (data.equippedAvatar.top is string && data.equippedAvatar.top.size() <= 80))
+          && (!('bottom' in data.equippedAvatar) || (data.equippedAvatar.bottom is string && data.equippedAvatar.bottom.size() <= 80))
           && (!('outfit' in data.equippedAvatar) || (data.equippedAvatar.outfit is string && data.equippedAvatar.outfit.size() <= 80))
+          && (!('shoes' in data.equippedAvatar) || (data.equippedAvatar.shoes is string && data.equippedAvatar.shoes.size() <= 80))
           && (!('accessory' in data.equippedAvatar) || (data.equippedAvatar.accessory is string && data.equippedAvatar.accessory.size() <= 80))
+          && (!('effect' in data.equippedAvatar) || (data.equippedAvatar.effect is string && data.equippedAvatar.effect.size() <= 80))
         ))
         && (!('ownedThemes' in data) || (data.ownedThemes is map && data.ownedThemes.size() <= 100))
         && (!('equippedTheme' in data) || (data.equippedTheme is string && data.equippedTheme.size() <= 80))
