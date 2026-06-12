@@ -20,12 +20,38 @@ heather_word/
 ├─ index.html
 ├─ style.css
 ├─ app.js
+├─ avatar-phaser.js
 ├─ words.json
 ├─ firebase-config.js
 ├─ firebase.json
 ├─ firestore.rules
 └─ README.md
 ```
+
+
+## Phaser 아바타 드레스룸
+
+- `DRESS / 아바타 드레스룸`은 Phaser 3 CDN(`https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js`)과 `avatar-phaser.js`로 렌더링합니다.
+- 빌드 도구나 npm 번들러 없이 GitHub Pages에서 바로 실행됩니다. Phaser 로드에 실패하면 기존 DOM 아바타 미리보기와 안내 문구가 표시되어 앱 전체가 멈추지 않습니다.
+- 아바타 저장 데이터는 기존 플레이어 저장 흐름을 유지합니다.
+  - 착용 조합: `player.equippedAvatar`
+  - 보유 파츠: `player.ownedAvatarItems`
+  - LOCAL 모드: `localStorage`의 `heather_word_v3`
+  - Firebase 모드: 기존 `syncPlayer()`가 Firestore player 문서에 저장
+- 기본 아바타 파츠는 무료 지급되며, 잠긴 파츠는 드레스룸에서 흐리게 표시됩니다. 쿠키샵의 `아바타 꾸미기` 섹션에서 구매하면 드레스룸에서 착용할 수 있습니다.
+- 드레스룸의 `이미지 저장` 버튼은 Phaser canvas를 `heather-avatar.png`로 다운로드합니다.
+
+### 아바타 PNG/SVG 이미지 교체 방법
+
+1. `assets/avatar/<slot>/` 아래에 SVG 또는 PNG 파일을 추가합니다. 예: `assets/avatar/top/top05.png`
+2. `app.js`의 `AVATAR_ITEMS`에 다음처럼 파츠를 등록합니다.
+
+```js
+{ id: "top_space_05", slot: "top", name: "우주 티셔츠", cost: 700, rarity: "epic", src: "./assets/avatar/top/top05.png", color: "#6366f1" }
+```
+
+3. `src`는 기존 DOM 미리보기/쿠키샵 카드에 사용되고, `color`, `accent`, `variant`, `icon`은 Phaser 임시 그래픽 렌더러의 대체 표현에 사용됩니다.
+4. 완전한 PNG 레이어 렌더링으로 바꾸려면 `avatar-phaser.js`의 각 `drawTop`, `drawHair` 같은 슬롯별 그리기 함수를 이미지 로딩 방식으로 교체하면 됩니다.
 
 ## Firebase 연결 방법
 

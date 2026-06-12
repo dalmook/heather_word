@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#141b34" />
   <meta name="description" content="카테고리별 영어 단어와 스펠링을 연습하는 Heather Word" />
   <title>Heather Word · Spellingmon</title>
-  <link rel="stylesheet" href="./style.css?v=7.3" />
+  <link rel="stylesheet" href="./style.css?v=7.4" />
 </head>
 <body>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -289,11 +289,14 @@
             <strong>전신 스타일링 스튜디오</strong>
             <small>피부톤부터 헤어, 얼굴, 옷, 소품까지 한눈에 꾸며요.</small>
           </div>
-          <div class="avatar-room dress-room">
-            <div class="avatar-room-bg" aria-hidden="true"></div>
-            <div class="avatar-room-shelf" aria-hidden="true"></div>
-            <div id="dressAvatarPreview" class="avatar-preview shop-avatar-preview" role="img" aria-label="아바타 전신 미리보기"></div>
-            <div class="avatar-room-floor" aria-hidden="true"></div>
+          <div class="avatar-room dress-room phaser-dress-room">
+            <div id="avatarGame" class="avatar-game" role="img" aria-label="Phaser 전신 아바타 미리보기"></div>
+            <div id="avatarGameStatus" class="avatar-game-status" role="status" aria-live="polite" hidden>드레스룸을 불러오는 중이에요…</div>
+            <div id="dressAvatarPreview" class="avatar-preview shop-avatar-preview fallback-avatar-preview" role="img" aria-label="아바타 전신 미리보기"></div>
+          </div>
+          <div class="dress-action-row" aria-label="아바타 저장 도구">
+            <button id="saveAvatarBtn" class="soft-btn good">💾 코디 저장</button>
+            <button id="downloadAvatarBtn" class="soft-btn">📸 이미지 저장</button>
           </div>
           <div id="dressAvatarParts" class="avatar-parts" aria-label="현재 미리보기 파츠"></div>
         </section>
@@ -301,7 +304,7 @@
         <section class="dress-closet-panel avatar-shop-section">
           <div class="section-title avatar-room-title">
             <strong>옷장 카테고리</strong>
-            <small>카드를 누르면 바로 미리 입어볼 수 있어요.</small>
+            <small>카드를 누르면 미리 입어보고, 드레스룸에서 바로 구매/착용할 수 있어요.</small>
           </div>
           <div id="dressAvatarTabs" class="avatar-tabs dress-tabs" aria-label="아바타 꾸미기 분류"></div>
           <div id="dressAvatarGrid" class="shop-grid avatar-shop-grid dress-avatar-grid"></div>
@@ -323,6 +326,15 @@
             <small>구매 후 착용할 수 있어요</small>
           </div>
           <div id="shopItemGrid" class="shop-grid"></div>
+        </section>
+
+        <section class="shop-section">
+          <div class="section-title">
+            <strong>아바타 꾸미기</strong>
+            <small>구매한 파츠는 드레스룸에서 바로 입을 수 있어요</small>
+          </div>
+          <div id="shopAvatarTabs" class="avatar-tabs shop-avatar-tabs" aria-label="쿠키샵 아바타 분류"></div>
+          <div id="shopAvatarGrid" class="shop-grid avatar-shop-grid"></div>
         </section>
 
         <section class="shop-section">
@@ -458,8 +470,10 @@
 
   <input id="importFile" type="file" accept="application/json" hidden />
 
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js" defer></script>
+  <script src="./avatar-phaser.js?v=7.4" defer></script>
   <script src="./firebase-config.js"></script>
-  <script type="module" src="./app.js?v=6.8"></script>
+  <script type="module" src="./app.js?v=7.4"></script>
 </body>
 </html>
 
