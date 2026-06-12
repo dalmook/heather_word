@@ -5053,3 +5053,70 @@ body.theme-legend {
     grid-template-columns: 1fr;
   }
 }
+
+/* v7.4.1 dressroom visibility and avatar overlap fix */
+.dress-scroll {
+  height: calc(var(--vh, 100dvh) - 118px);
+  padding-bottom: max(96px, env(safe-area-inset-bottom));
+}
+
+.phaser-dress-room {
+  min-height: 0;
+  height: clamp(320px, 46vh, 430px);
+}
+
+.avatar-game {
+  min-height: 0;
+}
+
+.avatar-game canvas {
+  max-height: 460px;
+}
+
+.dress-action-row {
+  position: sticky;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  z-index: 8;
+  padding: 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 14px 30px rgba(88, 28, 135, 0.16);
+  backdrop-filter: blur(10px);
+}
+
+#homeScreen .avatar-generated-layer,
+.fallback-avatar-preview .avatar-generated-layer {
+  display: none;
+}
+
+@media (max-width: 430px) {
+  .dress-scroll {
+    height: calc(var(--vh, 100dvh) - 104px);
+    padding: 10px 10px max(110px, env(safe-area-inset-bottom));
+  }
+
+  .dress-hero-card,
+  .dress-closet-panel {
+    border-radius: 22px;
+    padding: 10px;
+  }
+
+  .phaser-dress-room {
+    height: clamp(300px, 42vh, 360px);
+  }
+
+  .avatar-game {
+    inset: 6px;
+  }
+
+  .dress-action-row .soft-btn {
+    min-height: 42px;
+  }
+}
+
+@media (max-width: 395px) {
+  .phaser-dress-room {
+    min-height: 0;
+    height: 330px;
+  }
+}

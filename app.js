@@ -54,7 +54,7 @@ const DEFAULT_AVATAR = Object.freeze({
   hair: "hair_basic_01",
   top: "top_sky_01",
   bottom: "bottom_denim_01",
-  outfit: "",
+  outfit: "outfit_basic_01",
   shoes: "shoes_cookie_01",
   accessory: "",
   effect: ""
@@ -1645,13 +1645,16 @@ function renderAvatar(targetElement, equippedAvatar = state.player.equippedAvata
   const avatar = normalizeEquippedAvatar(avatarSource, state.player.ownedAvatarItems, {
     allowUnowned: Boolean(options.draftAvatar) || Boolean(options.allowUnowned)
   });
-  const layerOrder = ["body", "shoes", "bottom", "outfit", "top", "face", "hair", "accessory", "effect"];
+  // DOM previews use the existing aligned SVG assets only. Generated Phaser-only
+  // pieces (top/bottom/shoes/background/effect) are intentionally skipped here
+  // so the home hero never stacks mismatched emoji/shape layers over SVG parts.
+  const layerOrder = ["body", "outfit", "face", "hair", "accessory"];
   const layers = layerOrder
     .filter((slot) => !(avatar.outfit && ["top", "bottom"].includes(slot)))
     .map((slot) => avatar[slot])
     .filter(Boolean)
     .map((itemId) => getAvatarItem(itemId))
-    .filter(Boolean);
+    .filter((item) => item?.src);
 
   targetElement.classList.add("avatar-preview");
   if (options.compact) targetElement.classList.add("compact");
@@ -2042,13 +2045,17 @@ function handleAvatarShopClick(event) {
   if (!item) return;
 
   if (!state.player.ownedAvatarItems?.[item.id]) {
-    state.avatarPreviewDraft = { [item.slot]: item.id };
+    state.avatarPreviewDraft = ["top", "bottom"].includes(item.slot)
+      ? { [item.slot]: item.id, outfit: "" }
+      : { [item.slot]: item.id };
     renderAvatarShop();
     showToast("잠긴 아이템", "쿠키샵에서 구매하면 착용할 수 있어요");
     return;
   }
 
-  state.avatarPreviewDraft = { [item.slot]: item.id };
+  state.avatarPreviewDraft = ["top", "bottom"].includes(item.slot)
+    ? { [item.slot]: item.id, outfit: "" }
+    : { [item.slot]: item.id };
 
   if (!button || button.dataset.avatarAction === "equip") {
     equipAvatarItem(item.id);
@@ -3480,8 +3487,11 @@ function normalizeEquippedAvatar(avatar, ownedItems = DEFAULT_OWNED_AVATAR_ITEMS
     if (item && item.slot === slot && (ownedItems[itemId] || options.allowUnowned)) normalized[slot] = itemId;
   }
 
-  if (source.accessory === "") normalized.accessory = "";
+  for (const optionalSlot of ["outfit", "accessory", "effect"]) {
+    if (source[optionalSlot] === "") normalized[optionalSlot] = "";
+  }
   if (normalized.accessory && !ownedItems[normalized.accessory] && !options.allowUnowned) normalized.accessory = "";
+  if (normalized.effect && !ownedItems[normalized.effect] && !options.allowUnowned) normalized.effect = "";
   return normalized;
 }
 

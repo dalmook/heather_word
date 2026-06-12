@@ -3,7 +3,7 @@
   "use strict";
 
   const GAME_WIDTH = 360;
-  const GAME_HEIGHT = 520;
+  const GAME_HEIGHT = 460;
   const LAYERS = ["background", "effect", "body", "face", "hair", "top", "bottom", "outfit", "shoes", "accessory"];
 
   class AvatarDressScene extends Phaser.Scene {
@@ -48,14 +48,14 @@
 
       const selected = this.resolveSelectedParts();
       this.drawBackground(selected.background);
+      this.drawEffect(selected.effect);
       this.drawBody(selected.body);
       this.drawShoes(selected.shoes);
       this.drawBottom(selected.bottom);
       this.drawTop(selected.top, selected.outfit);
-      this.drawFace(selected.face);
       this.drawHair(selected.hair);
+      this.drawFace(selected.face);
       this.drawAccessory(selected.accessory);
-      this.drawEffect(selected.effect);
 
       if (withSparkle) this.burst(180, 210, 12, 0xffffff);
     }
@@ -100,7 +100,7 @@
       g.fillRoundedRect(28, 44, 74, 92, 20);
       g.fillRoundedRect(252, 58, 78, 52, 18);
       g.fillStyle(0xfff3c7, 0.85);
-      g.fillEllipse(180, 460, 310, 92);
+      g.fillEllipse(180, 410, 292, 76);
       this.stage.add(g);
     }
 
@@ -109,15 +109,16 @@
       const blush = this.color(part, "#fb7185", "accent");
       const g = this.graphics();
       g.fillStyle(skin, 1);
-      g.fillEllipse(180, 152, 112, 126);
-      g.fillRoundedRect(138, 198, 84, 146, 42);
-      g.fillRoundedRect(108, 222, 38, 124, 20);
-      g.fillRoundedRect(214, 222, 38, 124, 20);
-      g.fillRoundedRect(144, 328, 34, 92, 18);
-      g.fillRoundedRect(184, 328, 34, 92, 18);
-      g.fillStyle(blush, 0.28);
-      g.fillCircle(142, 166, 10);
-      g.fillCircle(218, 166, 10);
+      g.fillEllipse(180, 126, 100, 112);
+      g.fillRoundedRect(158, 176, 44, 38, 16);
+      g.fillRoundedRect(132, 205, 96, 126, 36);
+      g.fillRoundedRect(98, 218, 38, 112, 19);
+      g.fillRoundedRect(224, 218, 38, 112, 19);
+      g.fillRoundedRect(142, 318, 34, 78, 17);
+      g.fillRoundedRect(184, 318, 34, 78, 17);
+      g.fillStyle(blush, 0.32);
+      g.fillCircle(144, 142, 9);
+      g.fillCircle(216, 142, 9);
       this.stage.add(g);
     }
 
@@ -126,16 +127,16 @@
       const eye = this.color(part, "#1f2937");
       g.fillStyle(eye, 1);
       if (part?.variant === "wink") {
-        g.fillCircle(156, 150, 7);
-        g.lineStyle(4, eye, 1).beginPath().moveTo(202, 150).lineTo(220, 146).strokePath();
+        g.fillCircle(158, 126, 6);
+        g.lineStyle(4, eye, 1).beginPath().moveTo(202, 126).lineTo(218, 122).strokePath();
       } else if (part?.variant === "sparkle") {
-        this.star(g, 156, 150, 10, 0x6366f1);
-        this.star(g, 208, 150, 10, 0x6366f1);
+        this.star(g, 158, 126, 9, 0x6366f1);
+        this.star(g, 208, 126, 9, 0x6366f1);
       } else {
-        g.fillCircle(156, 150, 7);
-        g.fillCircle(208, 150, 7);
+        g.fillCircle(158, 126, 6);
+        g.fillCircle(208, 126, 6);
       }
-      g.lineStyle(4, 0xd94673, 1).beginPath().arc(182, 172, 18, 0.12, Math.PI - 0.12).strokePath();
+      g.lineStyle(4, 0xd94673, 1).beginPath().arc(183, 150, 17, 0.12, Math.PI - 0.12).strokePath();
       this.stage.add(g);
     }
 
@@ -144,17 +145,21 @@
       const accent = this.color(part, "#f9a8d4", "accent");
       const g = this.graphics();
       g.fillStyle(hair, 1);
-      g.fillEllipse(180, 112, 126, 78);
-      g.fillRoundedRect(118, 118, 36, 100, 20);
-      g.fillRoundedRect(208, 118, 36, 100, 20);
+      g.fillEllipse(180, 84, 116, 54);
+      g.fillRoundedRect(122, 92, 30, 104, 18);
+      g.fillRoundedRect(210, 92, 30, 104, 18);
+      g.fillTriangle(136, 98, 182, 72, 224, 98);
       if (part?.variant === "twintail" || part?.variant === "ponytail") {
-        g.fillCircle(108, 166, 34);
-        g.fillCircle(252, 166, 34);
+        g.fillCircle(108, 150, 28);
+        g.fillCircle(252, 150, 28);
         g.fillStyle(accent, 1);
-        g.fillCircle(112, 134, 9);
-        g.fillCircle(248, 134, 9);
+        g.fillCircle(116, 108, 8);
+        g.fillCircle(244, 108, 8);
       }
-      if (part?.variant === "long") g.fillRoundedRect(126, 176, 108, 110, 32);
+      if (part?.variant === "long") {
+        g.fillStyle(hair, 0.96);
+        g.fillRoundedRect(122, 170, 116, 74, 26);
+      }
       this.stage.add(g);
     }
 
@@ -164,12 +169,18 @@
       const accent = this.color(part, "#fef08a", "accent");
       const g = this.graphics();
       g.fillStyle(fill, 1);
-      g.fillRoundedRect(128, 208, 104, outfit ? 146 : 92, 24);
-      g.fillRoundedRect(102, 224, 44, 74, 20);
-      g.fillRoundedRect(214, 224, 44, 74, 20);
-      g.fillStyle(accent, 0.9);
-      if (outfit) g.fillTriangle(132, 340, 228, 340, 252, 405);
-      else g.fillCircle(180, 254, 15);
+      g.fillRoundedRect(124, 196, 112, outfit ? 130 : 92, 26);
+      g.fillRoundedRect(96, 210, 48, 68, 22);
+      g.fillRoundedRect(216, 210, 48, 68, 22);
+      g.fillStyle(0xffffff, 0.62);
+      g.fillTriangle(158, 198, 202, 198, 180, 230);
+      g.fillStyle(accent, 0.86);
+      if (outfit) {
+        g.fillTriangle(126, 312, 234, 312, 258, 382);
+        g.fillTriangle(126, 312, 180, 372, 102, 382);
+      } else {
+        g.fillCircle(180, 248, 11);
+      }
       this.stage.add(g);
     }
 
@@ -177,16 +188,16 @@
       if (!part) return;
       const g = this.graphics();
       g.fillStyle(this.color(part, "#8b5cf6"), 1);
-      g.fillRoundedRect(134, 300, 42, 76, 12);
-      g.fillRoundedRect(184, 300, 42, 76, 12);
+      g.fillRoundedRect(134, 292, 42, 70, 12);
+      g.fillRoundedRect(184, 292, 42, 70, 12);
       this.stage.add(g);
     }
 
     drawShoes(part) {
       const g = this.graphics();
       g.fillStyle(this.color(part, "#7c2d12"), 1);
-      g.fillRoundedRect(128, 405, 54, 24, 12);
-      g.fillRoundedRect(178, 405, 54, 24, 12);
+      g.fillRoundedRect(126, 386, 56, 22, 11);
+      g.fillRoundedRect(178, 386, 56, 22, 11);
       this.stage.add(g);
     }
 
@@ -219,7 +230,7 @@
       const fill = this.color(part, "#fde047");
       for (let i = 0; i < 8; i += 1) {
         const angle = (Math.PI * 2 * i) / 8;
-        this.star(g, 180 + Math.cos(angle) * 120, 226 + Math.sin(angle) * 156, 8, fill, 0.72);
+        this.star(g, 180 + Math.cos(angle) * 118, 206 + Math.sin(angle) * 132, 8, fill, 0.72);
       }
       this.stage.add(g);
     }
