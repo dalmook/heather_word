@@ -944,7 +944,7 @@ function render() {
   applyEquippedTheme();
 
   const pet = getCurrentMonster();
-  renderAvatar(dom.avatarPreview, state.player.equippedAvatar);
+  renderHomePet(dom.avatarPreview);
   renderEquippedAccessory();
   dom.petName.textContent = pet.name;
   dom.petMsg.textContent = pet.message;
@@ -966,6 +966,24 @@ function render() {
   renderPetCare();
   renderRewardClaims();
   renderRoundProgress();
+}
+
+function renderHomePet(targetElement) {
+  if (!targetElement) {
+    if (dom.petEmoji) dom.petEmoji.textContent = getCarePet()?.emoji || "🥚";
+    return;
+  }
+
+  const pet = getCarePet();
+  const stats = getPetCareStats();
+  const stage = getPetGrowthStage(stats.level);
+  const emoji = pet?.emoji || "🥚";
+
+  targetElement.classList.remove("avatar-preview", "drafting");
+  targetElement.classList.add("home-pet-emoji");
+  targetElement.style.setProperty("--pet-size", `${pet ? stage.size : 86}px`);
+  targetElement.setAttribute("aria-label", pet ? `현재 함께 지내는 펫 ${pet.name}` : "입양을 기다리는 펫 알");
+  targetElement.textContent = emoji;
 }
 
 function renderProfileButton() {
