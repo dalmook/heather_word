@@ -5149,7 +5149,7 @@ body.theme-legend {
   box-shadow: 0 10px 20px rgba(16, 185, 129, 0.18);
 }
 
-/* v7.3.2 home pet hero: show the equipped pet instead of the dress-up character */
+/* v7.3.2 home pet hero: show the latest collected monster instead of the dress-up character */
 #homeScreen .home-pet-emoji {
   width: clamp(132px, 35vw, 166px);
   height: clamp(132px, 35vw, 166px);

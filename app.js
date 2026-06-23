@@ -944,7 +944,7 @@ function render() {
   applyEquippedTheme();
 
   const pet = getCurrentMonster();
-  renderHomePet(dom.avatarPreview);
+  renderHomePet(dom.avatarPreview, pet);
   renderEquippedAccessory();
   dom.petName.textContent = pet.name;
   dom.petMsg.textContent = pet.message;
@@ -968,21 +968,18 @@ function render() {
   renderRoundProgress();
 }
 
-function renderHomePet(targetElement) {
+function renderHomePet(targetElement, currentMonster = getCurrentMonster()) {
+  const emoji = currentMonster?.emoji || "🥚";
+
   if (!targetElement) {
-    if (dom.petEmoji) dom.petEmoji.textContent = getCarePet()?.emoji || "🥚";
+    if (dom.petEmoji) dom.petEmoji.textContent = emoji;
     return;
   }
 
-  const pet = getCarePet();
-  const stats = getPetCareStats();
-  const stage = getPetGrowthStage(stats.level);
-  const emoji = pet?.emoji || "🥚";
-
   targetElement.classList.remove("avatar-preview", "drafting");
   targetElement.classList.add("home-pet-emoji");
-  targetElement.style.setProperty("--pet-size", `${pet ? stage.size : 86}px`);
-  targetElement.setAttribute("aria-label", pet ? `현재 함께 지내는 펫 ${pet.name}` : "입양을 기다리는 펫 알");
+  targetElement.style.setProperty("--pet-size", "96px");
+  targetElement.setAttribute("aria-label", currentMonster?.name ? `현재 모은 최종 펫 ${currentMonster.name}` : "현재 모은 최종 펫");
   targetElement.textContent = emoji;
 }
 
