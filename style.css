@@ -5148,3 +5148,16 @@ body.theme-legend {
 .dress-avatar-grid .avatar-product.for-sale .soft-btn:not(:disabled) {
   box-shadow: 0 10px 20px rgba(16, 185, 129, 0.18);
 }
+
+/* v7.3.2 home pet hero: show the equipped pet instead of the dress-up character */
+#homeScreen .home-pet-emoji {
+  width: clamp(132px, 35vw, 166px);
+  height: clamp(132px, 35vw, 166px);
+  display: grid;
+  place-items: center;
+  font-size: clamp(76px, var(--pet-size, 90px), 112px);
+  line-height: 1;
+  filter: drop-shadow(0 16px 22px rgba(124, 58, 237, 0.24));
+  animation: petBob 2.2s ease-in-out infinite;
+  user-select: none;
+}
