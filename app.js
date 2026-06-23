@@ -944,7 +944,7 @@ function render() {
   applyEquippedTheme();
 
   const pet = getCurrentMonster();
-  renderAvatar(dom.avatarPreview, state.player.equippedAvatar);
+  renderHomePet(dom.avatarPreview, pet);
   renderEquippedAccessory();
   dom.petName.textContent = pet.name;
   dom.petMsg.textContent = pet.message;
@@ -966,6 +966,21 @@ function render() {
   renderPetCare();
   renderRewardClaims();
   renderRoundProgress();
+}
+
+function renderHomePet(targetElement, currentMonster = getCurrentMonster()) {
+  const emoji = currentMonster?.emoji || "🥚";
+
+  if (!targetElement) {
+    if (dom.petEmoji) dom.petEmoji.textContent = emoji;
+    return;
+  }
+
+  targetElement.classList.remove("avatar-preview", "drafting");
+  targetElement.classList.add("home-pet-emoji");
+  targetElement.style.setProperty("--pet-size", "96px");
+  targetElement.setAttribute("aria-label", currentMonster?.name ? `현재 모은 최종 펫 ${currentMonster.name}` : "현재 모은 최종 펫");
+  targetElement.textContent = emoji;
 }
 
 function renderProfileButton() {
