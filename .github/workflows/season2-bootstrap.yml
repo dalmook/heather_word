@@ -1,0 +1,42 @@
+name: Bootstrap Season 2 release
+
+on:
+  push:
+    branches: ["codex/heather-word-season2"]
+    paths:
+      - ".github/workflows/season2-bootstrap.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/heather-word-season2
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Expand and verify release
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat tools/season2-upload.part{00..10} | base64 --decode > /tmp/heather-season2.tgz
+          echo "a391b8676751228803286016bb5846b05f2f103207f9c60f94b800232d19a6bf  /tmp/heather-season2.tgz" | sha256sum -c -
+          tar -xzf /tmp/heather-season2.tgz -C .
+          rm -f tools/season2-upload.part* tools/season2-bundle.part*
+          rm -f .github/workflows/season2-bootstrap.yml
+          npm run check
+      - name: Commit verified release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: ship Heather Word Season 2 learning adventure"
+          git push origin HEAD:codex/heather-word-season2
