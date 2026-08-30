@@ -34,7 +34,7 @@ jobs:
           echo "2ecd13f267d9d49c4c75096034c07c1bc62edf4df007ce810cd227119461bcc4  /tmp/heather-season2-release.tgz" | sha256sum -c -
           tar -xzf /tmp/heather-season2-release.tgz -C .
           rm -f tools/.season2-release.part*
-          rm -f .github/workflows/season2-bootstrap.yml
+          rm -f .github/workflows/season2-checks.yml
           npm run check
       - name: Commit verified source and assets
         shell: bash
