@@ -1,0 +1,6 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="오로라월러스">
+    <defs><radialGradient id="bg-s2_ice_frost_seal_3" cx="50%" cy="35%" r="70%"><stop offset="0" stop-color="#f0f9ff"/><stop offset="1" stop-color="#0284c7" stop-opacity=".22"/></radialGradient></defs>
+    <circle cx="120" cy="120" r="112" fill="url(#bg-s2_ice_frost_seal_3)"/>
+    <g><path d="M52 135q3-72 68-78 65 6 68 78l28 45-50-5q-46 42-92 0l-50 5z" fill="#e0f2fe" stroke="#0369a1" stroke-width="7"/><circle cx="94" cy="111" r="7" fill="#172033"/><circle cx="146" cy="111" r="7" fill="#172033"/><ellipse cx="120" cy="132" rx="23" ry="19" fill="#ffffff"/><path d="M120 127v18M120 145l-13 9M120 145l13 9" stroke="#0369a1" stroke-width="4"/><path d="M52 157L13 132l17 58 38-8M188 157l39-25-17 58-38-8" fill="#ffffff" stroke="#0369a1" stroke-width="7"/><path d="M82 61l14-31 24 20 24-20 14 31" fill="#fde047" stroke="#a16207" stroke-width="6" stroke-linejoin="round"/><circle cx="120" cy="30" r="8" fill="#fff"/><path d="M75 199q45 27 90 0" fill="none" stroke="#fde047" stroke-width="10" stroke-linecap="round"/><g transform="translate(184 151)" stroke="#0369a1" stroke-width="5" stroke-linecap="round"><path d="M0-31V31M-27-16L27 16M-27 16L27-16"/><path d="M0-31l-8 9M0-31l8 9M0 31l-8-9M0 31l8-9"/></g></g>
+    
+  </svg>
