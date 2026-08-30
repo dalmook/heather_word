@@ -25,7 +25,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat tools/.season2-release.part{00..11} | base64 --decode > /tmp/heather-season2-release.tgz
+          cat \
+            tools/.season2-release.part00a \
+            tools/.season2-release.part00b \
+            tools/.season2-release.part00c \
+            tools/.season2-release.part{01..11} \
+            | base64 --decode > /tmp/heather-season2-release.tgz
           echo "2ecd13f267d9d49c4c75096034c07c1bc62edf4df007ce810cd227119461bcc4  /tmp/heather-season2-release.tgz" | sha256sum -c -
           tar -xzf /tmp/heather-season2-release.tgz -C .
           rm -f tools/.season2-release.part*
