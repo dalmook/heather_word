@@ -22,15 +22,22 @@ jobs:
           set -euo pipefail
           ok=0
           for attempt in {1..30}; do
-            if curl -fsSL --retry 2 "${BASE_URL}/season2.js?deploy=${RELEASE_SHA}" | grep -q '스펠링 월드 시즌 2' \
-              && curl -fsSL --retry 2 "${BASE_URL}/firebase-config.js?deploy=${RELEASE_SHA}" | grep -q 'installHeatherSeason2Loader' \
-              && curl -fsSL --retry 2 "${BASE_URL}/assets/monsters/season2/cookie/crumb_bear_1.svg?deploy=${RELEASE_SHA}" | grep -q '<svg'; then
+            if curl -fsSL --retry 2 "${BASE_URL}/season2.js?deploy=${RELEASE_SHA}" -o /tmp/season2.js \
+              && curl -fsSL --retry 2 "${BASE_URL}/firebase-config.js?deploy=${RELEASE_SHA}" -o /tmp/firebase-config.js \
+              && curl -fsSL --retry 2 "${BASE_URL}/assets/monsters/season2/cookie/crumb_bear_1.svg?deploy=${RELEASE_SHA}" -o /tmp/crumb-bear.svg \
+              && grep -q '스펠링 월드 시즌 2' /tmp/season2.js \
+              && grep -q 'installHeatherSeason2Loader' /tmp/firebase-config.js \
+              && grep -q '<svg' /tmp/crumb-bear.svg; then
               ok=1
               break
             fi
             sleep 4
           done
           test "$ok" -eq 1
+          printf 'live assets: season2.js=%s bytes, firebase-config.js=%s bytes, svg=%s bytes\n' \
+            "$(wc -c < /tmp/season2.js)" \
+            "$(wc -c < /tmp/firebase-config.js)" \
+            "$(wc -c < /tmp/crumb-bear.svg)"
 
       - name: Verify live mobile DOM after JavaScript boot
         shell: bash
@@ -60,5 +67,9 @@ jobs:
             fi
             sleep 4
           done
-          test "$ok" -eq 1
+          if [ "$ok" -ne 1 ]; then
+            cat /tmp/heather-live-browser.log || true
+            grep -n 'season2\|모험\|bootstrap failed' /tmp/heather-live-dom.html | head -50 || true
+            exit 1
+          fi
           grep -o '스펠링 월드 시즌 2\|오늘의 모험 시작' /tmp/heather-live-dom.html | sort -u
