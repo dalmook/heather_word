@@ -21,7 +21,7 @@ window.HEATHER_FIREBASE_CONFIG = {
 // Firebase mode, legacy data, and Phaser fallback remain intact.
 (function installHeatherSeason2Loader() {
   const LOCAL_KEY = "heather_word_v3";
-  const RELEASE = "8.0.0";
+  const RELEASE = "8.1.0";
 
   // The legacy app keeps its own in-memory player object. Preserve a newer
   // Season 2 revision if the legacy save routine writes an older snapshot.
@@ -60,20 +60,29 @@ window.HEATHER_FIREBASE_CONFIG = {
     };
   }
 
-  function loadSeason2() {
-    if (document.querySelector("script[data-heather-season2]")) return;
-
+  function appendStyle(href, marker) {
+    if (document.querySelector(`link[data-${marker}]`)) return;
     const style = document.createElement("link");
     style.rel = "stylesheet";
-    style.href = `./season2.css?v=${RELEASE}`;
-    style.dataset.heatherSeason2 = RELEASE;
+    style.href = `${href}?v=${RELEASE}`;
+    style.setAttribute(`data-${marker}`, RELEASE);
     document.head.appendChild(style);
+  }
 
+  function appendModule(src, marker) {
+    if (document.querySelector(`script[data-${marker}]`)) return;
     const script = document.createElement("script");
     script.type = "module";
-    script.src = `./season2.js?v=${RELEASE}`;
-    script.dataset.heatherSeason2 = RELEASE;
+    script.src = `${src}?v=${RELEASE}`;
+    script.setAttribute(`data-${marker}`, RELEASE);
     document.body.appendChild(script);
+  }
+
+  function loadSeason2() {
+    appendStyle("./season2.css", "heather-season2-style");
+    appendStyle("./season2-polish.css", "heather-season2-polish-style");
+    appendModule("./season2.js", "heather-season2");
+    appendModule("./season2-polish.js", "heather-season2-polish");
   }
 
   if (document.readyState === "loading") {
