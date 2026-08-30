@@ -1,0 +1,37 @@
+name: UI v9 audit and preview
+
+on:
+  push:
+    branches: ["codex/commercial-ui-v9"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-current:
+    if: ${{ !contains(github.event.head_commit.message || '', '[skip baseline]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Capture current production at target viewports
+        shell: bash
+        run: |
+          set -euo pipefail
+          browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$browser"
+          mkdir -p audit/before
+          for size in 360x800 375x812 390x844 412x915 430x932 768x1024 1440x1000; do
+            width="${size%x*}"
+            height="${size#*x}"
+            "$browser" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
+              --hide-scrollbars --window-size="${width},${height}" --virtual-time-budget=15000 \
+              --screenshot="audit/before/home-${size}.png" \
+              "https://dalmook.github.io/heather_word/?mode=local&baseline=${GITHUB_SHA}"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: heather-word-before-${{ github.sha }}
+          path: audit/before/*.png
+          retention-days: 14
