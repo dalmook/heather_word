@@ -1,0 +1,72 @@
+name: UI audit v10 baseline
+
+on:
+  push:
+    branches: ["ux/premium-app-v10"]
+    paths:
+      - ".github/workflows/ui-audit-v10.yml"
+      - "qa/**"
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Capture current production viewports
+        shell: bash
+        env:
+          BASE_URL: https://dalmook.github.io/heather_word/?audit=pre-v10
+        run: |
+          set -euo pipefail
+          browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$browser"
+          mkdir -p qa/baseline
+          for spec in 360x800 375x812 390x844 412x915 430x932 768x1024 1440x1000; do
+            width="${spec%x*}"
+            height="${spec#*x}"
+            "$browser" \
+              --headless=new \
+              --no-sandbox \
+              --disable-gpu \
+              --disable-dev-shm-usage \
+              --hide-scrollbars \
+              --window-size="${width},${height}" \
+              --virtual-time-budget=15000 \
+              --screenshot="qa/baseline/home-${spec}.png" \
+              "$BASE_URL&viewport=${spec}" >/tmp/chrome-${spec}.log 2>&1
+          done
+
+          "$browser" \
+            --headless=new \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-dev-shm-usage \
+            --window-size=390,844 \
+            --virtual-time-budget=15000 \
+            --dump-dom \
+            "$BASE_URL&viewport=390x844" > qa/baseline/home-390x844.html 2>qa/baseline/browser.log
+
+          python - <<'PY'
+          from pathlib import Path
+          import json, re
+          html = Path('qa/baseline/home-390x844.html').read_text(encoding='utf-8', errors='ignore')
+          metrics = {
+              'buttons': len(re.findall(r'<button\b', html)),
+              'screens': len(re.findall(r'class="[^"]*screen', html)),
+              'emoji_candidates': len(re.findall(r'[\U0001F300-\U0001FAFF]', html)),
+              'primary_cta_mentions': html.count('오늘의 모험 시작'),
+              'home_panel_mentions': html.count('season2HomePanel'),
+              'legacy_pet_card_mentions': html.count('pet-card'),
+          }
+          Path('qa/baseline/metrics.json').write_text(json.dumps(metrics, ensure_ascii=False, indent=2), encoding='utf-8')
+          print(json.dumps(metrics, ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: heather-word-ui-baseline-v10
+          path: qa/baseline
+          retention-days: 14
