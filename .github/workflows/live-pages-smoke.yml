@@ -1,18 +1,15 @@
 name: Live Pages smoke
 
 on:
-  workflow_run:
-    workflows: ["pages build and deployment"]
-    types: [completed]
+  push:
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   smoke:
-    if: >-
-      ${{ github.event.workflow_run.conclusion == 'success' &&
-          github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -20,7 +17,7 @@ jobs:
         shell: bash
         env:
           BASE_URL: https://dalmook.github.io/heather_word
-          RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+          RELEASE_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           ok=0
@@ -39,7 +36,7 @@ jobs:
         shell: bash
         env:
           BASE_URL: https://dalmook.github.io/heather_word
-          RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+          RELEASE_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
