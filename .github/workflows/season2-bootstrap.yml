@@ -1,0 +1,42 @@
+name: Materialize Season 2 release
+
+on:
+  push:
+    branches: ["release/season2-live"]
+    paths:
+      - ".github/workflows/season2-bootstrap.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release/season2-live
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Decode checksum-verified release bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat tools/.season2-release.part{00..11} | base64 --decode > /tmp/heather-season2-release.tgz
+          echo "2ecd13f267d9d49c4c75096034c07c1bc62edf4df007ce810cd227119461bcc4  /tmp/heather-season2-release.tgz" | sha256sum -c -
+          tar -xzf /tmp/heather-season2-release.tgz -C .
+          rm -f tools/.season2-release.part*
+          rm -f .github/workflows/season2-bootstrap.yml
+          npm run check
+      - name: Commit verified source and assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: deploy Heather Word Season 2 adventure"
+          git push origin HEAD:release/season2-live
