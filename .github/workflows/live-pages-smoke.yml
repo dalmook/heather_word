@@ -1,0 +1,67 @@
+name: Live Pages smoke
+
+on:
+  workflow_run:
+    workflows: ["pages build and deployment"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.head_branch == 'main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify deployed static assets
+        shell: bash
+        env:
+          BASE_URL: https://dalmook.github.io/heather_word
+          RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          ok=0
+          for attempt in {1..30}; do
+            if curl -fsSL --retry 2 "${BASE_URL}/season2.js?deploy=${RELEASE_SHA}" | grep -q '스펠링 월드 시즌 2' \
+              && curl -fsSL --retry 2 "${BASE_URL}/firebase-config.js?deploy=${RELEASE_SHA}" | grep -q 'installHeatherSeason2Loader' \
+              && curl -fsSL --retry 2 "${BASE_URL}/assets/monsters/season2/cookie/crumb_bear_1.svg?deploy=${RELEASE_SHA}" | grep -q '<svg'; then
+              ok=1
+              break
+            fi
+            sleep 4
+          done
+          test "$ok" -eq 1
+
+      - name: Verify live mobile DOM after JavaScript boot
+        shell: bash
+        env:
+          BASE_URL: https://dalmook.github.io/heather_word
+          RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$browser"
+          ok=0
+          for attempt in {1..12}; do
+            "$browser" \
+              --headless=new \
+              --no-sandbox \
+              --disable-gpu \
+              --disable-dev-shm-usage \
+              --window-size=390,844 \
+              --virtual-time-budget=15000 \
+              --dump-dom \
+              "${BASE_URL}/?mode=local&deploy=${RELEASE_SHA}" > /tmp/heather-live-dom.html 2>/tmp/heather-live-browser.log || true
+            if grep -q 'id="season2HomePanel"' /tmp/heather-live-dom.html \
+              && grep -q '스펠링 월드 시즌 2' /tmp/heather-live-dom.html \
+              && grep -q '오늘의 모험 시작' /tmp/heather-live-dom.html; then
+              ok=1
+              break
+            fi
+            sleep 4
+          done
+          test "$ok" -eq 1
+          grep -o '스펠링 월드 시즌 2\|오늘의 모험 시작' /tmp/heather-live-dom.html | sort -u
