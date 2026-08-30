@@ -1,0 +1,6 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="새싹렉스">
+    <defs><radialGradient id="bg-s2_dinosaur_sprout_rex_1" cx="50%" cy="35%" r="70%"><stop offset="0" stop-color="#f7fee7"/><stop offset="1" stop-color="#65a30d" stop-opacity=".22"/></radialGradient></defs>
+    <circle cx="120" cy="120" r="112" fill="url(#bg-s2_dinosaur_sprout_rex_1)"/>
+    <g><path d="M54 92q52-56 114-13 32 22 12 57l31 34-41-3q-17 43-65 41l-9-35-39 18 14-45Q39 119 54 92z" fill="#84cc16" stroke="#365314" stroke-width="7"/><circle cx="126" cy="91" r="8" fill="#172033"/><path d="M140 116l-25 9 29 9" fill="#ecfccb" stroke="#365314" stroke-width="4"/><path d="M79 191l-8 27M139 198l9 22" stroke="#365314" stroke-width="12" stroke-linecap="round"/><path d="M89 196q31 19 62 0" fill="none" stroke="#365314" stroke-width="7" stroke-linecap="round"/><path d="M163 178c-8-35 28-55 52-47-1 31-21 52-52 47z" fill="#4ade80" stroke="#166534" stroke-width="5"/><path d="M169 171l34-30" stroke="#166534" stroke-width="4"/></g>
+    
+  </svg>

@@ -1,0 +1,6 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="쿠키가드">
+    <defs><radialGradient id="bg-s2_cookie_crumb_bear_2" cx="50%" cy="35%" r="70%"><stop offset="0" stop-color="#fff7ed"/><stop offset="1" stop-color="#f59e0b" stop-opacity=".22"/></radialGradient></defs>
+    <circle cx="120" cy="120" r="112" fill="url(#bg-s2_cookie_crumb_bear_2)"/>
+    <g><circle cx="75" cy="70" r="30" fill="#f6c177" stroke="#8b5e34" stroke-width="6"/><circle cx="165" cy="70" r="30" fill="#f6c177" stroke="#8b5e34" stroke-width="6"/><ellipse cx="120" cy="121" rx="72" ry="77" fill="#f6c177" stroke="#8b5e34" stroke-width="7"/><ellipse cx="120" cy="125" rx="32" ry="26" fill="#fff7ed"/><circle cx="99" cy="105" r="6" fill="#172033"/><circle cx="141" cy="105" r="6" fill="#172033"/><path d="M106 130 Q120 140 134 130" fill="none" stroke="#172033" stroke-width="5" stroke-linecap="round"/><path d="M57 158l-32 26 41 4M183 158l32 26-41 4" fill="#fff7ed" stroke="#8b5e34" stroke-width="6"/><path d="M86 190h68l-8 31H94z" fill="#8b5e34"/><circle cx="120" cy="204" r="8" fill="#f6c177"/><circle cx="177" cy="147" r="24" fill="#f5c26b" stroke="#8b5e34" stroke-width="5"/><circle cx="168" cy="139" r="4" fill="#7c2d12"/><circle cx="184" cy="151" r="4" fill="#7c2d12"/><circle cx="172" cy="159" r="3" fill="#7c2d12"/></g>
+    
+  </svg>
