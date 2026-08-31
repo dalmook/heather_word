@@ -11,9 +11,9 @@ permissions:
 jobs:
   smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
-      - name: Verify deployed static assets
+      - name: Wait for commercial v9 assets on Pages
         shell: bash
         env:
           BASE_URL: https://dalmook.github.io/heather_word
@@ -21,30 +21,28 @@ jobs:
         run: |
           set -euo pipefail
           ok=0
-          for attempt in {1..36}; do
-            if curl -fsSL --retry 2 "${BASE_URL}/season2.js?deploy=${RELEASE_SHA}" -o /tmp/season2.js \
-              && curl -fsSL --retry 2 "${BASE_URL}/season2-polish.js?deploy=${RELEASE_SHA}" -o /tmp/season2-polish.js \
-              && curl -fsSL --retry 2 "${BASE_URL}/season2-polish.css?deploy=${RELEASE_SHA}" -o /tmp/season2-polish.css \
+          for attempt in {1..60}; do
+            if curl -fsSL --retry 2 "${BASE_URL}/ui-v9.js?deploy=${RELEASE_SHA}" -o /tmp/ui-v9.js \
+              && curl -fsSL --retry 2 "${BASE_URL}/ui-v9.css?deploy=${RELEASE_SHA}" -o /tmp/ui-v9.css \
               && curl -fsSL --retry 2 "${BASE_URL}/firebase-config.js?deploy=${RELEASE_SHA}" -o /tmp/firebase-config.js \
-              && curl -fsSL --retry 2 "${BASE_URL}/assets/monsters/season2/cookie/crumb_bear_1.svg?deploy=${RELEASE_SHA}" -o /tmp/crumb-bear.svg \
-              && grep -q '스펠링 월드 시즌 2' /tmp/season2.js \
-              && grep -q 'POLISH_VERSION = "8.1.0"' /tmp/season2-polish.js \
-              && grep -q '#homeScreen.s2-market-home.active' /tmp/season2-polish.css \
-              && grep -q 'season2-polish.js' /tmp/firebase-config.js \
-              && grep -q '<svg' /tmp/crumb-bear.svg; then
+              && curl -fsSL --retry 2 "${BASE_URL}/assets/icons/app-icon.svg?deploy=${RELEASE_SHA}" -o /tmp/app-icon.svg \
+              && grep -q 'UI_V9_VERSION' /tmp/ui-v9.js \
+              && grep -q 'Heather Word UI v9' /tmp/ui-v9.css \
+              && grep -q 'RELEASE = "9.0.0"' /tmp/firebase-config.js \
+              && grep -q '<svg' /tmp/app-icon.svg; then
               ok=1
               break
             fi
-            sleep 4
+            sleep 5
           done
           test "$ok" -eq 1
-          printf 'live assets: season2=%s, polish-js=%s, polish-css=%s, svg=%s bytes\n' \
-            "$(wc -c < /tmp/season2.js)" \
-            "$(wc -c < /tmp/season2-polish.js)" \
-            "$(wc -c < /tmp/season2-polish.css)" \
-            "$(wc -c < /tmp/crumb-bear.svg)"
+          printf 'live assets: ui=%s css=%s loader=%s icon=%s bytes\n' \
+            "$(wc -c < /tmp/ui-v9.js)" \
+            "$(wc -c < /tmp/ui-v9.css)" \
+            "$(wc -c < /tmp/firebase-config.js)" \
+            "$(wc -c < /tmp/app-icon.svg)"
 
-      - name: Verify collision-free mobile home after JavaScript boot
+      - name: Verify live mobile and desktop app shell
         shell: bash
         env:
           BASE_URL: https://dalmook.github.io/heather_word
@@ -53,53 +51,40 @@ jobs:
           set -euo pipefail
           browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           test -n "$browser"
-          ok=0
-          for attempt in {1..18}; do
-            "$browser" \
-              --headless=new \
-              --no-sandbox \
-              --disable-gpu \
-              --disable-dev-shm-usage \
-              --hide-scrollbars \
-              --window-size=390,844 \
-              --virtual-time-budget=15000 \
-              --dump-dom \
-              "${BASE_URL}/?mode=local&deploy=${RELEASE_SHA}" > /tmp/heather-live-dom.html 2>/tmp/heather-live-browser.log || true
-            if grep -q 'data-home-polish-version="8.1.0"' /tmp/heather-live-dom.html \
-              && grep -q 'id="s2HomeUtility"' /tmp/heather-live-dom.html \
-              && grep -q 'data-s2-relocated="hero"' /tmp/heather-live-dom.html \
-              && grep -q 'data-s2-relocated="mission"' /tmp/heather-live-dom.html \
-              && grep -q 'data-s2-legacy-hero="hidden"' /tmp/heather-live-dom.html \
-              && grep -q '오늘의 모험 시작' /tmp/heather-live-dom.html; then
-              ok=1
-              break
-            fi
-            sleep 4
+          mkdir -p /tmp/live-proof
+          for size in 360x800 390x844 430x932 1440x1000; do
+            width="${size%x*}"
+            height="${size#*x}"
+            ready=0
+            for attempt in {1..18}; do
+              "$browser" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
+                --hide-scrollbars --window-size="${width},${height}" --virtual-time-budget=16000 \
+                --dump-dom "${BASE_URL}/?mode=local&deploy=${RELEASE_SHA}#/home" \
+                > "/tmp/live-proof/home-${size}.html" 2> "/tmp/live-proof/browser-${size}.log" || true
+              if grep -q 'data-hw9-version="9.0.0"' "/tmp/live-proof/home-${size}.html" \
+                && grep -q 'data-hw9-tab="home"' "/tmp/live-proof/home-${size}.html" \
+                && grep -q 'data-hw9-tab="learn"' "/tmp/live-proof/home-${size}.html" \
+                && grep -q 'data-hw9-tab="games"' "/tmp/live-proof/home-${size}.html" \
+                && grep -q 'data-hw9-tab="collection"' "/tmp/live-proof/home-${size}.html" \
+                && grep -q 'data-hw9-tab="my"' "/tmp/live-proof/home-${size}.html"; then
+                ready=1
+                break
+              fi
+              sleep 4
+            done
+            test "$ready" -eq 1
+            "$browser" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
+              --hide-scrollbars --window-size="${width},${height}" --virtual-time-budget=16000 \
+              --screenshot="/tmp/live-proof/home-${size}.png" \
+              "${BASE_URL}/?mode=local&deploy=${RELEASE_SHA}#/home" >/dev/null 2>&1
+            test -s "/tmp/live-proof/home-${size}.png"
           done
-          if [ "$ok" -ne 1 ]; then
-            cat /tmp/heather-live-browser.log || true
-            grep -n 'home-polish\|s2HomeUtility\|season2HomePanel\|bootstrap failed' /tmp/heather-live-dom.html | head -80 || true
-            exit 1
-          fi
+          grep -o '오늘 학습 시작하기\|이어서 학습하기\|오늘 기록 보기' /tmp/live-proof/home-390x844.html | head -1
 
-          "$browser" \
-            --headless=new \
-            --no-sandbox \
-            --disable-gpu \
-            --disable-dev-shm-usage \
-            --hide-scrollbars \
-            --window-size=390,844 \
-            --virtual-time-budget=15000 \
-            --screenshot=/tmp/heather-live-home.png \
-            "${BASE_URL}/?mode=local&deploy=${RELEASE_SHA}" >/tmp/heather-live-shot.log 2>&1
-
-          test -s /tmp/heather-live-home.png
-          grep -o '오늘의 모험 시작\|내 단어장\|자유 학습' /tmp/heather-live-dom.html | sort -u
-
-      - name: Upload mobile visual proof
+      - name: Upload live visual proof
         uses: actions/upload-artifact@v4
         with:
-          name: heather-word-mobile-home-${{ github.sha }}
-          path: /tmp/heather-live-home.png
+          name: heather-word-live-v9-${{ github.sha }}
+          path: /tmp/live-proof
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 14

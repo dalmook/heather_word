@@ -26,17 +26,33 @@ import {
   getStageOneCharacters,
   renderMonsterSvg
 } from "./monster-catalog-season2.js?v=8.0.0";
-import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  updateDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+let getApps;
+let initializeApp;
+let getAuth;
+let signInAnonymously;
+let onAuthStateChanged;
+let getFirestore;
+let collection;
+let doc;
+let getDoc;
+let getDocs;
+let updateDoc;
+let serverTimestamp;
+let season2FirebaseRuntimePromise = null;
+
+async function loadSeason2FirebaseRuntime() {
+  if (season2FirebaseRuntimePromise) return season2FirebaseRuntimePromise;
+  season2FirebaseRuntimePromise = Promise.all([
+    import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"),
+    import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js")
+  ]).then(([appModule, authModule, firestoreModule]) => {
+    ({ getApps, initializeApp } = appModule);
+    ({ getAuth, signInAnonymously, onAuthStateChanged } = authModule);
+    ({ getFirestore, collection, doc, getDoc, getDocs, updateDoc, serverTimestamp } = firestoreModule);
+  });
+  return season2FirebaseRuntimePromise;
+}
 
 const LOCAL_KEY = "heather_word_v3";
 const MANAGE_PASSWORD = "3341";
@@ -200,6 +216,7 @@ async function loadBundledWords() {
 async function setupFirebase() {
   if (!window.HEATHER_USE_FIREBASE || new URLSearchParams(location.search).get("mode") === "local") return;
   try {
+    await loadSeason2FirebaseRuntime();
     app.firebase.app = getApps()[0] || initializeApp(window.HEATHER_FIREBASE_CONFIG, "heather-season2");
     app.firebase.auth = getAuth(app.firebase.app);
     app.firebase.db = getFirestore(app.firebase.app);

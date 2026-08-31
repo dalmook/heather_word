@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Heather Word</title>
+  <desc id="desc">쿠키를 든 단어 곰 캐릭터</desc>
+  <defs>
+    <linearGradient id="bg" x1="8" y1="6" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6B5CE7"/>
+      <stop offset="1" stop-color="#4B3CB7"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="18" fill="url(#bg)"/>
+  <circle cx="20" cy="22" r="8" fill="#DCA45E"/>
+  <circle cx="44" cy="22" r="8" fill="#DCA45E"/>
+  <circle cx="32" cy="34" r="21" fill="#EAB66F"/>
+  <circle cx="32" cy="36" r="14" fill="#FFF3D7"/>
+  <circle cx="27" cy="32" r="2.4" fill="#20263A"/>
+  <circle cx="37" cy="32" r="2.4" fill="#20263A"/>
+  <path d="M27 39c2.6 3 7.4 3 10 0" fill="none" stroke="#20263A" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="48" cy="47" r="10" fill="#F4C978" stroke="#FFF3D7" stroke-width="2"/>
+  <circle cx="45" cy="44" r="1.5" fill="#8A5728"/>
+  <circle cx="51" cy="47" r="1.5" fill="#8A5728"/>
+  <circle cx="46" cy="51" r="1.5" fill="#8A5728"/>
+</svg>

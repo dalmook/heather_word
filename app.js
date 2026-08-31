@@ -1,23 +1,34 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import {
-  getAuth,
-  signInAnonymously,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  doc,
-  setDoc,
-  deleteDoc,
-  onSnapshot,
-  serverTimestamp,
-  query,
-  orderBy,
-  limit,
-  getDocs,
-  writeBatch
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+let initializeApp;
+let getAuth;
+let signInAnonymously;
+let onAuthStateChanged;
+let getFirestore;
+let collection;
+let doc;
+let setDoc;
+let deleteDoc;
+let onSnapshot;
+let serverTimestamp;
+let query;
+let orderBy;
+let limit;
+let getDocs;
+let writeBatch;
+let firebaseRuntimePromise = null;
+
+async function loadFirebaseRuntime() {
+  if (firebaseRuntimePromise) return firebaseRuntimePromise;
+  firebaseRuntimePromise = Promise.all([
+    import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"),
+    import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js")
+  ]).then(([appModule, authModule, firestoreModule]) => {
+    ({ initializeApp } = appModule);
+    ({ getAuth, signInAnonymously, onAuthStateChanged } = authModule);
+    ({ getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, serverTimestamp, query, orderBy, limit, getDocs, writeBatch } = firestoreModule);
+  });
+  return firebaseRuntimePromise;
+}
 
 const DEFAULT_CATEGORY = { id: "all", name: "전체", emoji: "🌈" };
 const CUSTOM_CATEGORY = { id: "custom", name: "직접추가", emoji: "⭐", base: true };
@@ -204,7 +215,6 @@ const PET_MAX_LEVEL = 50;
 const PET_LEVEL_XP_BASE = 120;
 const PET_LEVEL_XP_GROWTH = 35;
 const DAISO_VOUCHER_LABEL = "다이소 3천원 상품권";
-const MANAGE_PASSWORD = "3341";
 const LEGACY_MONSTER_COUNT = 100;
 const LEGACY_MONSTER_XP_STEP = 250;
 const MONSTER_CATALOG_SIZE = 1000;
@@ -458,7 +468,79 @@ let audioContext = null;
 let nextTimer = null;
 let avatarGameController = null;
 let avatarGameFailed = false;
+let avatarRuntimePromise = null;
 
+function loadOptionalScript(src, marker) {
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[data-${marker}]`);
+    if (existing?.dataset.loaded === "true") return resolve();
+    if (existing) {
+      existing.addEventListener("load", resolve, { once: true });
+      existing.addEventListener("error", reject, { once: true });
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = src;
+    script.defer = true;
+    script.setAttribute(`data-${marker}`, "true");
+    script.addEventListener("load", () => {
+      script.dataset.loaded = "true";
+      resolve();
+    }, { once: true });
+    script.addEventListener("error", reject, { once: true });
+    document.head.appendChild(script);
+  });
+}
+
+function ensureAvatarRuntime() {
+  if (window.Phaser && window.HeatherAvatarPhaser?.mount) return Promise.resolve();
+  if (avatarRuntimePromise) return avatarRuntimePromise;
+  avatarRuntimePromise = loadOptionalScript(
+    "https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js",
+    "heather-phaser-runtime"
+  ).then(() => loadOptionalScript("./avatar-phaser.js?v=9.0.0", "heather-avatar-runtime"))
+    .then(() => {
+      if (!window.Phaser || !window.HeatherAvatarPhaser?.mount) throw new Error("Avatar renderer unavailable");
+    });
+  return avatarRuntimePromise;
+}
+
+function cloneBridgeValue(value) {
+  if (typeof structuredClone === "function") return structuredClone(value);
+  return JSON.parse(JSON.stringify(value));
+}
+
+window.HeatherWordLegacyBridge = Object.freeze({
+  getSnapshot() {
+    return {
+      player: cloneBridgeValue(state.player),
+      categories: cloneBridgeValue(state.categories),
+      words: cloneBridgeValue(state.words),
+      selectedCategoryId: state.selectedCategoryId,
+      screen: state.screen,
+      firebaseReady: state.firebaseReady
+    };
+  },
+  navigate,
+  selectCategory,
+  startCard(categoryId = state.selectedCategoryId) {
+    if (categoryId) selectCategory(categoryId);
+    navigate("card");
+  },
+  startGame(mode = "choice", categoryId = state.selectedCategoryId) {
+    if (categoryId) selectCategory(categoryId);
+    navigate("game");
+    if (mode && mode !== "choice") startRound(mode);
+  },
+  sync: syncPlayer,
+  setManageGranted(value) {
+    const granted = value === true;
+    state.manageUnlocked = granted;
+    window.HEATHER_PARENT_GATE_GRANTED = granted;
+  }
+});
+
+window.dispatchEvent(new CustomEvent("heather:legacy-ready"));
 init();
 
 async function init() {
@@ -569,6 +651,7 @@ async function initFirebaseIfEnabled() {
   }
 
   try {
+    await loadFirebaseRuntime();
     firebase.app = initializeApp(window.HEATHER_FIREBASE_CONFIG);
     firebase.auth = getAuth(firebase.app);
     firebase.db = getFirestore(firebase.app);
@@ -829,9 +912,12 @@ function handleGameBack() {
 }
 
 function navigate(screen) {
-  if (screen === "manage" && !state.manageUnlocked) {
-    openManageLock();
+  if (screen === "manage" && !state.manageUnlocked && window.HEATHER_PARENT_GATE_GRANTED !== true) {
+    window.dispatchEvent(new CustomEvent("heather:parent-gate-request"));
     return;
+  }
+  if (screen === "manage" && window.HEATHER_PARENT_GATE_GRANTED === true) {
+    state.manageUnlocked = true;
   }
 
   state.screen = screen;
@@ -842,8 +928,14 @@ function navigate(screen) {
   updateTypingModeClass();
 
   if (screen === "rank") loadRanking();
-  if (screen === "manage") loadRewardAdminClaims();
-  if (screen === "game") startRound("choice");
+    if (screen === "manage" && window.HEATHER_FIREBASE_ADMIN === true) {
+      loadRewardAdminClaims();
+    } else if (screen === "manage") {
+      state.rewardAdminClaims = [];
+      state.rewardAdminPlayers = [];
+      state.rewardAdminLoaded = true;
+    }
+    if (screen === "game") startRound("choice");
   render();
 }
 
@@ -855,18 +947,10 @@ function openManageLock() {
 }
 
 function unlockManageScreen() {
-  if (dom.managePasswordInput.value !== MANAGE_PASSWORD) {
-    dom.managePasswordError.textContent = "비밀번호가 맞지 않아요.";
-    dom.managePasswordInput.value = "";
-    dom.managePasswordInput.focus();
-    playSfx("bad");
-    return;
-  }
-
-  state.manageUnlocked = true;
+  dom.managePasswordInput.value = "";
+  dom.managePasswordError.textContent = "보호자 PIN 화면에서 확인해 주세요.";
   dom.manageLockDialog.close();
-  showToast("관리 잠금 해제", "이 기기의 현재 탭에서 편집할 수 있어요");
-  navigate("manage");
+  window.dispatchEvent(new CustomEvent("heather:parent-gate-request"));
 }
 
 function selectCategory(categoryId) {
@@ -966,6 +1050,7 @@ function render() {
   renderPetCare();
   renderRewardClaims();
   renderRoundProgress();
+  window.dispatchEvent(new CustomEvent("heather:legacy-render"));
 }
 
 function renderHomePet(targetElement, currentMonster = getCurrentMonster()) {
@@ -1692,7 +1777,20 @@ function renderPhaserAvatar(options = {}) {
   const avatar = getCurrentAvatarLook();
 
   if (!window.Phaser || !window.HeatherAvatarPhaser?.mount) {
-    showAvatarGameStatus("드레스룸을 불러오지 못했어요. 기본 미리보기로 계속 사용할 수 있어요.", true);
+    showAvatarGameStatus("드레스룸을 준비하고 있어요…", true);
+    if (!avatarRuntimePromise) {
+      ensureAvatarRuntime()
+        .then(() => {
+          avatarGameFailed = false;
+          renderPhaserAvatar(options);
+        })
+        .catch((error) => {
+          console.info("Phaser 드레스룸은 DOM 미리보기로 대체합니다.", error);
+          avatarGameFailed = true;
+          dom.avatarGame?.classList.add("failed");
+          showAvatarGameStatus("고급 미리보기를 불러오지 못했어요. 기본 미리보기로 계속 사용할 수 있어요.", true);
+        });
+    }
     return;
   }
 

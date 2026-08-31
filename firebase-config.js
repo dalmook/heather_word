@@ -17,23 +17,23 @@ window.HEATHER_FIREBASE_CONFIG = {
     appId: "1:337773788613:web:b508f3413977095c6b9fac",
 };
 
-// Season 2 is loaded as an additive layer so the existing app, LOCAL mode,
-// Firebase mode, legacy data, and Phaser fallback remain intact.
-(function installHeatherSeason2Loader() {
+// Season 2 and the commercial v9 shell are additive compatibility layers.
+// The original app remains the source of truth for legacy learning, shop,
+// avatar, pet, collection, LOCAL mode, Firebase sync and Phaser fallback.
+(function installHeatherCommercialLoader() {
   const LOCAL_KEY = "heather_word_v3";
-  const RELEASE = "8.1.0";
+  const RELEASE = "9.0.0";
 
-  // The legacy app keeps its own in-memory player object. Preserve a newer
-  // Season 2 revision if the legacy save routine writes an older snapshot.
+  // Preserve the newest Season 2 revision when the legacy saver writes the
+  // same `heather_word_v3` envelope. No existing balance or collection field
+  // is renamed, reset, or removed.
   if (!window.__HEATHER_SEASON2_STORAGE_GUARD__) {
     window.__HEATHER_SEASON2_STORAGE_GUARD__ = true;
     const nativeSetItem = Storage.prototype.setItem;
     Storage.prototype.setItem = function guardedSetItem(key, value) {
       if (this === window.localStorage && key === LOCAL_KEY) {
         try {
-          const current = JSON.parse(nativeSetItem === Storage.prototype.setItem
-            ? "{}"
-            : window.localStorage.getItem(LOCAL_KEY) || "{}");
+          const current = JSON.parse(window.localStorage.getItem(LOCAL_KEY) || "{}");
           const incoming = JSON.parse(String(value));
           const currentPlayer = current?.player && typeof current.player === "object" ? current.player : {};
           const incomingPlayer = incoming?.player && typeof incoming.player === "object" ? incoming.player : {};
@@ -53,7 +53,7 @@ window.HEATHER_FIREBASE_CONFIG = {
             value = JSON.stringify(incoming);
           }
         } catch {
-          // Invalid legacy data is handled by the idempotent migration layer.
+          // Corrupt data is normalized by the existing migration layer.
         }
       }
       return nativeSetItem.call(this, key, value);
@@ -78,16 +78,16 @@ window.HEATHER_FIREBASE_CONFIG = {
     document.body.appendChild(script);
   }
 
-  function loadSeason2() {
+  function loadCommercialApp() {
     appendStyle("./season2.css", "heather-season2-style");
-    appendStyle("./season2-polish.css", "heather-season2-polish-style");
+    appendStyle("./ui-v9.css", "heather-ui-v9-style");
     appendModule("./season2.js", "heather-season2");
-    appendModule("./season2-polish.js", "heather-season2-polish");
+    appendModule("./ui-v9.js", "heather-ui-v9");
   }
 
   if (document.readyState === "loading") {
-    window.addEventListener("DOMContentLoaded", () => setTimeout(loadSeason2, 0), { once: true });
+    window.addEventListener("DOMContentLoaded", () => setTimeout(loadCommercialApp, 0), { once: true });
   } else {
-    setTimeout(loadSeason2, 0);
+    setTimeout(loadCommercialApp, 0);
   }
 })();
