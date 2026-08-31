@@ -20,7 +20,11 @@ jobs:
         with:
           node-version: 22
       - name: Syntax, data compatibility and asset tests
-        run: npm run check
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p audit/after
+          npm run check 2>&1 | tee audit/after/check-output.txt
       - name: Start the static GitHub Pages preview
         shell: bash
         run: |
