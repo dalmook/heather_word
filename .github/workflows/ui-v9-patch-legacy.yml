@@ -1,0 +1,153 @@
+name: Patch legacy bridge for commercial UI
+
+on:
+  push:
+    branches: ["codex/commercial-ui-v9"]
+    paths:
+      - ".github/workflows/ui-v9-patch-legacy.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/commercial-ui-v9
+          fetch-depth: 0
+      - name: Add safe bridge and parent gate handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          app = Path('app.js')
+          text = app.read_text(encoding='utf-8')
+          text = text.replace('const MANAGE_PASSWORD = "3341";\n', '')
+
+          old_init = '''init();\n\nasync function init() {'''
+          bridge = '''function cloneBridgeValue(value) {
+            if (typeof structuredClone === "function") return structuredClone(value);
+            return JSON.parse(JSON.stringify(value));
+          }
+
+          window.HeatherWordLegacyBridge = Object.freeze({
+            getSnapshot() {
+              return {
+                player: cloneBridgeValue(state.player),
+                categories: cloneBridgeValue(state.categories),
+                words: cloneBridgeValue(state.words),
+                selectedCategoryId: state.selectedCategoryId,
+                screen: state.screen,
+                firebaseReady: state.firebaseReady
+              };
+            },
+            navigate,
+            selectCategory,
+            startCard(categoryId = state.selectedCategoryId) {
+              if (categoryId) selectCategory(categoryId);
+              navigate("card");
+            },
+            startGame(mode = "choice", categoryId = state.selectedCategoryId) {
+              if (categoryId) selectCategory(categoryId);
+              navigate("game");
+              if (mode && mode !== "choice") startRound(mode);
+            },
+            sync: syncPlayer,
+            setManageGranted(value) {
+              const granted = value === true;
+              state.manageUnlocked = granted;
+              window.HEATHER_PARENT_GATE_GRANTED = granted;
+            }
+          });
+
+          window.dispatchEvent(new CustomEvent("heather:legacy-ready"));
+          init();
+
+          async function init() {'''
+          if old_init not in text:
+              raise SystemExit('init anchor not found')
+          text = text.replace(old_init, bridge, 1)
+
+          old_guard = '''function navigate(screen) {
+            if (screen === "manage" && !state.manageUnlocked) {
+              openManageLock();
+              return;
+            }
+          '''
+          new_guard = '''function navigate(screen) {
+            if (screen === "manage" && !state.manageUnlocked && window.HEATHER_PARENT_GATE_GRANTED !== true) {
+              window.dispatchEvent(new CustomEvent("heather:parent-gate-request"));
+              return;
+            }
+            if (screen === "manage" && window.HEATHER_PARENT_GATE_GRANTED === true) {
+              state.manageUnlocked = true;
+            }
+          '''
+          if old_guard not in text:
+              raise SystemExit('navigate guard not found')
+          text = text.replace(old_guard, new_guard, 1)
+
+          old_unlock = '''function unlockManageScreen() {
+            if (dom.managePasswordInput.value !== MANAGE_PASSWORD) {
+              dom.managePasswordError.textContent = "비밀번호가 맞지 않아요.";
+              dom.managePasswordInput.value = "";
+              dom.managePasswordInput.focus();
+              playSfx("bad");
+              return;
+            }
+
+            state.manageUnlocked = true;
+            dom.manageLockDialog.close();
+            showToast("관리 잠금 해제", "이 기기의 현재 탭에서 편집할 수 있어요");
+            navigate("manage");
+          }'''
+          new_unlock = '''function unlockManageScreen() {
+            dom.managePasswordInput.value = "";
+            dom.managePasswordError.textContent = "보호자 PIN 화면에서 확인해 주세요.";
+            dom.manageLockDialog.close();
+            window.dispatchEvent(new CustomEvent("heather:parent-gate-request"));
+          }'''
+          if old_unlock not in text:
+              raise SystemExit('unlock function not found')
+          text = text.replace(old_unlock, new_unlock, 1)
+
+          old_end = '''  renderPetCare();
+            renderRewardClaims();
+            renderRoundProgress();
+          }'''
+          new_end = '''  renderPetCare();
+            renderRewardClaims();
+            renderRoundProgress();
+            window.dispatchEvent(new CustomEvent("heather:legacy-render"));
+          }'''
+          if old_end not in text:
+              raise SystemExit('render end not found')
+          text = text.replace(old_end, new_end, 1)
+          app.write_text(text, encoding='utf-8')
+
+          index = Path('index.html')
+          html = index.read_text(encoding='utf-8')
+          old_script = '<script src="./firebase-config.js?v=8.1.0"></script>'
+          new_script = '<script src="./firebase-config.js?v=9.0.0"></script>'
+          if old_script not in html and new_script not in html:
+              raise SystemExit('firebase loader tag not found')
+          index.write_text(html.replace(old_script, new_script, 1), encoding='utf-8')
+          PY
+          node --check app.js
+          grep -q 'HeatherWordLegacyBridge' app.js
+          ! grep -q 'MANAGE_PASSWORD' app.js
+          grep -q 'firebase-config.js?v=9.0.0' index.html
+      - name: Commit compatibility patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.js index.html
+          git commit -m "refactor: bridge legacy features into the commercial shell"
+          git push origin HEAD:codex/commercial-ui-v9
