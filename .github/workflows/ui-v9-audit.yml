@@ -1,37 +1,64 @@
-name: UI v9 audit and preview
+name: Commercial UI v9 quality gate
 
 on:
   push:
     branches: ["codex/commercial-ui-v9"]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  audit-current:
-    if: ${{ !contains(github.event.head_commit.message || '', '[skip baseline]') }}
+  quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Capture current production at target viewports
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax, data compatibility and asset tests
+        run: npm run check
+      - name: Start the static GitHub Pages preview
         shell: bash
         run: |
           set -euo pipefail
-          browser="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
-          test -n "$browser"
-          mkdir -p audit/before
-          for size in 360x800 375x812 390x844 412x915 430x932 768x1024 1440x1000; do
-            width="${size%x*}"
-            height="${size#*x}"
-            "$browser" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
-              --hide-scrollbars --window-size="${width},${height}" --virtual-time-budget=15000 \
-              --screenshot="audit/before/home-${size}.png" \
-              "https://dalmook.github.io/heather_word/?mode=local&baseline=${GITHUB_SHA}"
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/heather-http.log 2>&1 &
+          for attempt in {1..40}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 0.25
           done
-      - uses: actions/upload-artifact@v4
+          cat /tmp/heather-http.log
+          exit 1
+      - name: Browser regression and multi-viewport visual QA
+        env:
+          BASE_URL: http://127.0.0.1:4173
+          UI_QA_OUTPUT: audit/after
+        run: node tools/ui-v9-browser-qa.mjs
+      - name: Lighthouse product-quality audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes lighthouse@12.2.1 "http://127.0.0.1:4173/?mode=local&lighthouse=1#/home" \
+            --chrome-flags="--headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage" \
+            --only-categories=performance,accessibility,best-practices \
+            --output=json --output-path=audit/after/lighthouse.json --quiet
+          node - <<'NODE'
+          const report = require('./audit/after/lighthouse.json');
+          const categories = report.categories;
+          const scores = Object.fromEntries(Object.entries(categories).map(([key, value]) => [key, Math.round(value.score * 100)]));
+          console.log(scores);
+          if (scores.accessibility < 90) throw new Error(`Accessibility score ${scores.accessibility} < 90`);
+          if (scores['best-practices'] < 90) throw new Error(`Best practices score ${scores['best-practices']} < 90`);
+          if (scores.performance < 70) throw new Error(`Performance score ${scores.performance} < 70`);
+          NODE
+      - name: Upload visual and performance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: heather-word-before-${{ github.sha }}
-          path: audit/before/*.png
+          name: heather-word-commercial-ui-${{ github.sha }}
+          path: audit/after
+          if-no-files-found: warn
           retention-days: 14
