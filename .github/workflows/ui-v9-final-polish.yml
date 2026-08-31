@@ -24,20 +24,15 @@ jobs:
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
+          import re
 
           css_path = Path('ui-v9.css')
           css = css_path.read_text(encoding='utf-8')
-          old = '''  .hw9-app {
-            grid-template-columns: 96px minmax(0, 1fr);
-          '''
-          new = '''  .hw9-app {
-            grid-template-columns: 96px minmax(0, 1fr);
-            max-width: var(--app-max-desktop);
-          '''
-          if 'max-width: var(--app-max-desktop);' not in css:
-              if old not in css:
+          if not re.search(r'@media \(min-width: 900px\)[\s\S]*?\.hw9-app \{[\s\S]*?max-width: var\(--app-max-desktop\);', css):
+              pattern = re.compile(r'(@media \(min-width: 900px\) \{[\s\S]*?\n\s*\.hw9-app \{\n\s*grid-template-columns: 96px minmax\(0, 1fr\);\n)')
+              css, count = pattern.subn(r'\1    max-width: var(--app-max-desktop);\n', css, count=1)
+              if count != 1:
                   raise SystemExit('desktop app anchor not found')
-              css = css.replace(old, new, 1)
           css_path.write_text(css, encoding='utf-8')
 
           index_path = Path('index.html')
@@ -54,41 +49,28 @@ jobs:
           qa = qa_path.read_text(encoding='utf-8')
           if 'const networkErrors = [];' not in qa:
               qa = qa.replace('const consoleErrors = [];\n', 'const consoleErrors = [];\nconst networkErrors = [];\n', 1)
-          listener_anchor = '''    cdp.on("Runtime.consoleAPICalled", ({ type, args }) => {
-              if (type === "error") consoleErrors.push(args?.map((arg) => arg.value || arg.description).join(" ") || "console.error");
-            });
-          '''
-          listener_new = listener_anchor + '''    cdp.on("Network.responseReceived", ({ response }) => {
-              if (Number(response?.status) >= 400) networkErrors.push(`${response.status} ${response.url}`);
-            });
-          '''
           if 'Network.responseReceived' not in qa:
-              if listener_anchor not in qa:
+              pattern = re.compile(r'(\s*cdp\.on\("Runtime\.consoleAPICalled", \(\{ type, args \}\) => \{[\s\S]*?\n\s*\}\);\n)')
+              addition = '''    cdp.on("Network.responseReceived", ({ response }) => {
+                if (Number(response?.status) >= 400) networkErrors.push(`${response.status} ${response.url}`);
+              });
+          '''
+              qa, count = pattern.subn(lambda match: match.group(1) + addition, qa, count=1)
+              if count != 1:
                   raise SystemExit('console listener anchor not found')
-              qa = qa.replace(listener_anchor, listener_new, 1)
-          report_anchor = '''      consoleErrors,
-              exceptions: errors,
-          '''
-          report_new = '''      consoleErrors,
-              networkErrors,
-              exceptions: errors,
-          '''
-          if '      networkErrors,\n      exceptions: errors,' not in qa:
-              if report_anchor not in qa:
+          if not re.search(r'consoleErrors,\s*\n\s*networkErrors,\s*\n\s*exceptions: errors', qa):
+              qa, count = re.subn(r'(\s+consoleErrors,\n)(\s+exceptions: errors,)', r'\1      networkErrors,\n\2', qa, count=1)
+              if count != 1:
                   raise SystemExit('report anchor not found')
-              qa = qa.replace(report_anchor, report_new, 1)
-          condition_old = '''    if (errors.length || consoleErrors.length) {
-              throw new Error(`Browser errors: ${JSON.stringify({ errors, consoleErrors })}`);
-            }
-          '''
-          condition_new = '''    if (errors.length || consoleErrors.length || networkErrors.length) {
-              throw new Error(`Browser errors: ${JSON.stringify({ errors, consoleErrors, networkErrors })}`);
-            }
-          '''
           if 'networkErrors.length' not in qa:
-              if condition_old not in qa:
+              qa, count = re.subn(
+                  r'if \(errors\.length \|\| consoleErrors\.length\) \{\n\s*throw new Error\(`Browser errors: \$\{JSON\.stringify\(\{ errors, consoleErrors \}\)\}`\);\n\s*\}',
+                  'if (errors.length || consoleErrors.length || networkErrors.length) {\n      throw new Error(`Browser errors: ${JSON.stringify({ errors, consoleErrors, networkErrors })}`);\n    }',
+                  qa,
+                  count=1
+              )
+              if count != 1:
                   raise SystemExit('browser error condition not found')
-              qa = qa.replace(condition_old, condition_new, 1)
           qa_path.write_text(qa, encoding='utf-8')
           PY
           node --check tools/ui-v9-browser-qa.mjs
@@ -104,3 +86,5 @@ jobs:
           git add ui-v9.css index.html tools/ui-v9-browser-qa.mjs
           git commit -m "fix: widen desktop app shell and eliminate missing favicon requests"
           git push origin HEAD:codex/commercial-ui-v9
+
+# trigger: regex-safe-final-polish
