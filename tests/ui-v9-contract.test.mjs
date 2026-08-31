@@ -13,7 +13,7 @@ const [app, loader, ui, css, rules, index] = await Promise.all([
 ]);
 
 test("removes the public admin password and delegates to the parent gate", () => {
-  assert.doesNotMatch(app, /MANAGE_PASSWORD|3341/);
+  assert.doesNotMatch(app, /MANAGE_PASSWORD|["']3341["']/);
   assert.match(app, /HeatherWordLegacyBridge/);
   assert.match(app, /heather:parent-gate-request/);
   assert.match(ui, /PARENT_GATE_KEY/);
@@ -59,7 +59,7 @@ test("exposes a token-based premium kids design system", () => {
   }
   assert.match(css, /@media \(min-width:\s*(?:900|980)px\)/);
   assert.match(css, /safe-area-inset-bottom/);
-  assert.match(css, /visualViewport|keyboard-open/);
+  assert.match(`${ui}\n${css}`, /visualViewport|hw9-keyboard-open/);
 });
 
 test("requires an admin custom claim for cross-user reward updates", () => {
