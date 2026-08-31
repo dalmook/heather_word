@@ -204,7 +204,6 @@ const PET_MAX_LEVEL = 50;
 const PET_LEVEL_XP_BASE = 120;
 const PET_LEVEL_XP_GROWTH = 35;
 const DAISO_VOUCHER_LABEL = "다이소 3천원 상품권";
-const MANAGE_PASSWORD = "3341";
 const LEGACY_MONSTER_COUNT = 100;
 const LEGACY_MONSTER_XP_STEP = 250;
 const MONSTER_CATALOG_SIZE = 1000;
@@ -459,6 +458,42 @@ let nextTimer = null;
 let avatarGameController = null;
 let avatarGameFailed = false;
 
+function cloneBridgeValue(value) {
+  if (typeof structuredClone === "function") return structuredClone(value);
+  return JSON.parse(JSON.stringify(value));
+}
+
+window.HeatherWordLegacyBridge = Object.freeze({
+  getSnapshot() {
+    return {
+      player: cloneBridgeValue(state.player),
+      categories: cloneBridgeValue(state.categories),
+      words: cloneBridgeValue(state.words),
+      selectedCategoryId: state.selectedCategoryId,
+      screen: state.screen,
+      firebaseReady: state.firebaseReady
+    };
+  },
+  navigate,
+  selectCategory,
+  startCard(categoryId = state.selectedCategoryId) {
+    if (categoryId) selectCategory(categoryId);
+    navigate("card");
+  },
+  startGame(mode = "choice", categoryId = state.selectedCategoryId) {
+    if (categoryId) selectCategory(categoryId);
+    navigate("game");
+    if (mode && mode !== "choice") startRound(mode);
+  },
+  sync: syncPlayer,
+  setManageGranted(value) {
+    const granted = value === true;
+    state.manageUnlocked = granted;
+    window.HEATHER_PARENT_GATE_GRANTED = granted;
+  }
+});
+
+window.dispatchEvent(new CustomEvent("heather:legacy-ready"));
 init();
 
 async function init() {
@@ -829,9 +864,12 @@ function handleGameBack() {
 }
 
 function navigate(screen) {
-  if (screen === "manage" && !state.manageUnlocked) {
-    openManageLock();
+  if (screen === "manage" && !state.manageUnlocked && window.HEATHER_PARENT_GATE_GRANTED !== true) {
+    window.dispatchEvent(new CustomEvent("heather:parent-gate-request"));
     return;
+  }
+  if (screen === "manage" && window.HEATHER_PARENT_GATE_GRANTED === true) {
+    state.manageUnlocked = true;
   }
 
   state.screen = screen;
@@ -855,18 +893,10 @@ function openManageLock() {
 }
 
 function unlockManageScreen() {
-  if (dom.managePasswordInput.value !== MANAGE_PASSWORD) {
-    dom.managePasswordError.textContent = "비밀번호가 맞지 않아요.";
-    dom.managePasswordInput.value = "";
-    dom.managePasswordInput.focus();
-    playSfx("bad");
-    return;
-  }
-
-  state.manageUnlocked = true;
+  dom.managePasswordInput.value = "";
+  dom.managePasswordError.textContent = "보호자 PIN 화면에서 확인해 주세요.";
   dom.manageLockDialog.close();
-  showToast("관리 잠금 해제", "이 기기의 현재 탭에서 편집할 수 있어요");
-  navigate("manage");
+  window.dispatchEvent(new CustomEvent("heather:parent-gate-request"));
 }
 
 function selectCategory(categoryId) {
@@ -966,6 +996,7 @@ function render() {
   renderPetCare();
   renderRewardClaims();
   renderRoundProgress();
+  window.dispatchEvent(new CustomEvent("heather:legacy-render"));
 }
 
 function renderHomePet(targetElement, currentMonster = getCurrentMonster()) {
