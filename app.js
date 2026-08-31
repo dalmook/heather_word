@@ -880,8 +880,14 @@ function navigate(screen) {
   updateTypingModeClass();
 
   if (screen === "rank") loadRanking();
-  if (screen === "manage") loadRewardAdminClaims();
-  if (screen === "game") startRound("choice");
+    if (screen === "manage" && window.HEATHER_FIREBASE_ADMIN === true) {
+      loadRewardAdminClaims();
+    } else if (screen === "manage") {
+      state.rewardAdminClaims = [];
+      state.rewardAdminPlayers = [];
+      state.rewardAdminLoaded = true;
+    }
+    if (screen === "game") startRound("choice");
   render();
 }
 

@@ -898,10 +898,15 @@ async function detectClaims() {
     const instance = getApps()[0];
     if (!instance) return;
     const auth = getAuth(instance);
+    for (let attempt = 0; attempt < 40 && !auth.currentUser; attempt += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
     if (!auth.currentUser) return;
     const token = await getIdTokenResult(auth.currentUser, false);
     app.claims.admin = token.claims.admin === true;
     app.claims.guardian = token.claims.guardian === true || app.claims.admin;
+    window.HEATHER_FIREBASE_ADMIN = app.claims.admin;
+    window.HEATHER_FIREBASE_GUARDIAN = app.claims.guardian;
     document.body.classList.toggle("hw9-admin-claim", app.claims.admin);
   } catch (error) {
     console.info("Heather Word role check unavailable", error);
@@ -915,6 +920,14 @@ function interceptLegacyManage(event) {
   event.stopImmediatePropagation();
   openParentGate();
 }
+
+    function interceptLegacyBack(event) {
+      const back = event.target.closest?.(".back-btn, #gameBackBtn");
+      if (!back || !document.body.classList.contains("hw9-legacy-active")) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      goHomeFromLegacy();
+    }
 
 function enhanceSeason2Overlay() {
   const root = document.querySelector("#season2Overlay");
@@ -942,6 +955,7 @@ function bindEvents() {
   window.addEventListener("hashchange", handleHistory);
   window.addEventListener("heather:parent-gate-request", openParentGate);
   document.addEventListener("click", interceptLegacyManage, true);
+  document.addEventListener("click", interceptLegacyBack, true);
   document.addEventListener("click", () => setTimeout(enhanceSeason2Overlay, 0), true);
 }
 
@@ -952,6 +966,7 @@ function installGlobalApi() {
     refresh: () => refreshSnapshot({ force: true }),
     openLegacy,
     openAdventure,
+    backToShell: () => goHomeFromLegacy(),
     getSnapshot: () => typeof structuredClone === "function" ? structuredClone(app.snapshot) : JSON.parse(JSON.stringify(app.snapshot))
   });
 }
