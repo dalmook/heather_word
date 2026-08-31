@@ -85,10 +85,12 @@ jobs:
           app_path = Path('app.js')
           app = app_path.read_text(encoding='utf-8')
           if 'screen === "manage" && window.HEATHER_FIREBASE_ADMIN === true' not in app:
-              old = '''  if (screen === "rank") loadRanking();
-              if (screen === "manage") loadRewardAdminClaims();
-              if (screen === "game") startRound("choice");'''
-              new = '''  if (screen === "rank") loadRanking();
+              pattern = re.compile(
+                  r'  if \(screen === "rank"\) loadRanking\(\);\n'
+                  r'  if \(screen === "manage"\) loadRewardAdminClaims\(\);\n'
+                  r'  if \(screen === "game"\) startRound\("choice"\);'
+              )
+              replacement = '''  if (screen === "rank") loadRanking();
               if (screen === "manage" && window.HEATHER_FIREBASE_ADMIN === true) {
                 loadRewardAdminClaims();
               } else if (screen === "manage") {
@@ -97,9 +99,9 @@ jobs:
                 state.rewardAdminLoaded = true;
               }
               if (screen === "game") startRound("choice");'''
-              if old not in app:
+              app, count = pattern.subn(replacement, app, count=1)
+              if count != 1:
                   raise SystemExit('admin loading block not found')
-              app = app.replace(old, new, 1)
           app_path.write_text(app, encoding='utf-8')
           PY
           node --check ui-v9.js
@@ -117,4 +119,4 @@ jobs:
           git commit -m "fix: make focused screens navigate back and require admin claims"
           git push origin HEAD:codex/commercial-ui-v9
 
-# trigger: robust-finalize-v9
+# trigger: robust-finalize-v9-2
