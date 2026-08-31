@@ -1,0 +1,106 @@
+name: Apply final commercial UI polish
+
+on:
+  push:
+    branches: ["codex/commercial-ui-v9"]
+    paths:
+      - ".github/workflows/ui-v9-final-polish.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/commercial-ui-v9
+          fetch-depth: 0
+      - name: Fix desktop width, favicon and network diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          css_path = Path('ui-v9.css')
+          css = css_path.read_text(encoding='utf-8')
+          old = '''  .hw9-app {
+            grid-template-columns: 96px minmax(0, 1fr);
+          '''
+          new = '''  .hw9-app {
+            grid-template-columns: 96px minmax(0, 1fr);
+            max-width: var(--app-max-desktop);
+          '''
+          if 'max-width: var(--app-max-desktop);' not in css:
+              if old not in css:
+                  raise SystemExit('desktop app anchor not found')
+              css = css.replace(old, new, 1)
+          css_path.write_text(css, encoding='utf-8')
+
+          index_path = Path('index.html')
+          html = index_path.read_text(encoding='utf-8')
+          favicon = '  <link rel="icon" href="./assets/icons/app-icon.svg?v=9.0.0" type="image/svg+xml" />\n'
+          if favicon not in html:
+              anchor = '  <title>Heather Word · Spellingmon</title>\n'
+              if anchor not in html:
+                  raise SystemExit('title anchor not found')
+              html = html.replace(anchor, anchor + favicon, 1)
+          index_path.write_text(html, encoding='utf-8')
+
+          qa_path = Path('tools/ui-v9-browser-qa.mjs')
+          qa = qa_path.read_text(encoding='utf-8')
+          if 'const networkErrors = [];' not in qa:
+              qa = qa.replace('const consoleErrors = [];\n', 'const consoleErrors = [];\nconst networkErrors = [];\n', 1)
+          listener_anchor = '''    cdp.on("Runtime.consoleAPICalled", ({ type, args }) => {
+              if (type === "error") consoleErrors.push(args?.map((arg) => arg.value || arg.description).join(" ") || "console.error");
+            });
+          '''
+          listener_new = listener_anchor + '''    cdp.on("Network.responseReceived", ({ response }) => {
+              if (Number(response?.status) >= 400) networkErrors.push(`${response.status} ${response.url}`);
+            });
+          '''
+          if 'Network.responseReceived' not in qa:
+              if listener_anchor not in qa:
+                  raise SystemExit('console listener anchor not found')
+              qa = qa.replace(listener_anchor, listener_new, 1)
+          report_anchor = '''      consoleErrors,
+              exceptions: errors,
+          '''
+          report_new = '''      consoleErrors,
+              networkErrors,
+              exceptions: errors,
+          '''
+          if '      networkErrors,\n      exceptions: errors,' not in qa:
+              if report_anchor not in qa:
+                  raise SystemExit('report anchor not found')
+              qa = qa.replace(report_anchor, report_new, 1)
+          condition_old = '''    if (errors.length || consoleErrors.length) {
+              throw new Error(`Browser errors: ${JSON.stringify({ errors, consoleErrors })}`);
+            }
+          '''
+          condition_new = '''    if (errors.length || consoleErrors.length || networkErrors.length) {
+              throw new Error(`Browser errors: ${JSON.stringify({ errors, consoleErrors, networkErrors })}`);
+            }
+          '''
+          if 'networkErrors.length' not in qa:
+              if condition_old not in qa:
+                  raise SystemExit('browser error condition not found')
+              qa = qa.replace(condition_old, condition_new, 1)
+          qa_path.write_text(qa, encoding='utf-8')
+          PY
+          node --check tools/ui-v9-browser-qa.mjs
+          grep -q 'max-width: var(--app-max-desktop)' ui-v9.css
+          grep -q 'assets/icons/app-icon.svg?v=9.0.0' index.html
+          grep -q 'Network.responseReceived' tools/ui-v9-browser-qa.mjs
+      - name: Commit final visual polish
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ui-v9.css index.html tools/ui-v9-browser-qa.mjs
+          git commit -m "fix: widen desktop app shell and eliminate missing favicon requests"
+          git push origin HEAD:codex/commercial-ui-v9
