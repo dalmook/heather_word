@@ -1,12 +1,12 @@
 {
-  "name": "heather-word-season2",
-  "version": "8.1.0",
+  "name": "heather-word",
+  "version": "9.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
     "generate:assets": "node tools/generate-season2-assets.mjs",
     "validate:assets": "node tools/validate-season2-assets.mjs",
-    "check": "node --check season2-core.js && node --check monster-catalog-season2.js && node --check season2.js && node --check season2-polish.js && node --check firebase-config.js && npm test && npm run validate:assets"
+    "check": "node --check app.js && node --check firebase-config.js && node --check season2-core.js && node --check monster-catalog-season2.js && node --check season2.js && node --check ui-v9-core.js && node --check ui-v9.js && npm test && npm run validate:assets"
   }
 }
