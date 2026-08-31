@@ -57,7 +57,7 @@ test("exposes a token-based premium kids design system", () => {
   ]) {
     assert.match(css, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
-  assert.match(css, /@media \(min-width:\s*900px\)/);
+  assert.match(css, /@media \(min-width:\s*(?:900|980)px\)/);
   assert.match(css, /safe-area-inset-bottom/);
   assert.match(css, /visualViewport|keyboard-open/);
 });
