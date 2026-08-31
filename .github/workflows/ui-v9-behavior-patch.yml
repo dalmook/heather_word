@@ -18,23 +18,27 @@ jobs:
         with:
           ref: codex/commercial-ui-v9
           fetch-depth: 0
-      - name: Patch role detection and focus-screen back navigation
+      - name: Patch role detection and focused-screen navigation
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
+          import re
 
-          ui = Path('ui-v9.js')
-          text = ui.read_text(encoding='utf-8')
-          old_claims = '''    const auth = getAuth(instance);
-              if (!auth.currentUser) return;
-              const token = await getIdTokenResult(auth.currentUser, false);
-              app.claims.admin = token.claims.admin === true;
-              app.claims.guardian = token.claims.guardian === true || app.claims.admin;
-              document.body.classList.toggle("hw9-admin-claim", app.claims.admin);
-          '''
-          new_claims = '''    const auth = getAuth(instance);
+          ui_path = Path('ui-v9.js')
+          ui = ui_path.read_text(encoding='utf-8')
+
+          if 'window.HEATHER_FIREBASE_ADMIN = app.claims.admin;' not in ui:
+              pattern = re.compile(
+                  r'    const auth = getAuth\(instance\);\n'
+                  r'    if \(!auth\.currentUser\) return;\n'
+                  r'    const token = await getIdTokenResult\(auth\.currentUser, false\);\n'
+                  r'    app\.claims\.admin = token\.claims\.admin === true;\n'
+                  r'    app\.claims\.guardian = token\.claims\.guardian === true \|\| app\.claims\.admin;\n'
+                  r'    document\.body\.classList\.toggle\("hw9-admin-claim", app\.claims\.admin\);'
+              )
+              replacement = '''    const auth = getAuth(instance);
               for (let attempt = 0; attempt < 40 && !auth.currentUser; attempt += 1) {
                 await new Promise((resolve) => setTimeout(resolve, 100));
               }
@@ -44,81 +48,64 @@ jobs:
               app.claims.guardian = token.claims.guardian === true || app.claims.admin;
               window.HEATHER_FIREBASE_ADMIN = app.claims.admin;
               window.HEATHER_FIREBASE_GUARDIAN = app.claims.guardian;
-              document.body.classList.toggle("hw9-admin-claim", app.claims.admin);
-          '''
-          if old_claims not in text:
-              raise SystemExit('claim block not found')
-          text = text.replace(old_claims, new_claims, 1)
+              document.body.classList.toggle("hw9-admin-claim", app.claims.admin);'''
+              ui, count = pattern.subn(replacement, ui, count=1)
+              if count != 1:
+                  raise SystemExit('role claim block not found')
 
-          manage_fn = '''function interceptLegacyManage(event) {
-              const manage = event.target.closest?.('[data-nav="manage"]');
-              if (!manage || window.HEATHER_PARENT_GATE_GRANTED === true) return;
-              event.preventDefault();
-              event.stopImmediatePropagation();
-              openParentGate();
-            }
-          '''
-          back_fn = manage_fn + '''
-            function interceptLegacyBack(event) {
-              const back = event.target.closest?.(".back-btn, #gameBackBtn");
-              if (!back || !document.body.classList.contains("hw9-legacy-active")) return;
-              event.preventDefault();
-              event.stopImmediatePropagation();
-              goHomeFromLegacy();
-            }
-          '''
-          if manage_fn not in text:
-              raise SystemExit('manage interceptor not found')
-          text = text.replace(manage_fn, back_fn, 1)
+          if 'function interceptLegacyBack(event)' not in ui:
+              marker = '\n\nfunction enhanceSeason2Overlay() {'
+              if marker not in ui:
+                  raise SystemExit('season2 overlay marker not found')
+              back = '''
 
-          old_bind = '''  document.addEventListener("click", interceptLegacyManage, true);
-              document.addEventListener("click", () => setTimeout(enhanceSeason2Overlay, 0), true);
-          '''
-          new_bind = '''  document.addEventListener("click", interceptLegacyManage, true);
-              document.addEventListener("click", interceptLegacyBack, true);
-              document.addEventListener("click", () => setTimeout(enhanceSeason2Overlay, 0), true);
-          '''
-          if old_bind not in text:
-              raise SystemExit('bind anchor not found')
-          text = text.replace(old_bind, new_bind, 1)
+              function interceptLegacyBack(event) {
+                const back = event.target.closest?.(".back-btn, #gameBackBtn");
+                if (!back || !document.body.classList.contains("hw9-legacy-active")) return;
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                goHomeFromLegacy();
+              }'''
+              ui = ui.replace(marker, back + marker, 1)
 
-          old_api = '''    openLegacy,
-                openAdventure,
-                getSnapshot: () => typeof structuredClone === "function" ? structuredClone(app.snapshot) : JSON.parse(JSON.stringify(app.snapshot))
-          '''
-          new_api = '''    openLegacy,
-                openAdventure,
-                backToShell: () => goHomeFromLegacy(),
-                getSnapshot: () => typeof structuredClone === "function" ? structuredClone(app.snapshot) : JSON.parse(JSON.stringify(app.snapshot))
-          '''
-          if old_api not in text:
-              raise SystemExit('global API anchor not found')
-          text = text.replace(old_api, new_api, 1)
-          ui.write_text(text, encoding='utf-8')
+          if 'document.addEventListener("click", interceptLegacyBack, true);' not in ui:
+              anchor = '  document.addEventListener("click", interceptLegacyManage, true);\n'
+              if anchor not in ui:
+                  raise SystemExit('legacy manage listener not found')
+              ui = ui.replace(anchor, anchor + '  document.addEventListener("click", interceptLegacyBack, true);\n', 1)
 
-          app = Path('app.js')
-          app_text = app.read_text(encoding='utf-8')
-          old_admin = '''  if (screen === "rank") loadRanking();
-            if (screen === "manage") loadRewardAdminClaims();
-            if (screen === "game") startRound("choice");
-          '''
-          new_admin = '''  if (screen === "rank") loadRanking();
-            if (screen === "manage" && window.HEATHER_FIREBASE_ADMIN === true) {
-              loadRewardAdminClaims();
-            } else if (screen === "manage") {
-              state.rewardAdminClaims = [];
-              state.rewardAdminPlayers = [];
-              state.rewardAdminLoaded = true;
-            }
-            if (screen === "game") startRound("choice");
-          '''
-          if old_admin not in app_text:
-              raise SystemExit('admin load anchor not found')
-          app.write_text(app_text.replace(old_admin, new_admin, 1), encoding='utf-8')
+          if 'backToShell: () => goHomeFromLegacy(),' not in ui:
+              anchor = '    openAdventure,\n'
+              if anchor not in ui:
+                  raise SystemExit('global API anchor not found')
+              ui = ui.replace(anchor, anchor + '    backToShell: () => goHomeFromLegacy(),\n', 1)
+
+          ui_path.write_text(ui, encoding='utf-8')
+
+          app_path = Path('app.js')
+          app = app_path.read_text(encoding='utf-8')
+          if 'screen === "manage" && window.HEATHER_FIREBASE_ADMIN === true' not in app:
+              old = '''  if (screen === "rank") loadRanking();
+              if (screen === "manage") loadRewardAdminClaims();
+              if (screen === "game") startRound("choice");'''
+              new = '''  if (screen === "rank") loadRanking();
+              if (screen === "manage" && window.HEATHER_FIREBASE_ADMIN === true) {
+                loadRewardAdminClaims();
+              } else if (screen === "manage") {
+                state.rewardAdminClaims = [];
+                state.rewardAdminPlayers = [];
+                state.rewardAdminLoaded = true;
+              }
+              if (screen === "game") startRound("choice");'''
+              if old not in app:
+                  raise SystemExit('admin loading block not found')
+              app = app.replace(old, new, 1)
+          app_path.write_text(app, encoding='utf-8')
           PY
           node --check ui-v9.js
           node --check app.js
           grep -q 'interceptLegacyBack' ui-v9.js
+          grep -q 'backToShell' ui-v9.js
           grep -q 'HEATHER_FIREBASE_ADMIN' app.js
       - name: Commit navigation and role behavior
         shell: bash
@@ -130,4 +117,4 @@ jobs:
           git commit -m "fix: make focused screens navigate back and require admin claims"
           git push origin HEAD:codex/commercial-ui-v9
 
-# trigger: finalize-v9
+# trigger: robust-finalize-v9
