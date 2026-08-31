@@ -129,3 +129,5 @@ jobs:
           git add ui-v9.js app.js
           git commit -m "fix: make focused screens navigate back and require admin claims"
           git push origin HEAD:codex/commercial-ui-v9
+
+# trigger: finalize-v9
