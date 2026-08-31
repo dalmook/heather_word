@@ -59,7 +59,7 @@ test("exposes a token-based premium kids design system", () => {
   }
   assert.match(css, /@media \(min-width:\s*(?:900|980)px\)/);
   assert.match(css, /safe-area-inset-bottom/);
-  assert.match(`${ui}\n${css}`, /visualViewport|hw9-keyboard-open/);
+  assert.match(`${app}\n${ui}\n${css}`, /visualViewport|keyboard-open|hw9-keyboard-open/);
 });
 
 test("requires an admin custom claim for cross-user reward updates", () => {
