@@ -2440,6 +2440,7 @@ body.hw9-shell-ready .s2-wide {
 
   .hw9-app {
     grid-template-columns: 96px minmax(0, 1fr);
+    max-width: var(--app-max-desktop);
     grid-template-rows: auto minmax(0, 1fr);
     width: min(calc(100% - 48px), var(--app-max-desktop));
     height: min(calc(100% - 40px), 980px);

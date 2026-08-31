@@ -8,6 +8,7 @@ const outputDir = resolve(process.env.UI_QA_OUTPUT || "audit/after");
 const port = Number(process.env.CHROME_DEBUG_PORT || 9333);
 const errors = [];
 const consoleErrors = [];
+const networkErrors = [];
 
 const fixture = {
   selectedCategoryId: "fruit",
@@ -232,6 +233,9 @@ async function run() {
     cdp.on("Runtime.consoleAPICalled", ({ type, args }) => {
       if (type === "error") consoleErrors.push(args?.map((arg) => arg.value || arg.description).join(" ") || "console.error");
     });
+    cdp.on("Network.responseReceived", ({ response }) => {
+      if (Number(response?.status) >= 400) networkErrors.push(`${response.status} ${response.url}`);
+    });
 
     const fixtureScript = `(() => { if (location.origin === ${JSON.stringify(new URL(baseUrl).origin)} && sessionStorage.getItem('__hw9_fixture_seeded') !== '1') { localStorage.setItem('heather_word_v3', ${JSON.stringify(JSON.stringify(fixture))}); localStorage.removeItem('heather_parent_gate_v1'); sessionStorage.setItem('__hw9_fixture_seeded', '1'); } })();`;
     await cdp.send("Page.addScriptToEvaluateOnNewDocument", { source: fixtureScript });
@@ -345,13 +349,14 @@ async function run() {
       version: await evaluate(cdp, "document.body.dataset.hw9Version"),
       screenshots: viewports.length + 5 + 10,
       consoleErrors,
+      networkErrors,
       exceptions: errors,
       preservedLocalKey: await evaluate(cdp, "typeof localStorage.getItem('heather_word_v3') === 'string'"),
       generatedAt: new Date().toISOString()
     };
     await writeFile(join(outputDir, "qa-report.json"), JSON.stringify(report, null, 2));
-    if (errors.length || consoleErrors.length) {
-      throw new Error(`Browser errors: ${JSON.stringify({ errors, consoleErrors })}`);
+    if (errors.length || consoleErrors.length || networkErrors.length) {
+      throw new Error(`Browser errors: ${JSON.stringify({ errors, consoleErrors, networkErrors })}`);
     }
     cdp.close();
   } finally {
