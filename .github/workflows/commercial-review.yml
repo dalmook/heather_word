@@ -1,0 +1,34 @@
+name: Commercial redesign review
+
+on:
+  push:
+    branches: ["redesign/commercial-20260905"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Capture exact review source
+        run: |
+          mkdir -p /tmp/heather-review
+          git archive --format=zip HEAD -o /tmp/heather-review/source.zip
+          git rev-parse HEAD > /tmp/heather-review/commit.txt
+      - name: Verify current compatibility contracts
+        run: npm run check
+      - name: Upload reproducible review package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: heather-commercial-review-source
+          path: /tmp/heather-review
+          retention-days: 14
+          if-no-files-found: error
