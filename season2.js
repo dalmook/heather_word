@@ -55,7 +55,6 @@ async function loadSeason2FirebaseRuntime() {
 }
 
 const LOCAL_KEY = "heather_word_v3";
-const MANAGE_PASSWORD = "3341";
 const SYNC_DELAY_MS = 500;
 const STAGES = Object.freeze([
   {
@@ -145,6 +144,7 @@ async function bootstrap() {
     version: "8.0.0",
     schemaVersion: SEASON2_SCHEMA_VERSION,
     open: (view = "adventure") => openSeason2(view),
+    close: closeSeason2,
     getState: () => JSON.parse(JSON.stringify(app.season2))
   });
 }
@@ -340,7 +340,7 @@ function mountUi() {
   document.addEventListener("click", handleClick);
   document.addEventListener("change", handleChange);
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && app.root && !app.root.hidden) closeSeason2();
+    if (event.key === "Escape" && app.root && !app.root.hidden && !document.querySelector("dialog[open]")) closeSeason2();
     if (event.key === "Enter" && app.root && !app.root.hidden) {
       const active = document.activeElement;
       if (active?.matches("[data-s2-answer-input]")) submitTypedAnswer(active.value);
@@ -448,9 +448,11 @@ function renderOverlayHeader() {
 
 function openSeason2(view = "adventure") {
   if (!app.root) return;
+  if(view === "report" && window.HEATHER_PARENT_GATE_GRANTED !== true) {openReport();return;}
   app.view = view;
   app.root.hidden = false;
   document.body.classList.add("s2-open");
+  window.dispatchEvent(new CustomEvent("heather:season2-open",{detail:{view}}));
   renderAll();
   setTimeout(() => app.root.querySelector("#s2Content")?.focus(), 0);
 }
@@ -459,6 +461,7 @@ function closeSeason2() {
   if (!app.root) return;
   app.root.hidden = true;
   document.body.classList.remove("s2-open");
+  window.dispatchEvent(new CustomEvent("heather:season2-close"));
   renderHomePanel();
 }
 
@@ -869,14 +872,12 @@ function claimWeekly() {
 }
 
 function openReport() {
-  const value = window.prompt("관리 비밀번호 4자리를 입력하세요.");
-  if (value === null) return;
-  if (value !== MANAGE_PASSWORD) {
-    showToast("비밀번호 확인", "관리 비밀번호가 맞지 않아요.");
-    return;
-  }
-  app.lastReport = buildLearningReport(app.season2, app.words, app.categories, new Date());
-  openSeason2("report");
+  const showReport=()=>{
+    app.lastReport=buildLearningReport(app.season2,app.words,app.categories,new Date());
+    openSeason2("report");
+  };
+  if(window.HeatherWordUI?.requestParentAccess) window.HeatherWordUI.requestParentAccess(showReport);
+  else showToast("보호자 확인 필요", "앱을 새로고침한 뒤 보호자 PIN으로 열어 주세요.");
 }
 
 function exportReport(type) {

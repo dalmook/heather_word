@@ -3,13 +3,30 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#141b34" />
+  <meta name="theme-color" content="#5b43c4" />
   <meta name="description" content="카테고리별 영어 단어와 스펠링을 연습하는 Heather Word" />
-  <title>Heather Word · Spellingmon</title>
+  <title>Heather Word · 매일 자라는 영어 자신감</title>
   <link rel="icon" href="./assets/icons/app-icon.svg?v=9.0.0" type="image/svg+xml" />
   <link rel="stylesheet" href="./style.css?v=7.4" />
+  <link rel="stylesheet" data-heather-season2-style="10.0.0" href="./season2.css?v=10.0.0" />
+  <link rel="stylesheet" data-heather-ui-v9-style="10.0.0" href="./ui-v9.css?v=10.0.0" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Heather Word · 매일 자라는 영어 자신감" />
+  <meta property="og:description" content="카드, 철자 게임, 나만의 모험으로 차곡차곡 쌓는 영어 단어. 기존 학습 기록과 함께 이어가세요." />
+  <meta property="og:image" content="https://dalmook.github.io/heather_word/assets/icons/social-card.png" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png" />
+  <style id="hwBootStyle">
+    #hwBoot{position:fixed;inset:0;z-index:9990;display:grid;place-content:center;justify-items:center;gap:16px;padding:24px;background:#f7f8fa;color:#202537;font:16px/1.6 system-ui;text-align:center}
+    #hwBoot strong{font-size:24px} #hwBoot a{color:#5b43c4;padding:12px} #hwBoot .boot-help{animation:hw-help 0s 12s forwards;visibility:hidden}
+    @keyframes hw-help{to{visibility:visible}} #hwBoot.has-error .boot-help{visibility:visible}
+  </style>
 </head>
 <body>
+  <div id="hwBoot" role="status"><strong>Heather Word</strong><span>나의 단어장을 준비하고 있어요.</span><div class="boot-help"><p>연결이 오래 걸리나요?</p><a href="?mode=local#/home">기기 저장 모드로 다시 열기</a><p>학습 데이터는 브라우저에 보관돼요. 저장소를 지우지 마세요.</p></div></div>
+  <noscript><style>#hwBoot{display:none}</style><p>학습 앱을 사용하려면 JavaScript를 켜 주세요. 기존 저장 데이터는 삭제하지 마세요.</p></noscript>
   <div class="ambient ambient-one" aria-hidden="true"></div>
   <div class="ambient ambient-two" aria-hidden="true"></div>
   <div id="fxLayer" class="fx-layer"></div>
@@ -471,8 +488,8 @@
 
   <input id="importFile" type="file" accept="application/json" hidden />
 
-  <script src="./firebase-config.js?v=9.0.0"></script>
-  <script type="module" src="./app.js?v=7.4"></script>
+  <script src="./firebase-config.js?v=10.0.0"></script>
+  <script type="module" src="./app.js?v=10.0.0"></script>
 </body>
 </html>
 

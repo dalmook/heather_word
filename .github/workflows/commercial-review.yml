@@ -1,0 +1,82 @@
+name: Commercial redesign review
+
+on:
+  push:
+    branches: ["redesign/commercial-20260905"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: commercial-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Korean screenshot fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Verify compatibility contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/heather-review/audit
+          npm run check 2>&1 | tee /tmp/heather-review/audit/check.txt
+      - name: Capture reviewed source
+        if: always()
+        run: |
+          mkdir -p /tmp/heather-review/audit
+          git archive --format=zip HEAD -o /tmp/heather-review/source.zip
+          git rev-parse HEAD > /tmp/heather-review/commit.txt
+      - name: Start static subpath preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/heather-preview
+          ln -s "$GITHUB_WORKSPACE" /tmp/heather-preview/heather_word
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory /tmp/heather-preview >/tmp/heather-http.log 2>&1 &
+          for attempt in {1..40}; do
+            if curl -fsS http://127.0.0.1:4173/heather_word/ >/dev/null; then exit 0; fi
+            sleep 0.25
+          done
+          cat /tmp/heather-http.log
+          exit 1
+      - name: Learning flow regression and responsive screenshots
+        env:
+          BASE_URL: http://127.0.0.1:4173/heather_word
+          UI_QA_OUTPUT: /tmp/heather-review/audit
+        run: node tools/ui-v9-browser-qa.mjs
+      - name: Settled visual checks and console warnings
+        if: always()
+        env:
+          BASE_URL: http://127.0.0.1:4173/heather_word
+          UI_QA_OUTPUT: /tmp/heather-review/audit
+        run: node tools/commercial-visual-qa.mjs
+      - name: Lighthouse evidence
+        if: always()
+        run: |
+          npx --yes lighthouse@12.2.1 "http://127.0.0.1:4173/heather_word/?mode=local&lighthouse=1#/home" \
+            --chrome-flags="--headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage" \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --output=json --output-path=/tmp/heather-review/audit/lighthouse.json --quiet
+      - name: Upload reproducible review package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: heather-commercial-review-source
+          path: /tmp/heather-review
+          retention-days: 14
+          if-no-files-found: error

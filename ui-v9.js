@@ -1,3 +1,4 @@
+import { homeView, wordResults, escapeText } from "./ui/components.js?v=10.0.0";
 import {
   UI_V9_VERSION,
   LOCAL_KEY,
@@ -10,7 +11,7 @@ import {
   safeJson,
   snapshotFingerprint,
   tabFromHash
-} from "./ui-v9-core.js?v=9.0.0";
+} from "./ui-v9-core.js?v=10.0.0";
 import {
   SEASON2_CATALOG,
   getSeason2Character,
@@ -55,6 +56,14 @@ const app = {
   wordQuery: "",
   wordCategory: "all",
   showAllCategories: false,
+  wordLimit: 60,
+  parentAction: null,
+  refreshPending: false,
+  lastRoute: "",
+  handlingHistory: false,
+  toastTimer: null,
+  focusBeforeSeason2: null,
+  season2WasOpen: false,
   storageTimer: null,
   pollTimer: null,
   screenObserver: null,
@@ -140,7 +149,8 @@ function connectionState() {
   const text = document.querySelector("#syncStatus")?.textContent || "";
   if (!navigator.onLine) return { state: "offline", label: "오프라인 저장" };
   if (/실패|규칙|권한/.test(text)) return { state: "warning", label: "기기에 저장" };
-  if (/Firebase|연결됨|동기화/.test(text)) return { state: "online", label: "동기화됨" };
+  if (/동기화 완료|동기화됨|연결됨/.test(text)) return { state: "online", label: "클라우드 연결" };
+  if (/연결 중|동기화 중/.test(text)) return { state: "local", label: "연결 확인 중" };
   return { state: "local", label: "기기 저장" };
 }
 
@@ -165,7 +175,7 @@ function waitForBaseApp(timeout = 12000) {
   const started = Date.now();
   return new Promise((resolve) => {
     const tick = () => {
-      if (document.querySelector("#homeScreen") && document.querySelector("#cardScreen") && document.querySelector("#gameScreen")) {
+      if (window.HeatherWordLegacyBridge && document.querySelector("#homeScreen") && document.querySelector("#cardScreen") && document.querySelector("#gameScreen")) {
         resolve(true);
         return;
       }
@@ -181,8 +191,9 @@ function waitForBaseApp(timeout = 12000) {
 
 function shellTemplate() {
   return `
+    <a class="hw9-skip" href="#hw9Content">본문으로 건너뛰기</a>
     <header class="hw9-header">
-      <button class="hw9-profile-button" type="button" data-hw9-action="profile" aria-label="사용자 프로필 열기">
+      <button class="hw9-profile-button" type="button" data-hw9-action="profile" aria-label="사용자 프로필">
         <span class="hw9-profile-avatar" data-hw9-profile-avatar>${icon("user")}</span>
         <span class="hw9-profile-copy"><small data-hw9-greeting>오늘도 반가워요</small><strong data-hw9-name>Player</strong></span>
       </button>
@@ -193,8 +204,9 @@ function shellTemplate() {
         <span class="hw9-connection" data-hw9-connection="local"><i></i><span>기기 저장</span></span>
       </div>
     </header>
-    <main class="hw9-content" id="hw9Content" tabindex="-1" aria-live="polite"></main>
+    <main class="hw9-content" id="hw9Content" tabindex="-1"></main>
     <nav class="hw9-tabbar" aria-label="주요 메뉴">
+      <div class="hw9-brand" aria-label="Heather Word"><span aria-hidden="true">h.</span><div>Heather Word<small>조금씩, 매일 성장해요</small></div></div>
       ${Object.entries(TAB_META).map(([id, item]) => `
         <button type="button" data-hw9-tab="${id}" aria-label="${item.label}" aria-current="false">
           <span>${icon(item.icon)}</span><b>${item.label}</b>
@@ -221,6 +233,7 @@ function shellTemplate() {
       </form>
     </dialog>
     <div class="hw9-live-region" aria-live="polite" aria-atomic="true" data-hw9-live></div>
+    <div class="hw9-toast" data-hw9-toast hidden></div>
   `;
 }
 
@@ -238,13 +251,13 @@ function mountShell() {
 function partnerMarkup(snapshot, size = "large") {
   const partner = getSeason2Character(snapshot.partnerId);
   if (partner) {
-    return `<div class="hw9-partner-art is-${size}" aria-label="현재 파트너 ${escapeHtml(partner.name)}">${renderMonsterSvg(partner)}</div>`;
+    return `<div class="hw9-partner-art is-${size}" role="img" aria-label="현재 파트너 ${escapeHtml(partner.name)}">${renderMonsterSvg(partner)}</div>`;
   }
   const latestLegacy = document.querySelector("#avatarPreview")?.innerHTML?.trim();
   if (latestLegacy && latestLegacy.includes("svg")) {
-    return `<div class="hw9-partner-art is-${size}" aria-label="현재 캐릭터">${latestLegacy}</div>`;
+    return `<div class="hw9-partner-art is-${size}" role="img" aria-label="현재 캐릭터">${latestLegacy}</div>`;
   }
-  return `<div class="hw9-partner-art is-${size} hw9-partner-empty" aria-label="파트너 선택 전">${icon("monster")}</div>`;
+  return `<div class="hw9-partner-art is-${size} hw9-partner-empty" role="img" aria-label="파트너 선택 전">${icon("monster")}</div>`;
 }
 
 function renderHeader() {
@@ -253,6 +266,8 @@ function renderHeader() {
   const partner = getSeason2Character(app.snapshot.partnerId);
   app.root.querySelector("[data-hw9-greeting]").textContent = greeting();
   app.root.querySelector("[data-hw9-name]").textContent = app.snapshot.name;
+  app.root.querySelector(".hw9-profile-button").setAttribute("aria-label", `${greeting()} ${app.snapshot.name} 사용자 프로필`);
+  app.root.querySelector(".hw9-resource").setAttribute("aria-label", `보유 쿠키 ${formatNumber(app.snapshot.coin)}개 확인`);
   app.root.querySelector("[data-hw9-coin]").textContent = formatNumber(app.snapshot.coin);
   const avatar = app.root.querySelector("[data-hw9-profile-avatar]");
   avatar.innerHTML = partner ? renderMonsterSvg(partner) : icon("user");
@@ -266,61 +281,7 @@ function progressBar(percent, label = "") {
 }
 
 function renderHome() {
-  const s = app.snapshot;
-  const cta = missionCta(s);
-  const partner = getSeason2Character(s.partnerId);
-  const partnerName = partner?.name || "첫 파트너를 기다리고 있어요";
-  const missionMessage = s.mission.complete
-    ? (s.mission.rewarded ? "오늘 목표를 모두 마쳤어요" : "보상을 받을 수 있어요")
-    : `오늘 목표 ${s.mission.percent}%`;
-  const dailyPercent = Math.max(s.adventure.percent, s.mission.percent);
-  return `
-    <section class="hw9-view hw9-home-view" aria-labelledby="hw9HomeTitle">
-      <div class="hw9-home-grid">
-        <article class="hw9-hero-card">
-          <div class="hw9-hero-copy">
-            <span class="hw9-kicker">오늘의 학습</span>
-            <h1 id="hw9HomeTitle">${cta.label}</h1>
-            <p>${cta.note}</p>
-            <div class="hw9-hero-progress">
-              <div><strong>${missionMessage}</strong><span>${s.adventure.stageIndex}/4 단계 · 별 ${s.adventure.stars}</span></div>
-              ${progressBar(dailyPercent, "오늘의 학습 진행도")}
-            </div>
-            <button class="hw9-button hw9-button-primary hw9-hero-cta" type="button" data-hw9-action="adventure" ${s.wordCount ? "" : "disabled"}>
-              <span>${s.wordCount ? cta.label : "먼저 단어를 추가해 주세요"}</span>${icon("arrow")}
-            </button>
-          </div>
-          <div class="hw9-hero-character">
-            ${partnerMarkup(s)}
-            <span class="hw9-partner-name">${escapeHtml(partnerName)}</span>
-          </div>
-        </article>
-
-        <article class="hw9-quest-card ${s.mission.complete ? "is-complete" : ""}">
-          <div class="hw9-section-title">
-            <div><span class="hw9-kicker">오늘 목표</span><h2>${s.mission.complete ? "목표 달성" : "조금씩 채워가요"}</h2></div>
-            <span class="hw9-quest-score">${s.mission.total}/${s.mission.target}</span>
-          </div>
-          ${progressBar(s.mission.percent, "오늘 목표 진행도")}
-          <p>카드 ${s.mission.cardViews}/5 · 게임 ${s.mission.gameCorrect}/5 · 쓰기 ${s.mission.writingAttempts}/3</p>
-          ${s.mission.complete && !s.mission.rewarded ? `
-            <button class="hw9-button hw9-button-reward" type="button" data-hw9-action="claim-mission">${icon("star")} 보상 받기</button>` : ""}
-        </article>
-
-        <div class="hw9-home-secondary">
-          <button class="hw9-info-tile" type="button" data-hw9-tab-jump="collection">
-            <span class="hw9-info-icon">${icon("monster")}</span>
-            <span><small>현재 파트너</small><strong>${escapeHtml(partnerName)}</strong><em>함께 공부한 기록 보기</em></span>
-            ${icon("chevron")}
-          </button>
-          <button class="hw9-info-tile" type="button" data-hw9-tab-jump="my">
-            <span class="hw9-info-icon">${icon("flame")}</span>
-            <span><small>학습 리듬</small><strong>${s.streak.current}일째</strong><em>이번 주 ${s.weekly.activeDays}/5일</em></span>
-            ${icon("chevron")}
-          </button>
-        </div>
-      </div>
-    </section>`;
+  return homeView(app.snapshot, { icon, partnerMarkup, missionCta });
 }
 
 function categoryRows(snapshot) {
@@ -342,28 +303,31 @@ function categoryRows(snapshot) {
 }
 
 function renderWordLibrary(snapshot) {
-  const filtered = filterWords(snapshot.words, app.wordQuery, app.wordCategory).slice(0, 120);
-  return `
-    <section class="hw9-view hw9-library-view" aria-labelledby="hw9LibraryTitle">
-      <div class="hw9-view-heading with-back">
-        <button type="button" class="hw9-icon-button" data-hw9-action="learn-overview" aria-label="학습 화면으로 돌아가기">${icon("back")}</button>
-        <div><span class="hw9-kicker">내 단어장</span><h1 id="hw9LibraryTitle">${snapshot.wordCount}개 단어</h1></div>
-      </div>
-      <div class="hw9-library-tools">
-        <label class="hw9-search-field">${icon("search")}<input type="search" data-hw9-word-search value="${escapeHtml(app.wordQuery)}" placeholder="단어 또는 뜻 검색" autocomplete="off" /></label>
-        <select data-hw9-word-category aria-label="카테고리 필터">
-          ${snapshot.categories.filter((item) => item.id === "all" || item.count > 0).map((item) => `<option value="${escapeHtml(item.id)}" ${item.id === app.wordCategory ? "selected" : ""}>${escapeHtml(item.name)} · ${item.count}</option>`).join("")}
-        </select>
-      </div>
-      <div class="hw9-word-list">
-        ${filtered.length ? filtered.map((word) => `
-          <article class="hw9-word-row">
-            <div><strong>${escapeHtml(word.word)}</strong><span>${escapeHtml(word.meaning || "뜻이 아직 없어요")}</span></div>
-            <button type="button" class="hw9-icon-button subtle" data-hw9-speak="${escapeHtml(word.word)}" aria-label="${escapeHtml(word.word)} 발음 듣기">${icon("volume")}</button>
-          </article>`).join("") : `<div class="hw9-empty-state compact">${icon("search")}<h3>찾는 단어가 없어요</h3><p>검색어나 카테고리를 바꿔 보세요.</p></div>`}
-      </div>
-      <button class="hw9-button hw9-button-secondary hw9-button-wide" type="button" data-hw9-action="parent">${icon("lock")} 보호자 단어 관리</button>
-    </section>`;
+  return `<section class="hw9-view hw9-library-view" aria-labelledby="hw9LibraryTitle">
+    <div class="hw9-view-heading with-back">
+      <button type="button" class="hw9-icon-button" data-hw9-action="learn-overview" aria-label="학습 화면으로 돌아가기">${icon("back")}</button>
+      <div><span class="hw9-kicker">내 단어장</span><h1 id="hw9LibraryTitle">${snapshot.wordCount}개 단어</h1></div>
+    </div>
+    <div class="hw9-library-tools">
+      <label class="hw9-search-field">${icon("search")}<input type="search" data-hw9-word-search value="${escapeHtml(app.wordQuery)}" aria-label="단어 또는 뜻 검색" placeholder="단어 또는 뜻 검색" autocomplete="off" /></label>
+      <select data-hw9-word-category aria-label="카테고리 필터">${snapshot.categories.filter(c=>c.id==="all"||c.count>0).map(c=>`<option value="${escapeHtml(c.id)}" ${c.id===app.wordCategory?'selected':''}>${escapeHtml(c.name)} · ${c.count}</option>`).join('')}</select>
+    </div>
+    <div data-hw9-results>${renderWordResults(snapshot)}</div>
+    <button class="hw9-button hw9-button-secondary hw9-button-wide" type="button" data-hw9-action="parent">${icon("lock")} 보호자 단어 관리</button>
+  </section>`;
+}
+
+function renderWordResults(snapshot) {
+  const result=wordResults(snapshot.words, app.wordQuery, app.wordCategory, app.wordLimit);
+  return `<p class="hw9-result-count" role="status">검색 결과 ${result.total}개 · ${result.items.length}개 표시</p><div class="hw9-word-list">${result.items.length?result.items.map(word=>`
+    <article class="hw9-word-row"><div><strong>${escapeText(word.word)}</strong><span>${escapeText(word.meaning||'뜻이 아직 없어요')}</span></div><button type="button" class="hw9-icon-button subtle" data-hw9-speak="${escapeText(word.word)}" aria-label="${escapeText(word.word)} 발음 듣기">${icon("volume")}</button></article>`).join(''):
+    `<div class="hw9-empty-state">${icon("search")}<h3>찾는 단어가 없어요</h3><p>검색어나 카테고리를 바꿔 보세요.</p><button type="button" class="hw9-text-button" data-hw9-action="clear-search">검색 초기화</button></div>`}</div>
+    ${result.hasMore?`<button type="button" class="hw9-text-button hw9-button-wide" data-hw9-action="more-words">다음 단어 더 보기 (${result.items.length}/${result.total})</button>`:''}`;
+}
+
+function refreshWordResults() {
+  const target=app.main?.querySelector('[data-hw9-results]');
+  if(target) target.innerHTML=renderWordResults(app.snapshot);
 }
 
 function renderLearn() {
@@ -377,8 +341,8 @@ function renderLearn() {
 
       <article class="hw9-review-feature ${s.mastery.due ? "has-due" : ""}">
         <div class="hw9-review-icon">${icon("clock")}</div>
-        <div><span class="hw9-kicker">오늘 복습</span><h2>${s.mastery.due ? `${s.mastery.due}개가 기다려요` : "예정된 복습을 마쳤어요"}</h2><p>${s.mastery.difficult ? `다시 보면 좋은 단어 ${s.mastery.difficult}개` : "새 단어를 가볍게 만나도 좋아요"}</p></div>
-        <button type="button" class="hw9-button hw9-button-primary" data-hw9-action="adventure" ${s.wordCount ? "" : "disabled"}>복습 시작</button>
+        <div><span class="hw9-kicker">오늘 복습</span><h2>${s.mastery.due ? `${s.mastery.due}개가 기다려요` : "지금은 예정된 복습이 없어요"}</h2><p>${s.mastery.difficult ? `모험에서 우선 연습해요 · 어려운 단어 ${s.mastery.difficult}개` : "새 단어를 가볍게 만나도 좋아요"}</p></div>
+        <button type="button" class="hw9-button hw9-button-primary" data-hw9-action="adventure" ${s.wordCount ? "" : "disabled"}>${s.mastery.due ? "모험에서 복습하기" : "새 단어 학습하기"}</button>
       </article>
 
       <div class="hw9-learn-actions">
@@ -407,11 +371,12 @@ function renderGames() {
 
       <button type="button" class="hw9-adventure-banner" data-hw9-action="adventure" ${s.wordCount ? "" : "disabled"}>
         <span>${icon("sparkles")}</span>
-        <div><strong>오늘의 모험</strong><small>네 가지 학습을 짧은 이야기로 이어서 플레이</small></div>
+        <div><strong>오늘의 모험</strong><small>4단계 · 총 21문제 · 진행 상황 저장</small></div>
         <em>${s.adventure.completed ? "완료" : `${s.adventure.stageIndex}/4`}</em>
         ${icon("chevron")}
       </button>
 
+      <label class="hw9-field hw9-game-category"><span>게임에서 학습할 단어</span><select data-hw9-game-category aria-label="게임 카테고리">${s.categories.filter(c=>c.id==="all"||c.count>0).map(c=>`<option value="${escapeHtml(c.id)}" ${c.id===s.selectedCategoryId?'selected':''}>${escapeHtml(c.name)} · ${c.count}개</option>`).join('')}</select></label>
       <div class="hw9-game-grid">
         ${GAME_META.map((game) => `
           <button type="button" class="hw9-game-card mode-${game.mode}" data-hw9-game="${game.mode}" ${s.wordCount ? "" : "disabled"}>
@@ -419,7 +384,7 @@ function renderGames() {
             <span class="hw9-game-level">${game.level}</span>
             <strong>${game.title}</strong>
             <p>${game.description}</p>
-            <small>문제당 ${game.reward}점</small>
+            <small>10문제 · 정답당 ${game.reward}점</small>
           </button>`).join("")}
       </div>
       ${!s.wordCount ? `<div class="hw9-inline-notice">${icon("offline")}<span>학습할 단어가 없어서 게임을 시작할 수 없어요.</span><button type="button" data-hw9-action="parent">단어 추가</button></div>` : ""}
@@ -431,7 +396,7 @@ function ownedPreview(snapshot) {
   if (!owned.length) {
     return `<div class="hw9-collection-empty">${icon("monster")}<span>모험을 완료하면 새로운 친구가 이곳에 나타나요.</span></div>`;
   }
-  return `<div class="hw9-owned-preview">${owned.map((character) => `<div aria-label="${escapeHtml(character.name)}">${renderMonsterSvg(character)}<span>${escapeHtml(character.name)}</span></div>`).join("")}</div>`;
+  return `<div class="hw9-owned-preview">${owned.map((character) => `<div role="img" aria-label="${escapeHtml(character.name)}">${renderMonsterSvg(character)}<span>${escapeHtml(character.name)}</span></div>`).join("")}</div>`;
 }
 
 function renderCollection() {
@@ -510,17 +475,19 @@ function renderMy() {
       <section class="hw9-settings-group hw9-parent-entry">
         <h2>보호자</h2>
         ${settingRow("shield", "보호자 도구", "단어 추가, 백업, 복원과 관리", 'data-hw9-action="parent"')}
+        ${settingRow("lock", "보호자 화면 다시 잠그기", "이 브라우저의 보호자 확인을 종료해요", 'data-hw9-action="lock-parent"')}
       </section>
 
       <p class="hw9-integrity-note">랭킹 점수는 현재 클라이언트가 기록하므로 공개 경쟁의 공식 기록으로 사용하지 않습니다. 운영 경쟁 기능에는 서버 검증이 필요합니다.</p>
     </section>`;
 }
 
-function renderActiveView({ force = false } = {}) {
+function renderActiveView({ force = false, preserveScroll = false } = {}) {
+  const previousScroll = app.main?.scrollTop || 0;
   if (!app.main || !app.snapshot) return;
   const renderers = { home: renderHome, learn: renderLearn, games: renderGames, collection: renderCollection, my: renderMy };
   app.main.innerHTML = renderers[app.activeTab]();
-  app.main.scrollTop = 0;
+  app.main.scrollTop = preserveScroll ? previousScroll : 0;
   app.root.dataset.tab = app.activeTab;
   app.nav.querySelectorAll("[data-hw9-tab]").forEach((button) => {
     const active = button.dataset.hw9Tab === app.activeTab;
@@ -532,16 +499,28 @@ function renderActiveView({ force = false } = {}) {
 
 function refreshSnapshot({ force = false } = {}) {
   if (app.destroyed) return;
-  const next = deriveSnapshot(readEnvelope());
-  const fingerprint = snapshotFingerprint(next);
-  const changed = fingerprint !== app.fingerprint;
-  app.snapshot = next;
-  if (changed || force) {
-    app.fingerprint = fingerprint;
-    renderHeader();
-    renderActiveView();
+  const next=deriveSnapshot(readEnvelope());
+  const fingerprint=snapshotFingerprint(next);
+  const changed=fingerprint!==app.fingerprint;
+  app.snapshot=next;
+  renderHeader();
+  if(changed||force) {
+    app.fingerprint=fingerprint;
+    if(app.activeTab==='learn'&&app.learnMode==='library'&&app.main.querySelector('[data-hw9-results]')) {
+      refreshWordResults();
+      const title=app.main.querySelector('#hw9LibraryTitle');
+      if(title) title.textContent=`${next.wordCount}개 단어`;
+    } else if(!app.root.hidden && !document.querySelector('dialog[open]') && !document.body.classList.contains('hw9-season2-open')) {
+      renderActiveView({preserveScroll:true});
+    }
   }
   applySettings();
+}
+
+function scheduleRefresh() {
+  if(app.refreshPending) return;
+  app.refreshPending=true;
+  requestAnimationFrame(()=>{app.refreshPending=false;refreshSnapshot();});
 }
 
 function applySettings() {
@@ -552,13 +531,22 @@ function applySettings() {
 }
 
 function announce(message) {
-  const region = app.root?.querySelector("[data-hw9-live]");
-  if (!region) return;
-  region.textContent = "";
-  requestAnimationFrame(() => { region.textContent = message; });
+  const region=app.root?.querySelector('[data-hw9-live]');
+  if(region) region.textContent=message;
+  const toast=app.root?.querySelector('[data-hw9-toast]');
+  if(!toast) return;
+  toast.textContent=message;
+  toast.hidden=false;
+  clearTimeout(app.toastTimer);
+  app.toastTimer=setTimeout(()=>{toast.hidden=true;},3600);
 }
 
 function setTab(tab, { history = true, focus = true } = {}) {
+  if(activeLegacyScreen()) {legacyBridge()?.navigate('home');syncLegacyVisibility();}
+  if(document.querySelector('#season2Overlay')?.hidden===false) {
+    const previous=app.handlingHistory; app.handlingHistory=true;
+    window.HeatherWordSeason2?.close?.(); app.handlingHistory=previous;
+  }
   const next = normalizeTab(tab);
   app.activeTab = next;
   app.learnMode = next === "learn" ? app.learnMode : "overview";
@@ -578,11 +566,35 @@ function historyPush(state, hash) {
 }
 
 function handleHistory() {
-  if (document.body.classList.contains("hw9-legacy-active")) {
-    goHomeFromLegacy({ history: false });
+  const hash=location.hash;
+  if(app.lastRoute===hash) return;
+  app.lastRoute=hash;
+  const season=hash.match(/^#\/season2\/(adventure|starter|collection|weekly|settings|egg|report)$/);
+  if(season) {
+    if(activeLegacyScreen()) {legacyBridge()?.navigate('home');syncLegacyVisibility();}
+    app.handlingHistory=true;
+    if(window.HeatherWordSeason2) {
+      window.HeatherWordSeason2.open(season[1]);
+      app.handlingHistory=false;
+    } else {
+      app.handlingHistory=false;
+      app.lastRoute='';
+      setTimeout(handleHistory,100);
+    }
     return;
   }
-  setTab(tabFromHash(), { history: false, focus: false });
+  const focus=hash.match(/^#\/focus\/(card|game|rank|collection|pet|dress|shop|manage)(?:\?(.*))?$/);
+  if(focus) {
+    const params=new URLSearchParams(focus[2]||'');
+    if(activeLegacyScreen()!==focus[1]) openLegacy(focus[1],{mode:params.get('mode')||'choice',categoryId:params.get('category')||app.snapshot.selectedCategoryId,history:false});
+    return;
+  }
+  if(document.querySelector('#season2Overlay')?.hidden===false) {app.handlingHistory=true;window.HeatherWordSeason2?.close?.();app.handlingHistory=false;}
+  if(activeLegacyScreen()) {
+    legacyBridge()?.navigate('home');
+    syncLegacyVisibility();
+  }
+  setTab(tabFromHash(),{history:false,focus:false});
 }
 
 function openAdventure() {
@@ -618,7 +630,7 @@ function openLegacy(screen, options = {}) {
     openParentGate();
     return;
   }
-  app.returnTab = app.activeTab;
+  app.returnTab = options.history === false ? (history.state?.returnTab || ({card:'learn',game:'games',collection:'collection',pet:'collection',dress:'collection'}[screen]||'my')) : app.activeTab;
   const bridge = legacyBridge();
   if (screen === "game" && options.mode && bridge?.startGame) {
     bridge.startGame(options.mode, options.categoryId || app.snapshot.selectedCategoryId);
@@ -640,7 +652,11 @@ function openLegacy(screen, options = {}) {
       setTimeout(() => document.querySelector(`.mode-btn[data-mode="${options.mode}"]`)?.click(), 80);
     }
   }
-  historyPush({ hw9: true, focus: screen, returnTab: app.returnTab }, `#/focus/${screen}`);
+  if(options.history !== false) {
+    const query=screen==='game'?`?mode=${encodeURIComponent(options.mode||'choice')}&category=${encodeURIComponent(options.categoryId||app.snapshot.selectedCategoryId)}`:'';
+    historyPush({hw9:true,focus:screen,returnTab:app.returnTab},`#/focus/${screen}${query}`);
+    app.lastRoute=location.hash;
+  }
   setTimeout(syncLegacyVisibility, 0);
 }
 
@@ -676,6 +692,17 @@ function syncLegacyVisibility() {
     if (!season2Open) app.root.hidden = false;
   }
   document.body.classList.toggle("hw9-season2-open", season2Open);
+  app.main.inert=season2Open;
+  app.nav.inert=season2Open;
+  app.root.querySelector('.hw9-header').inert=season2Open;
+  const legacyShell=document.querySelector('body > .app-shell');
+  if(legacyShell) legacyShell.inert=season2Open;
+  if(season2Open&&!app.season2WasOpen) app.focusBeforeSeason2=document.activeElement;
+  if(!season2Open&&app.season2WasOpen) {
+    app.focusBeforeSeason2?.focus?.({preventScroll:true});
+    refreshSnapshot({force:true});
+  }
+  app.season2WasOpen=season2Open;
 }
 
 function enhanceLegacyChrome(screen) {
@@ -745,6 +772,7 @@ function openProfile() {
 }
 
 function handleRootClick(event) {
+  if(event.target.closest('.hw9-skip')) {event.preventDefault();app.main.focus();return;}
   const tab = event.target.closest("[data-hw9-tab]")?.dataset.hw9Tab;
   if (tab) {
     setTab(tab);
@@ -789,7 +817,21 @@ function handleRootClick(event) {
     profile: openProfile,
     "toggle-sound": toggleSound,
     sync: syncData,
-    parent: openParentGate,
+    parent: () => openParentGate(),
+    "lock-parent": () => {
+      sessionStorage.removeItem('heather_parent_unlocked');
+      window.HEATHER_PARENT_GATE_GRANTED=false;
+      legacyBridge()?.setManageGranted?.(false);
+      announce('보호자 화면을 다시 잠갔어요');
+    },
+    "more-words": () => { app.wordLimit+=60; refreshWordResults(); },
+    "clear-search": () => {
+      app.wordQuery=''; app.wordCategory='all'; app.wordLimit=60;
+      const input=app.main.querySelector('[data-hw9-word-search]');
+      const select=app.main.querySelector('[data-hw9-word-category]');
+      if(input) { input.value=''; input.focus(); } if(select) select.value='all';
+      refreshWordResults();
+    },
     "claim-mission": claimMission,
     "close-parent": closeParentGate
   };
@@ -797,17 +839,21 @@ function handleRootClick(event) {
 }
 
 function handleRootInput(event) {
-  if (event.target.matches("[data-hw9-word-search]")) {
-    app.wordQuery = event.target.value;
-    clearTimeout(app.storageTimer);
-    app.storageTimer = setTimeout(() => renderActiveView(), 80);
+  if(event.target.matches('[data-hw9-word-search]')) {
+    app.wordQuery=event.target.value;
+    app.wordLimit=60;
+    if(!event.isComposing) refreshWordResults();
   }
 }
 
 function handleRootChange(event) {
-  if (event.target.matches("[data-hw9-word-category]")) {
-    app.wordCategory = event.target.value;
-    renderActiveView();
+  if(event.target.matches('[data-hw9-word-category]')) {
+    app.wordCategory=event.target.value;
+    app.wordLimit=60;
+    refreshWordResults();
+  }
+  if(event.target.matches('[data-hw9-game-category]')) {
+    legacyBridge()?.selectCategory?.(event.target.value);
   }
 }
 
@@ -826,7 +872,8 @@ async function hashPin(pin, salt) {
   return btoa(String.fromCharCode(...new Uint8Array(digest)));
 }
 
-function openParentGate() {
+function openParentGate(onGranted) {
+  app.parentAction=typeof onGranted==='function'?onGranted:null;
   if (app.claims.admin || app.claims.guardian || sessionStorage.getItem("heather_parent_unlocked") === "1") {
     grantParentAccess();
     return;
@@ -848,6 +895,7 @@ function openParentGate() {
 }
 
 function closeParentGate() {
+  app.parentAction=null;
   app.root.querySelector("#hw9ParentDialog")?.close();
 }
 
@@ -861,6 +909,10 @@ async function handleParentSubmit(event) {
     error.textContent = "숫자 4~8자리로 입력해 주세요.";
     return;
   }
+  const submit=dialog.querySelector('[data-hw9-parent-submit]');
+  if(submit.disabled) return;
+  submit.disabled=true;
+  try {
   if (dialog.dataset.mode === "setup") {
     if (pin !== confirm) {
       error.textContent = "두 PIN이 서로 달라요.";
@@ -880,12 +932,17 @@ async function handleParentSubmit(event) {
   sessionStorage.setItem("heather_parent_unlocked", "1");
   dialog.close();
   grantParentAccess();
+  } catch {
+    error.textContent='PIN을 확인하지 못했어요. 저장소 접근과 HTTPS 연결을 확인해 주세요.';
+  } finally { submit.disabled=false; }
 }
 
 function grantParentAccess() {
   window.HEATHER_PARENT_GATE_GRANTED = true;
   legacyBridge()?.setManageGranted?.(true);
-  openLegacy("manage");
+  const continuation=app.parentAction;
+  app.parentAction=null;
+  if(continuation) continuation(); else openLegacy("manage");
 }
 
 async function detectClaims() {
@@ -942,15 +999,45 @@ function enhanceSeason2Overlay() {
   });
 }
 
+function trapSeasonFocus(event) {
+  const overlay=document.querySelector('#season2Overlay');
+  if(event.key!=='Tab'||!overlay||overlay.hidden||document.querySelector('dialog[open]')) return;
+  const nodes=[...overlay.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),a[href],[tabindex="0"]')].filter(el=>el.getClientRects().length>0&&!el.closest('[hidden]'));
+  if(!nodes.length) {event.preventDefault();return;}
+  const first=nodes[0],last=nodes[nodes.length-1],active=document.activeElement;
+  if(event.shiftKey&&(active===first||!nodes.includes(active))) {event.preventDefault();last.focus();}
+  else if(!event.shiftKey&&(active===last||!nodes.includes(active))) {event.preventDefault();first.focus();}
+}
+
 function bindEvents() {
   app.root.addEventListener("click", handleRootClick);
   app.root.addEventListener("input", handleRootInput);
+  app.root.addEventListener("compositionend", handleRootInput);
+  app.root.querySelector("#hw9ParentDialog").addEventListener("cancel",()=>{app.parentAction=null;});
+  document.addEventListener("keydown",trapSeasonFocus,true);
   app.root.addEventListener("change", handleRootChange);
   app.root.querySelector("[data-hw9-parent-form]").addEventListener("submit", handleParentSubmit);
-  window.addEventListener("heather:state-change", () => refreshSnapshot());
+  window.addEventListener("heather:state-change", scheduleRefresh);
+  window.addEventListener("heather:legacy-render", scheduleRefresh);
+  window.addEventListener("heather:legacy-ready",scheduleRefresh);
   window.addEventListener("storage", (event) => { if (event.key === LOCAL_KEY) refreshSnapshot({ force: true }); });
   window.addEventListener("online", () => refreshSnapshot({ force: true }));
   window.addEventListener("offline", () => refreshSnapshot({ force: true }));
+  window.addEventListener('heather:season2-open', event => {
+    if(app.handlingHistory) return;
+    const view=event.detail?.view||'adventure';
+    const hash=`#/season2/${view}`;
+    if(location.hash.startsWith('#/season2/')) history.replaceState({hw9:true,season2:true,returnTab:app.returnTab},'',hash);
+    else {app.returnTab=app.activeTab;historyPush({hw9:true,season2:true,returnTab:app.returnTab},hash);}
+    app.lastRoute=hash;
+  });
+  window.addEventListener('heather:season2-close', () => {
+    if(app.handlingHistory) return;
+    const tab=history.state?.returnTab||app.returnTab;
+    history.replaceState({hw9:true,tab},'',`#/${tab}`);
+    app.lastRoute=location.hash;
+    setTab(tab,{history:false,focus:false});
+  });
   window.addEventListener("popstate", handleHistory);
   window.addEventListener("hashchange", handleHistory);
   window.addEventListener("heather:parent-gate-request", openParentGate);
@@ -966,6 +1053,7 @@ function installGlobalApi() {
     refresh: () => refreshSnapshot({ force: true }),
     openLegacy,
     openAdventure,
+    requestParentAccess: openParentGate,
     backToShell: () => goHomeFromLegacy(),
     getSnapshot: () => typeof structuredClone === "function" ? structuredClone(app.snapshot) : JSON.parse(JSON.stringify(app.snapshot))
   });
@@ -991,7 +1079,11 @@ async function boot() {
   refreshSnapshot({ force: true });
   installGlobalApi();
   detectClaims();
-  app.pollTimer = setInterval(() => refreshSnapshot(), 1200);
+  app.pollTimer = setInterval(() => {if(!document.hidden) scheduleRefresh();},30000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden) scheduleRefresh();});
+  document.querySelector('#hwBoot')?.remove();
+  document.querySelector('#hwBootStyle')?.remove();
+  handleHistory();
   if (!location.hash || !location.hash.startsWith("#/")) {
     history.replaceState({ hw9: true, tab: app.activeTab }, "", `#/${app.activeTab}`);
   }
@@ -1000,4 +1092,5 @@ async function boot() {
 
 boot().catch((error) => {
   console.error("Heather Word UI v9 failed", error);
+  document.querySelector("#hwBoot")?.classList.add("has-error");
 });

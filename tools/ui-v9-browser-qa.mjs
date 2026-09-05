@@ -165,7 +165,7 @@ async function click(cdp, selector) {
 async function load(cdp, url) {
   await cdp.send("Page.navigate", { url });
   await waitFor(async () => (await evaluate(cdp, "document.readyState")) === "complete", `document load ${url}`);
-  await waitFor(async () => await evaluate(cdp, "document.body?.dataset?.hw9Version === '9.0.0'"), "UI v9 ready", 20000);
+  await waitFor(async () => await evaluate(cdp, "document.body?.dataset?.hw9Version === '10.0.0'"), "UI v9 ready", 20000);
   await waitFor(async () => await evaluate(cdp, "Boolean(window.HeatherWordUI && window.HeatherWordLegacyBridge)"), "public UI bridges", 20000);
 }
 
@@ -208,6 +208,121 @@ async function openGame(cdp, mode) {
 async function backToShell(cdp) {
   await evaluate(cdp, "window.HeatherWordUI.backToShell()" );
   await waitFor(async () => await evaluate(cdp, "!document.body.classList.contains('hw9-legacy-active') && !document.querySelector('#heatherCommercialApp')?.hidden"), "return shell");
+}
+
+const extendedChecks=[];
+async function expectBrowser(cdp, expression, label) {
+  if(!await evaluate(cdp,expression)) throw new Error(`Commercial regression: ${label}`);
+  extendedChecks.push(label);
+}
+async function runExtended(cdp) {
+  await backToShell(cdp);
+  await evaluate(cdp,`(()=>{const e=JSON.parse(localStorage.getItem('heather_word_v3'));e.words=${JSON.stringify(fixture.words)};localStorage.setItem('heather_word_v3',JSON.stringify(e));})()`);
+  await cdp.send('Page.reload',{ignoreCache:true});
+  await waitFor(async()=>await evaluate(cdp,"Boolean(window.HeatherWordUI)&&Boolean(window.HeatherWordSeason2)"),'extended fixture reload',20000);
+  await backToShell(cdp);
+  // Finish every pre-existing 10-question mode using the same visible controls.
+  for(const mode of ['block','blank','type']) {
+    await openGame(cdp,mode);
+    for(let i=0;i<10;i++) {
+      if(mode==='block') await answerCurrentBlock(cdp);
+      else {
+        const meaning=await evaluate(cdp,"document.querySelector('.question-meaning')?.textContent.trim()||''");
+        await answerCurrentText(cdp,answerForMeaning(meaning));
+      }
+      await delay(740);
+    }
+    await expectBrowser(cdp,"Boolean(document.querySelector('.round-complete'))",`${mode}: 10 questions and completion`);
+    await screenshot(cdp,`complete-${mode}.png`);
+    await backToShell(cdp);
+  }
+  // Cover real viewport overflow on every top-level page, not only the home page.
+  for(const width of [360,390,430,768,1440]) {
+    await setViewport(cdp,width,width>=768?1000:844);
+    for(const tab of ['home','learn','games','collection','my']) {
+      await setTab(cdp,tab);await delay(60);
+      await expectBrowser(cdp,"document.querySelector('#hw9Content').scrollWidth <= document.querySelector('#hw9Content').clientWidth+1",`${tab}: no horizontal overflow at ${width}`);
+      await expectBrowser(cdp,"[...document.querySelectorAll('.hw9-tabbar button')].every(el=>el.getBoundingClientRect().height>=48)",`navigation targets >=48px at ${width}/${tab}`);
+      if([360,430,1440].includes(width)) await screenshot(cdp,`${tab}-${width}-commercial.png`);
+    }
+  }
+  await setViewport(cdp,390,844);await setTab(cdp,'games');
+  await evaluate(cdp,"(()=>{const s=document.querySelector('[data-hw9-game-category]');s.value='family';s.dispatchEvent(new Event('change',{bubbles:true}));})()");
+  await delay(80);
+  await expectBrowser(cdp,"window.HeatherWordUI.getSnapshot().selectedCategoryId==='family'",'category selection before starting game');
+  await click(cdp,'[data-hw9-game="type"]');
+  await cdp.send('Page.reload',{ignoreCache:true});
+  await waitFor(async()=>await evaluate(cdp,"document.querySelector('.mode-btn[data-mode=type]')?.classList.contains('active')&&document.body.classList.contains('hw9-legacy-active')"),'focused game restores correct mode',20000);
+  extendedChecks.push('deep-link refresh restores game mode');
+  await backToShell(cdp);await setTab(cdp,'my');
+  await click(cdp,'[data-hw9-action="lock-parent"]');
+  await click(cdp,'[data-hw9-action="report"]');
+  await waitFor(async()=>await evaluate(cdp,"document.querySelector('#hw9ParentDialog')?.open"),'report PIN gate');
+  await evaluate(cdp,"(()=>{const d=document.querySelector('#hw9ParentDialog');d.querySelector('[data-hw9-parent-pin]').value='0000';d.querySelector('form').requestSubmit();})()");await delay(100);
+  await expectBrowser(cdp,"document.querySelector('[data-hw9-parent-error]').textContent.includes('맞지')",'wrong report PIN does not unlock');
+  await evaluate(cdp,"(()=>{const d=document.querySelector('#hw9ParentDialog');d.querySelector('[data-hw9-parent-pin]').value='2580';d.querySelector('form').requestSubmit();})()");
+  await waitFor(async()=>await evaluate(cdp,"document.querySelector('#s2ViewTitle')?.textContent==='학습 리포트'&&!document.querySelector('#season2Overlay').hidden"),'protected report');
+  await screenshot(cdp,'protected-report.png');
+  await expectBrowser(cdp,"Boolean(document.querySelector('[data-s2-action=export-report-json]')&&document.querySelector('[data-s2-action=export-report-csv]'))",'both report export controls preserved');
+  // Non-native dialog keyboard focus cannot escape behind the overlay.
+  await evaluate(cdp,"document.querySelector('#s2Content').focus()");
+  await cdp.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+  await cdp.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+  await expectBrowser(cdp,"Boolean(document.activeElement.closest('#season2Overlay'))",'season dialog traps keyboard focus');
+  await click(cdp,'#season2Overlay [data-s2-view=settings]');
+  await screenshot(cdp,'season-settings.png');
+  await evaluate(cdp,"(()=>{const x=document.querySelector('[data-s2-setting=reducedMotion]');if(x){x.checked=true;x.dispatchEvent(new Event('change',{bubbles:true}));}})()");
+  await expectBrowser(cdp,"window.HeatherWordSeason2.getState().settings.reducedMotion===true",'reduced motion setting persists');
+  await click(cdp,'#season2Overlay [data-s2-action=close]');
+  await setTab(cdp,'home');await click(cdp,'.hw9-hero-cta');
+  await waitFor(async()=>await evaluate(cdp,"document.querySelector('#season2Overlay')?.hidden===false"),'adventure entry');
+  if(await evaluate(cdp,"Boolean(document.querySelector('[data-s2-action=choose-starter]'))")) await click(cdp,'[data-s2-action=choose-starter]');
+  await click(cdp,'[data-s2-action=start-stage][data-stage-index="0"]');
+  await waitFor(async()=>await evaluate(cdp,"Boolean(window.HeatherWordSeason2.getState().dailyAdventure.session?.questions?.length)"),'season session');
+  const sessionBefore=await evaluate(cdp,"window.HeatherWordSeason2.getState().dailyAdventure.session.questions[0].wordId");
+  await click(cdp,'#season2Overlay [data-s2-action=close]');
+  await cdp.send('Page.reload',{ignoreCache:true});
+  await waitFor(async()=>await evaluate(cdp,"Boolean(window.HeatherWordSeason2&&window.HeatherWordUI)"),'reload season data',20000);
+  await expectBrowser(cdp,`window.HeatherWordSeason2.getState().dailyAdventure.session.questions[0].wordId===${JSON.stringify(sessionBefore)}`,'unfinished adventure survives reload');
+  await setTab(cdp,'home');await click(cdp,'.hw9-hero-cta');
+  await click(cdp,'[data-s2-action=start-stage][data-stage-index="0"]');
+  for(let stage=0;stage<4;stage++) {
+    for(let safety=0;safety<10;safety++) {
+      const session=await evaluate(cdp,'window.HeatherWordSeason2.getState().dailyAdventure.session');
+      if(session.completed) break;
+      const q=session.questions[session.index];
+      const word=fixture.words.find(w=>w.id===q.wordId)?.word;
+      if(!word) throw new Error(`Unknown season fixture word ${q.wordId}`);
+      if(q.mode==='choice') await click(cdp,`#season2Overlay [data-s2-action=answer-choice][data-word-id="${q.wordId}"]`);
+      else if(q.mode==='block') await evaluate(cdp,`(()=>{for(const ch of ${JSON.stringify(word.toUpperCase().replace(/[^A-Z]/g,''))}){const b=[...document.querySelectorAll('[data-s2-action=add-block]')].find(x=>x.textContent.trim().toUpperCase()===ch);if(!b)throw new Error('Missing block');b.click();}document.querySelector('[data-s2-action=check-block]').click();})()`);
+      else await evaluate(cdp,`(()=>{const input=document.querySelector('[data-s2-answer-input]');input.value=${JSON.stringify(word)};document.querySelector('[data-s2-action=submit-input]').click();})()`);
+      await delay(800);
+    }
+    await expectBrowser(cdp,'window.HeatherWordSeason2.getState().dailyAdventure.session.completed',`adventure stage ${stage+1} completion`);
+    await screenshot(cdp,`adventure-stage-${stage+1}.png`);
+    await click(cdp,'[data-s2-action=finish-stage]');
+  }
+  await expectBrowser(cdp,'window.HeatherWordSeason2.getState().dailyAdventure.completed','full four-stage adventure and rewards');
+  await click(cdp,'#season2Overlay [data-s2-action=close]');
+  // Search all 151 entries in an isolated fixture, keeping the focused input node alive.
+  await evaluate(cdp,"(()=>{const e=JSON.parse(localStorage.getItem('heather_word_v3'));e.words=Array.from({length:151},(_,i)=>({id:'qa-'+i,word:'testword'+i,meaning:'연습 '+i,categoryId:'custom'}));e.selectedCategoryId='all';localStorage.setItem('heather_word_v3',JSON.stringify(e));})()");
+  await cdp.send('Page.reload',{ignoreCache:true});
+  await waitFor(async()=>await evaluate(cdp,"Boolean(window.HeatherWordUI)&&window.HeatherWordUI.getSnapshot().wordCount===151"),'151-word fixture',20000);
+  await setTab(cdp,'learn');await click(cdp,'[data-hw9-action=library]');
+  await evaluate(cdp,"window.__searchNode=document.querySelector('[data-hw9-word-search]');window.__searchNode.focus()");
+  await cdp.send('Input.insertText',{text:'testword'});await delay(200);
+  await expectBrowser(cdp,"document.activeElement===window.__searchNode&&document.querySelector('.hw9-word-list').children.length===60",'search retains same input node and focus');
+  await click(cdp,'[data-hw9-action=more-words]');await click(cdp,'[data-hw9-action=more-words]');
+  await expectBrowser(cdp,"document.querySelectorAll('.hw9-word-row').length===151",'all words beyond the old 120 limit are reachable');
+  await screenshot(cdp,'search-pagination.png');
+  await evaluate(cdp,"(()=>{const e=document.querySelector('[data-hw9-word-search]');e.focus();e.value='연습';e.dispatchEvent(new InputEvent('input',{bubbles:true,isComposing:true}));e.dispatchEvent(new CompositionEvent('compositionend',{bubbles:true}));})()");
+  await expectBrowser(cdp,"document.activeElement===window.__searchNode&&document.querySelector('.hw9-result-count').textContent.includes('151')",'Korean composition updates results without replacing input');
+  await setTab(cdp,'my');
+  await cdp.send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:0,uploadThroughput:0});await delay(100);
+  await expectBrowser(cdp,"document.querySelector('[data-hw9-connection]').textContent.includes('오프라인')",'offline state is explicitly labeled');
+  await screenshot(cdp,'state-offline.png');
+  await cdp.send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});
+  await writeFile(join(outputDir,'commercial-checks.json'),JSON.stringify({checks:extendedChecks,count:extendedChecks.length},null,2));
 }
 
 async function run() {
@@ -334,10 +449,11 @@ async function run() {
 
     const beforeReload = await evaluate(cdp, "localStorage.getItem('heather_word_v3')");
     await cdp.send("Page.reload", { ignoreCache: true });
-    await waitFor(async () => await evaluate(cdp, "document.body?.dataset?.hw9Version === '9.0.0'"), "reload ready", 20000);
+    await waitFor(async () => await evaluate(cdp, "document.body?.dataset?.hw9Version === '10.0.0'"), "reload ready", 20000);
     const afterReload = await evaluate(cdp, "localStorage.getItem('heather_word_v3')");
     if (!beforeReload || !afterReload) throw new Error("Local state missing after reload");
 
+    await runExtended(cdp);
     await setTab(cdp, "learn");
     await evaluate(cdp, "localStorage.setItem('heather_word_v3', JSON.stringify({player:{name:'New learner',score:0,coin:0,xp:0,knownCards:{},progress:{},dailyMission:{date:'2026-08-31',cardViews:0,gameCorrect:0,writingAttempts:0,rewarded:false}},categories:[],words:[],selectedCategoryId:'all'})); window.dispatchEvent(new CustomEvent('heather:state-change'));" );
     await delay(250);

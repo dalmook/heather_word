@@ -920,6 +920,7 @@ function navigate(screen) {
     state.manageUnlocked = true;
   }
 
+  if (state.screen === "game" && screen !== "game") clearTimeout(nextTimer);
   state.screen = screen;
   Object.entries(dom.screens).forEach(([key, el]) => {
     el.classList.toggle("active", key === screen);
@@ -1042,13 +1043,14 @@ function render() {
 
   renderCategories();
   renderSelects();
-  renderCard();
-  renderWordList();
-  renderCollection();
+  // Render only the active feature. Calculations, rewards and persisted data are unchanged.
+  if (state.screen === "card") renderCard();
+  if (state.screen === "manage") renderWordList();
+  if (state.screen === "collection") renderCollection();
   renderDailyMission();
-  renderShop();
-  renderPetCare();
-  renderRewardClaims();
+  if (state.screen === "shop" || state.screen === "dress") renderShop();
+  if (state.screen === "pet") renderPetCare();
+  if (state.screen === "manage" || state.screen === "shop") renderRewardClaims();
   renderRoundProgress();
   window.dispatchEvent(new CustomEvent("heather:legacy-render"));
 }
