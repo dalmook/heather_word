@@ -3,29 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#5b43c4" />
-  <meta name="description" content="카테고리별 영어 단어와 스펠링을 연습하는 Heather Word" />
-  <title>Heather Word · 매일 자라는 영어 자신감</title>
+  <meta name="theme-color" content="#087f76" />
+  <meta name="description" content="친구와 함께 보고, 듣고, 기억하는 영어 단어 탐험. 카드와 네 가지 철자 놀이로 차근차근 배워요." />
+  <title>Heather Word · 친구와 함께하는 단어 탐험</title>
   <link rel="icon" href="./assets/icons/app-icon.svg?v=9.0.0" type="image/svg+xml" />
   <link rel="stylesheet" href="./style.css?v=7.4" />
-  <link rel="stylesheet" data-heather-season2-style="10.0.0" href="./season2.css?v=10.0.0" />
-  <link rel="stylesheet" data-heather-ui-v9-style="10.0.0" href="./ui-v9.css?v=10.0.0" />
+  <link rel="stylesheet" data-heather-season2-style="11.0.0" href="./season2.css?v=11.0.0" />
+  <link rel="stylesheet" data-heather-ui-v9-style="11.0.0" href="./ui-v9.css?v=11.0.0" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Heather Word · 매일 자라는 영어 자신감" />
+  <meta property="og:title" content="Heather Word · 친구와 함께하는 단어 탐험" />
   <meta property="og:description" content="카드, 철자 게임, 나만의 모험으로 차곡차곡 쌓는 영어 단어. 기존 학습 기록과 함께 이어가세요." />
   <meta property="og:image" content="https://dalmook.github.io/heather_word/assets/icons/social-card.png" />
   <meta property="og:locale" content="ko_KR" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png" />
   <style id="hwBootStyle">
-    #hwBoot{position:fixed;inset:0;z-index:9990;display:grid;place-content:center;justify-items:center;gap:16px;padding:24px;background:#f7f8fa;color:#202537;font:16px/1.6 system-ui;text-align:center}
-    #hwBoot strong{font-size:24px} #hwBoot a{color:#5b43c4;padding:12px} #hwBoot .boot-help{animation:hw-help 0s 12s forwards;visibility:hidden}
+    #hwBoot{position:fixed;inset:0;z-index:9990;display:grid;place-content:center;justify-items:center;gap:16px;padding:24px;background:#fffaf2;color:#202537;font:16px/1.6 system-ui;text-align:center}
+    #hwBoot strong{font-size:24px} #hwBoot a{color:#087f76;padding:12px} #hwBoot .boot-help{animation:hw-help 0s 12s forwards;visibility:hidden}
     @keyframes hw-help{to{visibility:visible}} #hwBoot.has-error .boot-help{visibility:visible}
   </style>
 </head>
 <body>
-  <div id="hwBoot" role="status"><strong>Heather Word</strong><span>나의 단어장을 준비하고 있어요.</span><div class="boot-help"><p>연결이 오래 걸리나요?</p><a href="?mode=local#/home">기기 저장 모드로 다시 열기</a><p>학습 데이터는 브라우저에 보관돼요. 저장소를 지우지 마세요.</p></div></div>
+  <div id="hwBoot" role="status"><strong>Heather Word</strong><span>탐험 지도를 펼치고 있어!</span><div class="boot-help"><p>연결이 오래 걸리나요?</p><a href="?mode=local#/home">기기 저장 모드로 다시 열기</a><p>학습 데이터는 브라우저에 보관돼요. 저장소를 지우지 마세요.</p></div></div>
   <noscript><style>#hwBoot{display:none}</style><p>학습 앱을 사용하려면 JavaScript를 켜 주세요. 기존 저장 데이터는 삭제하지 마세요.</p></noscript>
   <div class="ambient ambient-one" aria-hidden="true"></div>
   <div class="ambient ambient-two" aria-hidden="true"></div>
@@ -34,397 +34,105 @@
 
   <main class="app-shell">
     <header class="topbar">
-      <div class="brand">
-        <div class="brand-icon">🦄</div>
-        <div class="brand-copy">
-          <span class="brand-kicker">SPELLING QUEST</span>
-          <h1>Heather Word</h1>
-          <p id="syncStatus">LOCAL 모드</p>
-        </div>
-      </div>
-
-      <div class="score-box">
-        <span id="scorePill" title="점수">⭐ 0</span>
-        <span id="coinPill" title="쿠키">🍪 0</span>
-        <span id="comboPill" title="연속 정답">🔥 0</span>
-      </div>
+      <div class="brand"><div class="brand-icon">🦄</div><div class="brand-copy"><span class="brand-kicker">SPELLING QUEST</span><h1>Heather Word</h1><p id="syncStatus">LOCAL 모드</p></div></div>
+      <div class="score-box"><span id="scorePill" title="점수">⭐ 0</span><span id="coinPill" title="쿠키">🍪 0</span><span id="comboPill" title="연속 정답">🔥 0</span></div>
     </header>
-
     <section id="homeScreen" class="screen active">
       <div class="pet-card">
-        <div class="hero-toolbar">
-          <span class="eyebrow">TODAY'S ADVENTURE</span>
-          <div class="hero-controls">
-            <button id="soundToggle" class="chip dark">🔊 ON</button>
-            <button id="profileBtn" class="chip">👤 이름</button>
-          </div>
-        </div>
-
+        <div class="hero-toolbar"><span class="eyebrow">TODAY'S ADVENTURE</span><div class="hero-controls"><button id="soundToggle" class="chip dark">🔊 ON</button><button id="profileBtn" class="chip">👤 이름</button></div></div>
         <div class="mission-card" aria-labelledby="missionTitle">
-          <div class="mission-head">
-            <div>
-              <span class="mission-kicker">DAILY QUEST</span>
-              <strong id="missionTitle">오늘의 미션</strong>
-              <span id="missionSummary" class="mission-summary">카드0/5 · 게임0/5 · 쓰기0/3</span>
-            </div>
-            <button id="claimMissionBtn" class="mission-claim" disabled>보상 받기</button>
-          </div>
+          <div class="mission-head"><div><span class="mission-kicker">DAILY QUEST</span><strong id="missionTitle">오늘의 미션</strong><span id="missionSummary" class="mission-summary">카드0/5 · 게임0/5 · 쓰기0/3</span></div><button id="claimMissionBtn" class="mission-claim" disabled>보상 받기</button></div>
           <div class="mission-list">
-            <div class="mission-item">
-              <span>카드 5개 보기</span>
-              <b id="missionCardText">0/5</b>
-              <i><em id="missionCardFill"></em></i>
-            </div>
-            <div class="mission-item">
-              <span>게임 정답 5개</span>
-              <b id="missionCorrectText">0/5</b>
-              <i><em id="missionCorrectFill"></em></i>
-            </div>
-            <div class="mission-item">
-              <span>쓰기 모드 3번 도전</span>
-              <b id="missionWritingText">0/3</b>
-              <i><em id="missionWritingFill"></em></i>
-            </div>
-          </div>
-          <p id="missionRewardText">완료 보상: 🍪 20 · XP 1000</p>
+            <div class="mission-item"><span>카드 5개 보기</span><b id="missionCardText">0/5</b><i><em id="missionCardFill"></em></i></div>
+            <div class="mission-item"><span>게임 정답 5개</span><b id="missionCorrectText">0/5</b><i><em id="missionCorrectFill"></em></i></div>
+            <div class="mission-item"><span>쓰기 모드 3번 도전</span><b id="missionWritingText">0/3</b><i><em id="missionWritingFill"></em></i></div>
+          </div><p id="missionRewardText">완료 보상: 🍪 20 · XP 1000</p>
         </div>
-
-        <div class="pet-glow">
-          <div id="avatarPreview" class="home-pet-emoji" role="img" aria-label="현재 모은 최종 펫">🥚</div>
-        </div>
-
-        <div class="pet-copy">
-          <h2 id="petName">알 스펠링몬</h2>
-          <p id="petMsg">단어를 맞히면 펫이 자라요.</p>
-        </div>
-
-        <div class="progress-panel">
-          <div class="progress-label">
-            <strong id="levelText">Lv.1</strong>
-            <span id="nextXpText">100XP 남음</span>
-          </div>
-          <div class="xpbar">
-            <i id="xpFill"></i>
-          </div>
-        </div>
-
-        <div class="home-stats" aria-label="학습 현황">
-          <div><b id="homeWordCount">0</b><span>단어</span></div>
-          <div><b id="homeKnownCount">0</b><span>완료</span></div>
-          <div><b id="homeBestCombo">0</b><span>최고콤보</span></div>
-        </div>
+        <div class="pet-glow"><div id="avatarPreview" class="home-pet-emoji" role="img" aria-label="현재 모은 최종 펫">🥚</div></div>
+        <div class="pet-copy"><h2 id="petName">알 스펠링몬</h2><p id="petMsg">단어를 맞히면 펫이 자라요.</p></div>
+        <div class="progress-panel"><div class="progress-label"><strong id="levelText">Lv.1</strong><span id="nextXpText">100XP 남음</span></div><div class="xpbar"><i id="xpFill"></i></div></div>
+        <div class="home-stats" aria-label="학습 현황"><div><b id="homeWordCount">0</b><span>단어</span></div><div><b id="homeKnownCount">0</b><span>완료</span></div><div><b id="homeBestCombo">0</b><span>최고콤보</span></div></div>
       </div>
-
-      <div class="collection-panel">
-        <div class="section-title">
-          <strong>내 단어장</strong>
-          <button class="collection-link" data-nav="collection">📖 도감 <b id="homeMonsterCount">1 / 1000</b></button>
-        </div>
-        <div class="category-strip" id="categoryStrip"></div>
-      </div>
-
-      <div class="launch-panel">
-        <div class="main-actions">
-          <button class="big-action action-card" data-nav="card">
-            <small class="action-badge">REVIEW</small>
-            <span>🃏</span>
-            <b>카드</b>
-            <em>보고 듣기</em>
-          </button>
-          <button class="big-action action-game" data-nav="game">
-            <small class="action-badge">PLAY</small>
-            <span>🎮</span>
-            <b>게임</b>
-            <em>쓰기 +100</em>
-          </button>
-          <button class="big-action action-rank" data-nav="rank">
-            <small class="action-badge">LEAGUE</small>
-            <span>🏆</span>
-            <b>랭킹</b>
-            <em>내 기록</em>
-          </button>
-          <button class="big-action action-dress" data-nav="dress">
-            <small class="action-badge">DRESS</small>
-            <span>👗</span>
-            <b>드레스룸</b>
-            <em>전신 아바타 꾸미기</em>
-          </button>
-          <button class="big-action action-shop" data-nav="shop">
-            <small class="action-badge">SHOP</small>
-            <span>🍪</span>
-            <b>쿠키샵</b>
-            <em>배경 · 펫 · 상품권</em>
-          </button>
-          <button class="big-action action-pet" data-nav="pet">
-            <small class="action-badge">PET</small>
-            <span>🐾</span>
-            <b>펫키우기</b>
-            <em>먹이 · 성장</em>
-          </button>
-          <button class="big-action action-manage" data-nav="manage">
-            <small class="action-badge">LIBRARY</small>
-            <span>⚙️</span>
-            <b>관리</b>
-            <em>단어장 편집</em>
-          </button>
-        </div>
-      </div>
+      <div class="collection-panel"><div class="section-title"><strong>내 단어장</strong><button class="collection-link" data-nav="collection">📖 도감 <b id="homeMonsterCount">1 / 1000</b></button></div><div class="category-strip" id="categoryStrip"></div></div>
+      <div class="launch-panel"><div class="main-actions">
+        <button class="big-action action-card" data-nav="card"><small class="action-badge">REVIEW</small><span>🃏</span><b>카드</b><em>보고 듣기</em></button>
+        <button class="big-action action-game" data-nav="game"><small class="action-badge">PLAY</small><span>🎮</span><b>게임</b><em>쓰기 +100</em></button>
+        <button class="big-action action-rank" data-nav="rank"><small class="action-badge">LEAGUE</small><span>🏆</span><b>랭킹</b><em>내 기록</em></button>
+        <button class="big-action action-dress" data-nav="dress"><small class="action-badge">DRESS</small><span>👗</span><b>드레스룸</b><em>전신 아바타 꾸미기</em></button>
+        <button class="big-action action-shop" data-nav="shop"><small class="action-badge">SHOP</small><span>🍪</span><b>쿠키샵</b><em>배경 · 펫 · 상품권</em></button>
+        <button class="big-action action-pet" data-nav="pet"><small class="action-badge">PET</small><span>🐾</span><b>펫키우기</b><em>먹이 · 성장</em></button>
+        <button class="big-action action-manage" data-nav="manage"><small class="action-badge">LIBRARY</small><span>⚙️</span><b>관리</b><em>단어장 편집</em></button>
+      </div></div>
     </section>
 
     <section id="cardScreen" class="screen">
-      <div class="screen-head">
-        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
-        <select id="cardCategory" class="select"></select>
-        <button id="cardSpeakBtn" class="round-btn" aria-label="단어 발음 듣기">🔊</button>
-      </div>
-
+      <div class="screen-head"><button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button><select id="cardCategory" class="select"></select><button id="cardSpeakBtn" class="round-btn" aria-label="단어 발음 듣기">🔊</button></div>
       <div id="cardProgress" class="card-progress" aria-live="polite">카드 0 / 0</div>
-
-      <div class="word-card">
-        <div id="cardEmoji" class="card-emoji">🍎</div>
-        <div id="cardWord" class="card-word">apple</div>
-        <div id="cardMeaning" class="card-meaning">사과</div>
-        <div id="cardCategoryName" class="tag">1일차</div>
-      </div>
-
-      <div class="bottom-actions">
-        <button id="knowBtn" class="soft-btn good">알아요 +1</button>
-        <button id="hardBtn" class="soft-btn warn">어려워요</button>
-        <button id="prevCardBtn" class="soft-btn">← 이전</button>
-        <button id="nextCardBtn" class="soft-btn">다음 →</button>
-      </div>
+      <div class="word-card"><div id="cardEmoji" class="card-emoji">🍎</div><div id="cardWord" class="card-word">apple</div><div id="cardMeaning" class="card-meaning">사과</div><div id="cardCategoryName" class="tag">1일차</div></div>
+      <div class="bottom-actions"><button id="knowBtn" class="soft-btn good">알아요 +1</button><button id="hardBtn" class="soft-btn warn">한 번 더 볼래요</button><button id="prevCardBtn" class="soft-btn">← 이전</button><button id="nextCardBtn" class="soft-btn">다음 →</button></div>
     </section>
 
     <section id="gameScreen" class="screen">
-      <div class="screen-head">
-        <button id="gameBackBtn" class="back-btn" aria-label="이전 화면으로 돌아가기">←</button>
-        <select id="gameCategory" class="select"></select>
-        <button id="newQuestionBtn" class="round-btn" aria-label="새 라운드 시작">↻</button>
-      </div>
-
-      <div class="round-bar">
-        <strong id="roundProgress">뜻 1 / 10</strong>
-        <span id="roundCorrect">정답 0</span>
-        <b id="roundBonus">완주 +10</b>
-      </div>
-
+      <div class="screen-head"><button id="gameBackBtn" class="back-btn" aria-label="이전 화면으로 돌아가기">←</button><select id="gameCategory" class="select"></select><button id="newQuestionBtn" class="round-btn" aria-label="새 라운드 시작">↻</button></div>
+      <div class="round-bar"><strong id="roundProgress">뜻 1 / 10</strong><span id="roundCorrect">정답 0</span><b id="roundBonus">완주 +10</b></div>
       <div class="mode-tabs" aria-label="게임 모드 선택">
         <button class="mode-btn active" data-mode="choice"><span>뜻</span><small id="modeProgressChoice">0/10 · +1</small></button>
         <button class="mode-btn" data-mode="block"><span>블록</span><small id="modeProgressBlock">0/10 · +15</small></button>
         <button class="mode-btn" data-mode="blank"><span>빈칸</span><small id="modeProgressBlank">0/10 · +40</small></button>
         <button class="mode-btn" data-mode="type"><span>쓰기</span><small id="modeProgressType">0/10 · +100</small></button>
-      </div>
-      <div id="gameBox" class="game-box"></div>
-      <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+      </div><div id="gameBox" class="game-box"></div><div id="feedback" class="feedback" role="status" aria-live="polite"></div>
     </section>
 
     <section id="rankScreen" class="screen">
-      <div class="screen-head">
-        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
-        <h2>🏆 랭킹</h2>
-        <button id="refreshRankBtn" class="round-btn" aria-label="랭킹 새로고침">↻</button>
-      </div>
-
-      <div class="rank-card me">
-        <div>
-          <b id="myNameRank">나</b>
-          <p>내 점수</p>
-        </div>
-        <strong id="myScoreRank">0점</strong>
-      </div>
-
-      <div id="rankingList" class="ranking-list"></div>
-
-      <p class="hint">
-        Firebase 설정을 넣으면 여러 휴대폰에서 같은 단어장과 랭킹을 공유합니다.
-      </p>
+      <div class="screen-head"><button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button><h2>🏆 랭킹</h2><button id="refreshRankBtn" class="round-btn" aria-label="랭킹 새로고침">↻</button></div>
+      <div class="rank-card me"><div><b id="myNameRank">나</b><p>내 점수</p></div><strong id="myScoreRank">0점</strong></div>
+      <div id="rankingList" class="ranking-list"></div><p class="hint">Firebase 설정을 넣으면 여러 휴대폰에서 같은 단어장과 랭킹을 공유합니다.</p>
     </section>
-
     <section id="collectionScreen" class="screen">
-      <div class="screen-head">
-        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
-        <h2>📖 몬스터 도감</h2>
-        <strong id="monsterCount" class="collection-count">1/1000</strong>
-      </div>
-
-      <div id="collectionHero" class="collection-hero"></div>
-      <div id="monsterGrid" class="monster-grid" aria-label="몬스터 목록"></div>
+      <div class="screen-head"><button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button><h2>📖 몬스터 도감</h2><strong id="monsterCount" class="collection-count">1/1000</strong></div>
+      <div id="collectionHero" class="collection-hero"></div><div id="monsterGrid" class="monster-grid" aria-label="몬스터 목록"></div>
     </section>
-
     <section id="petScreen" class="screen">
-      <div class="screen-head">
-        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
-        <h2>🐾 펫키우기</h2>
-        <button id="petShopBtn" class="round-btn" aria-label="쿠키샵으로 이동">🍪</button>
-      </div>
-
+      <div class="screen-head"><button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button><h2>🐾 펫키우기</h2><button id="petShopBtn" class="round-btn" aria-label="쿠키샵으로 이동">🍪</button></div>
       <div class="pet-care-card">
-        <div class="pet-care-room">
-          <div id="petCareEmoji" class="pet-care-emoji">🥚</div>
-          <div class="pet-care-sparkles" aria-hidden="true">✦ ✧ ✦</div>
-        </div>
-        <div class="pet-care-copy">
-          <span id="petCareLevel" class="pet-care-level">입양 대기</span>
-          <h2 id="petCareName">아직 펫이 없어요</h2>
-          <p id="petCareMessage">쿠키샵에서 마음에 드는 펫을 입양해 주세요.</p>
-        </div>
-        <div class="pet-care-bars">
-          <div><span id="petCareXpText">펫 입양 필요</span><i><em id="petCareXpFill"></em></i></div>
-          <div><span id="petCareMoodText">-</span><i><em id="petCareMoodFill"></em></i></div>
-          <div><span id="petCareHungerText">-</span><i><em id="petCareHungerFill"></em></i></div>
-        </div>
+        <div class="pet-care-room"><div id="petCareEmoji" class="pet-care-emoji">🥚</div><div class="pet-care-sparkles" aria-hidden="true">✦ ✧ ✦</div></div>
+        <div class="pet-care-copy"><span id="petCareLevel" class="pet-care-level">입양 대기</span><h2 id="petCareName">아직 펫이 없어요</h2><p id="petCareMessage">쿠키샵에서 마음에 드는 펫을 입양해 주세요.</p></div>
+        <div class="pet-care-bars"><div><span id="petCareXpText">펫 입양 필요</span><i><em id="petCareXpFill"></em></i></div><div><span id="petCareMoodText">-</span><i><em id="petCareMoodFill"></em></i></div><div><span id="petCareHungerText">-</span><i><em id="petCareHungerFill"></em></i></div></div>
       </div>
-
-      <div class="pet-care-actions">
-        <button id="petFeedCookieBtn" class="soft-btn good">🍪 60쿠키 간식</button>
-        <button id="petPlayBtn" class="soft-btn">💗 쓰다듬기</button>
-      </div>
-
-      <section class="pet-food-panel">
-        <div class="section-title">
-          <strong>먹이 보관함</strong>
-          <small>쿠키샵에서 산 먹이를 줄 수 있어요</small>
-        </div>
-        <div id="petFoodList" class="pet-food-list"></div>
-      </section>
+      <div class="pet-care-actions"><button id="petFeedCookieBtn" class="soft-btn good">🍪 60쿠키 간식</button><button id="petPlayBtn" class="soft-btn">💗 쓰다듬기</button></div>
+      <section class="pet-food-panel"><div class="section-title"><strong>먹이 보관함</strong><small>쿠키샵에서 산 먹이를 줄 수 있어요</small></div><div id="petFoodList" class="pet-food-list"></div></section>
     </section>
-
-
 
     <section id="dressScreen" class="screen">
-      <div class="screen-head dress-head">
-        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
-        <div>
-          <h2>👗 아바타 드레스룸</h2>
-          <p>쿠키샵과 분리된 전신 코디 공간이에요.</p>
-        </div>
-        <strong id="dressCookieCount" class="shop-cookie-count">0</strong>
-      </div>
-
+      <div class="screen-head dress-head"><button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button><div><h2>👗 아바타 드레스룸</h2><p>쿠키샵과 분리된 전신 코디 공간이에요.</p></div><strong id="dressCookieCount" class="shop-cookie-count">0</strong></div>
       <div class="dress-scroll">
         <section class="dress-hero-card avatar-shop-section">
-          <div class="section-title avatar-room-title">
-            <strong>전신 스타일링 스튜디오</strong>
-            <small>피부톤부터 헤어, 얼굴, 옷, 소품까지 한눈에 꾸며요.</small>
-          </div>
-          <div class="avatar-room dress-room phaser-dress-room">
-            <div id="avatarGame" class="avatar-game" role="img" aria-label="Phaser 전신 아바타 미리보기"></div>
-            <div id="avatarGameStatus" class="avatar-game-status" role="status" aria-live="polite" hidden>드레스룸을 불러오는 중이에요…</div>
-            <div id="dressAvatarPreview" class="avatar-preview shop-avatar-preview fallback-avatar-preview" role="img" aria-label="아바타 전신 미리보기"></div>
-          </div>
-          <div class="dress-action-row" aria-label="아바타 저장 도구">
-            <button id="saveAvatarBtn" class="soft-btn good">💾 코디 저장</button>
-            <button id="downloadAvatarBtn" class="soft-btn">📸 이미지 저장</button>
-          </div>
+          <div class="section-title avatar-room-title"><strong>전신 스타일링 스튜디오</strong><small>피부톤부터 헤어, 얼굴, 옷, 소품까지 한눈에 꾸며요.</small></div>
+          <div class="avatar-room dress-room phaser-dress-room"><div id="avatarGame" class="avatar-game" role="img" aria-label="Phaser 전신 아바타 미리보기"></div><div id="avatarGameStatus" class="avatar-game-status" role="status" aria-live="polite" hidden>드레스룸을 불러오는 중이에요…</div><div id="dressAvatarPreview" class="avatar-preview shop-avatar-preview fallback-avatar-preview" role="img" aria-label="아바타 전신 미리보기"></div></div>
+          <div class="dress-action-row" aria-label="아바타 저장 도구"><button id="saveAvatarBtn" class="soft-btn good">💾 코디 저장</button><button id="downloadAvatarBtn" class="soft-btn">📸 이미지 저장</button></div>
           <div id="dressAvatarParts" class="avatar-parts" aria-label="현재 미리보기 파츠"></div>
         </section>
-
-        <section class="dress-closet-panel avatar-shop-section">
-          <div class="section-title avatar-room-title">
-            <strong>옷장 카테고리</strong>
-            <small>카드를 누르면 미리 입어보고, 드레스룸에서 바로 구매/착용할 수 있어요.</small>
-          </div>
-          <div id="dressAvatarTabs" class="avatar-tabs dress-tabs" aria-label="아바타 꾸미기 분류"></div>
-          <div id="dressAvatarGrid" class="shop-grid avatar-shop-grid dress-avatar-grid"></div>
-        </section>
+        <section class="dress-closet-panel avatar-shop-section"><div class="section-title avatar-room-title"><strong>옷장 카테고리</strong><small>카드를 누르면 미리 입어보고, 드레스룸에서 바로 구매/착용할 수 있어요.</small></div><div id="dressAvatarTabs" class="avatar-tabs dress-tabs" aria-label="아바타 꾸미기 분류"></div><div id="dressAvatarGrid" class="shop-grid avatar-shop-grid dress-avatar-grid"></div></section>
       </div>
     </section>
 
     <section id="shopScreen" class="screen">
-      <div class="screen-head">
-        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
-        <h2>🍪 쿠키샵</h2>
-        <strong id="shopCookieCount" class="shop-cookie-count">0</strong>
-      </div>
-
+      <div class="screen-head"><button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button><h2>🍪 쿠키샵</h2><strong id="shopCookieCount" class="shop-cookie-count">0</strong></div>
       <div class="shop-scroll">
-        <section class="shop-section legacy-shop-items" hidden>
-          <div class="section-title">
-            <strong>캐릭터 꾸미기</strong>
-            <small>구매 후 착용할 수 있어요</small>
-          </div>
-          <div id="shopItemGrid" class="shop-grid"></div>
-        </section>
-
-        <section class="shop-section">
-          <div class="section-title">
-            <strong>아바타 꾸미기</strong>
-            <small>구매한 파츠는 드레스룸에서 바로 입을 수 있어요</small>
-          </div>
-          <div id="shopAvatarTabs" class="avatar-tabs shop-avatar-tabs" aria-label="쿠키샵 아바타 분류"></div>
-          <div id="shopAvatarGrid" class="shop-grid avatar-shop-grid"></div>
-        </section>
-
-        <section class="shop-section">
-          <div class="section-title">
-            <strong>배경 꾸미기</strong>
-            <small>홈 배경이 바뀌어요</small>
-          </div>
-          <div id="shopThemeGrid" class="shop-grid"></div>
-        </section>
-
-        <section class="shop-section">
-          <div class="section-title">
-            <strong>펫 입양</strong>
-            <small>입양한 펫은 펫키우기에서 돌볼 수 있어요</small>
-          </div>
-          <div id="shopPetGrid" class="shop-grid"></div>
-        </section>
-
-        <section class="shop-section">
-          <div class="section-title">
-            <strong>펫 먹이</strong>
-            <small>먹이를 사서 보관함에 넣어요</small>
-          </div>
-          <div id="shopFoodGrid" class="shop-grid"></div>
-        </section>
-
-        <section class="shop-section">
-          <div class="section-title">
-            <strong>상품권</strong>
-            <small>신청 후 관리자 확인</small>
-          </div>
-          <div class="voucher-card">
-            <div>
-              <b>🎁 다이소 3천원 상품권</b>
-              <p>신청 시 쿠키 5000개가 차감돼요.</p>
-            </div>
-            <button id="requestDaisoVoucherBtn" class="soft-btn good">5000쿠키 신청</button>
-          </div>
-          <div id="shopVoucherList" class="voucher-list"></div>
-        </section>
+        <section class="shop-section legacy-shop-items" hidden><div class="section-title"><strong>캐릭터 꾸미기</strong><small>구매 후 착용할 수 있어요</small></div><div id="shopItemGrid" class="shop-grid"></div></section>
+        <section class="shop-section"><div class="section-title"><strong>아바타 꾸미기</strong><small>구매한 파츠는 드레스룸에서 바로 입을 수 있어요</small></div><div id="shopAvatarTabs" class="avatar-tabs shop-avatar-tabs" aria-label="쿠키샵 아바타 분류"></div><div id="shopAvatarGrid" class="shop-grid avatar-shop-grid"></div></section>
+        <section class="shop-section"><div class="section-title"><strong>배경 꾸미기</strong><small>홈 배경이 바뀌어요</small></div><div id="shopThemeGrid" class="shop-grid"></div></section>
+        <section class="shop-section"><div class="section-title"><strong>펫 입양</strong><small>입양한 펫은 펫키우기에서 돌볼 수 있어요</small></div><div id="shopPetGrid" class="shop-grid"></div></section>
+        <section class="shop-section"><div class="section-title"><strong>펫 먹이</strong><small>먹이를 사서 보관함에 넣어요</small></div><div id="shopFoodGrid" class="shop-grid"></div></section>
+        <section class="shop-section"><div class="section-title"><strong>상품권</strong><small>신청 후 관리자 확인</small></div><div class="voucher-card"><div><b>🎁 다이소 3천원 상품권</b><p>신청 시 쿠키 5000개가 차감돼요.</p></div><button id="requestDaisoVoucherBtn" class="soft-btn good">5000쿠키 신청</button></div><div id="shopVoucherList" class="voucher-list"></div></section>
       </div>
     </section>
 
     <section id="manageScreen" class="screen">
-      <div class="screen-head">
-        <button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button>
-        <h2>⚙️ 관리</h2>
-        <button id="syncBtn" class="round-btn" aria-label="데이터 동기화">☁️</button>
-      </div>
-
-      <div class="manage-grid">
-        <button id="addWordBtn" class="manage-btn">➕ 단어 추가</button>
-        <button id="bulkAddBtn" class="manage-btn">📋 일괄 추가</button>
-        <button id="addCatBtn" class="manage-btn">🗂️ 카테고리 추가</button>
-        <button id="deleteCatBtn" class="manage-btn danger">🗑️ 카테고리 삭제</button>
-        <button id="exportBtn" class="manage-btn">📤 백업</button>
-        <button id="importBtn" class="manage-btn">📥 복원</button>
-      </div>
-
-      <div class="manage-filter">
-        <select id="listCategory" class="select"></select>
-        <input id="manageSearch" class="input" placeholder="단어 또는 뜻 검색" autocomplete="off" />
-      </div>
-      <div id="wordList" class="word-list"></div>
-
-      <section class="reward-admin-panel">
-        <div class="section-title">
-          <strong>상품권 신청 관리</strong>
-          <small>쿠키샵 신청 내역</small>
-        </div>
-        <div id="manageRewardList" class="reward-admin-list"></div>
-      </section>
+      <div class="screen-head"><button class="back-btn" data-nav="home" aria-label="홈으로 돌아가기">←</button><h2>⚙️ 관리</h2><button id="syncBtn" class="round-btn" aria-label="데이터 동기화">☁️</button></div>
+      <div class="manage-grid"><button id="addWordBtn" class="manage-btn">➕ 단어 추가</button><button id="bulkAddBtn" class="manage-btn">📋 일괄 추가</button><button id="addCatBtn" class="manage-btn">🗂️ 카테고리 추가</button><button id="deleteCatBtn" class="manage-btn danger">🗑️ 카테고리 삭제</button><button id="exportBtn" class="manage-btn">📤 백업</button><button id="importBtn" class="manage-btn">📥 복원</button></div>
+      <div class="manage-filter"><select id="listCategory" class="select"></select><input id="manageSearch" class="input" placeholder="단어 또는 뜻 검색" autocomplete="off" /></div><div id="wordList" class="word-list"></div>
+      <section class="reward-admin-panel"><div class="section-title"><strong>상품권 신청 관리</strong><small>쿠키샵 신청 내역</small></div><div id="manageRewardList" class="reward-admin-list"></div></section>
     </section>
   </main>
 
@@ -434,62 +142,33 @@
     <label>한글 뜻<input id="meaningInput" class="input" placeholder="사과" maxlength="120" autocomplete="off" /></label>
     <label>아이콘<input id="emojiInput" class="input" placeholder="🍎" maxlength="8" autocomplete="off" /></label>
     <label>카테고리<select id="wordCategoryInput" class="select"></select></label>
-    <div class="dialog-actions">
-      <button id="closeWordDialog" class="soft-btn">닫기</button>
-      <button id="saveWordBtn" class="soft-btn good">저장</button>
-    </div>
+    <div class="dialog-actions"><button id="closeWordDialog" class="soft-btn">닫기</button><button id="saveWordBtn" class="soft-btn good">저장</button></div>
   </dialog>
-
   <dialog id="bulkDialog" class="dialog">
-    <h2>단어 일괄 추가</h2>
-    <p class="hint">한 줄에 하나씩 입력하세요. 형식: <b>단어 / 뜻</b></p>
+    <h2>단어 일괄 추가</h2><p class="hint">한 줄에 하나씩 입력하세요. 형식: <b>단어 / 뜻</b></p>
     <label>카테고리<select id="bulkCategoryInput" class="select"></select></label>
-    <label>붙여넣기
-      <textarea id="bulkTextInput" class="textarea" maxlength="20000" placeholder="apple / 사과\nbanana / 바나나\nclassroom / 교실"></textarea>
-    </label>
-    <div class="dialog-actions">
-      <button id="closeBulkDialog" class="soft-btn">닫기</button>
-      <button id="saveBulkBtn" class="soft-btn good">일괄 저장</button>
-    </div>
+    <label>붙여넣기<textarea id="bulkTextInput" class="textarea" maxlength="20000" placeholder="apple / 사과\nbanana / 바나나\nclassroom / 교실"></textarea></label>
+    <div class="dialog-actions"><button id="closeBulkDialog" class="soft-btn">닫기</button><button id="saveBulkBtn" class="soft-btn good">일괄 저장</button></div>
   </dialog>
-
   <dialog id="catDialog" class="dialog">
     <h2>카테고리 추가</h2>
     <label>카테고리 이름<input id="catNameInput" class="input" placeholder="3일차 / 학교숙제 / 파닉스" maxlength="30" autocomplete="off" /></label>
     <label>아이콘<input id="catEmojiInput" class="input" placeholder="3️⃣" maxlength="8" autocomplete="off" /></label>
-    <div class="dialog-actions">
-      <button id="closeCatDialog" class="soft-btn">닫기</button>
-      <button id="saveCatBtn" class="soft-btn good">저장</button>
-    </div>
+    <div class="dialog-actions"><button id="closeCatDialog" class="soft-btn">닫기</button><button id="saveCatBtn" class="soft-btn good">저장</button></div>
   </dialog>
-
   <dialog id="profileDialog" class="dialog">
-    <h2>사용자 이름</h2>
-    <p class="hint">랭킹에 표시될 이름이에요.</p>
+    <h2>사용자 이름</h2><p class="hint">랭킹에 표시될 이름이에요.</p>
     <label>이름<input id="playerNameInput" class="input" placeholder="Heather" maxlength="20" autocomplete="off" /></label>
-    <div class="dialog-actions">
-      <button id="closeProfileDialog" class="soft-btn">닫기</button>
-      <button id="saveProfileBtn" class="soft-btn good">저장</button>
-    </div>
+    <div class="dialog-actions"><button id="closeProfileDialog" class="soft-btn">닫기</button><button id="saveProfileBtn" class="soft-btn good">저장</button></div>
   </dialog>
-
   <dialog id="manageLockDialog" class="dialog lock-dialog">
-    <h2>🔐 관리 잠금</h2>
-    <p class="hint">단어장을 편집하려면 관리 비밀번호를 입력하세요.</p>
-    <label>관리 비밀번호
-      <input id="managePasswordInput" class="input" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••" />
-    </label>
+    <h2>🔐 관리 잠금</h2><p class="hint">단어장을 편집하려면 관리 비밀번호를 입력하세요.</p>
+    <label>관리 비밀번호<input id="managePasswordInput" class="input" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••" /></label>
     <p id="managePasswordError" class="lock-error" role="alert"></p>
-    <div class="dialog-actions">
-      <button id="closeManageLockDialog" class="soft-btn">취소</button>
-      <button id="unlockManageBtn" class="soft-btn good">입장</button>
-    </div>
+    <div class="dialog-actions"><button id="closeManageLockDialog" class="soft-btn">취소</button><button id="unlockManageBtn" class="soft-btn good">입장</button></div>
   </dialog>
-
   <input id="importFile" type="file" accept="application/json" hidden />
-
-  <script src="./firebase-config.js?v=10.0.0"></script>
-  <script type="module" src="./app.js?v=10.0.0"></script>
+  <script src="./firebase-config.js?v=11.0.0"></script>
+  <script type="module" src="./app.js?v=11.0.0"></script>
 </body>
 </html>
-
