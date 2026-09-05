@@ -199,6 +199,36 @@ async function runExtended(cdp) {
   await cdp.send('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});
   await writeFile(join(outputDir,'commercial-checks.json'),JSON.stringify({checks:extendedChecks,count:extendedChecks.length},null,2));
 }
+async function runExplorerChecks(cdp) {
+  const production=await evaluate(cdp,"localStorage.getItem('heather_word_v3')");
+  const parentPin=await evaluate(cdp,"localStorage.getItem('heather_parent_gate_v1')");
+  await load(cdp,`${baseUrl}/?demo=1#/home`);
+  await waitFor(async()=>await evaluate(cdp,"window.HEATHER_DEMO===true&&window.HeatherWordLegacyBridge.getSnapshot().words.length===60"),'isolated 60-word trial');
+  await expectBrowser(cdp,"new URLSearchParams(location.search).get('mode')==='local'&&!window.HeatherWordLegacyBridge.getSnapshot().firebaseReady",'trial forces LOCAL even without mode parameter');
+  await setTab(cdp,'learn');await click(cdp,'[data-hw9-action="card"]');
+  await waitFor(async()=>await evaluate(cdp,"document.querySelector('#cardScreen')?.classList.contains('active')&&Boolean(document.querySelector('#cardWord')?.textContent)"),'trial card ready');
+  const scoreBefore=await evaluate(cdp,'window.HeatherWordLegacyBridge.getSnapshot().player.score');
+  await click(cdp,'#knowBtn');
+  await waitFor(async()=>await evaluate(cdp,'window.HeatherWordLegacyBridge.getSnapshot().player.score')>scoreBefore,'real trial learning reward');
+  await backToShell(cdp);await setTab(cdp,'home');await click(cdp,'[data-hw9-action="parent-hub"]');
+  await waitFor(async()=>await evaluate(cdp,"document.querySelector('#hw9ParentDialog')?.open"),'trial parent report remains PIN protected');
+  await expectBrowser(cdp,"document.querySelector('#hw9ParentDialog').dataset.mode==='setup'",'production PIN session does not unlock trial');
+  await evaluate(cdp,"(()=>{const d=document.querySelector('#hw9ParentDialog');d.querySelector('[data-hw9-parent-pin]').value='3690';d.querySelector('[data-hw9-parent-confirm]').value='3690';d.querySelector('form').requestSubmit();})()");
+  await waitFor(async()=>await evaluate(cdp,"document.querySelector('#hw12ParentHub')?.open&&document.querySelectorAll('.hw12-week-chart>div').length===7"),'real parent report and seven daily bins');
+  await expectBrowser(cdp,"document.querySelectorAll('.hw12-mastery-list>div').length===6",'all six real topic reports render');
+  await click(cdp,'[data-hw9-action="close-hub"]');await click(cdp,'[data-hw9-action="parent-guide"]');
+  await waitFor(async()=>await evaluate(cdp,"document.querySelector('#hw12ParentHub')?.open&&document.querySelector('.hw12-membership')?.textContent.includes('아직 판매하지')"),'honest membership guidance');
+  await click(cdp,'[data-hw9-action="close-hub"]');
+  const score=await evaluate(cdp,'window.HeatherWordLegacyBridge.getSnapshot().player.score');
+  await cdp.send('Page.reload',{ignoreCache:true});
+  await waitFor(async()=>await evaluate(cdp,"window.HEATHER_DEMO===true&&Boolean(window.HeatherWordUI)&&window.HeatherWordLegacyBridge.getSnapshot().words.length===60"),'trial reload');
+  await expectBrowser(cdp,`window.HeatherWordLegacyBridge.getSnapshot().player.score===${score}`,'trial learning survives reload');
+  await expectBrowser(cdp,`localStorage.getItem('heather_word_v3')===${JSON.stringify(production)}`,'trial never changes the production envelope');
+  await expectBrowser(cdp,`localStorage.getItem('heather_parent_gate_v1')===${JSON.stringify(parentPin)}`,'trial PIN never changes production PIN');
+  await load(cdp,`${baseUrl}/?mode=local#/home`);
+  await expectBrowser(cdp,"window.HEATHER_DEMO===false",'normal learner returns to production namespace');
+  await writeFile(join(outputDir,'explorers-checks.json'),JSON.stringify({passed:true,trialWords:60,reportDays:7,preservedProduction:true},null,2));
+}
 async function runKidsChecks(cdp) {
   const checks=[];
   for(const width of [360,390,430,768,1440]) {
@@ -291,6 +321,7 @@ async function run() {
     await evaluate(cdp,"localStorage.setItem('heather_word_v3',JSON.stringify({player:{name:'New learner',score:0,coin:0,xp:0,knownCards:{},progress:{},dailyMission:{date:'2026-08-31',cardViews:0,gameCorrect:0,writingAttempts:0,rewarded:false}},categories:[],words:[],selectedCategoryId:'all'}));window.dispatchEvent(new CustomEvent('heather:state-change'));");await delay(250);await screenshot(cdp,'state-empty-new-user-390x844.png');
     if(!await evaluate(cdp,"document.querySelector('.hw9-empty-state')?.textContent.includes('단어가 없어요')===true"))throw new Error('New-user empty state missing');
     await setTab(cdp,'home');await screenshot(cdp,'kids-first-use-390.png');
+    await runExplorerChecks(cdp);
     const report={version:await evaluate(cdp,'document.body.dataset.hw9Version'),screenshots:(await readdir(outputDir)).filter(name=>name.endsWith('.png')).length,consoleErrors,consoleWarnings,networkErrors,exceptions:errors,preservedLocalKey:await evaluate(cdp,"typeof localStorage.getItem('heather_word_v3')==='string'"),generatedAt:new Date().toISOString()};
     await writeFile(join(outputDir,'qa-report.json'),JSON.stringify(report,null,2));
     if(errors.length||consoleErrors.length||networkErrors.length)throw new Error(`Browser errors: ${JSON.stringify({errors,consoleErrors,networkErrors})}`);cdp.close();

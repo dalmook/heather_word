@@ -1,16 +1,16 @@
 /* Shared 7–10 learning palette. Stable token names preserve every legacy screen. */
 :root {
   color-scheme:light;
-  --color-primary:#087f76; --color-primary-hover:#076d66; --color-primary-pressed:#055e58;
-  --color-primary-soft:#e1f4ed; --color-secondary:#315da8;
+  --color-primary:#24634c; --color-primary-hover:#1c543f; --color-primary-pressed:#174533;
+  --color-primary-soft:#e9f2e8; --color-secondary:#315da8;
   --color-accent:#95600c; --color-accent-soft:#fff0c5;
   --color-success:#226c49; --color-success-soft:#dff5e6;
   --color-warning:#895708; --color-warning-soft:#fff1d5;
   --color-danger:#ab3d4b; --color-danger-soft:#fff0ee;
-  --color-bg:#fffaf2; --color-bg-alt:#f5eedf; --color-surface:#fff;
+  --color-bg:#f8f8f2; --color-bg-alt:#f5eedf; --color-surface:#fff;
   --color-surface-raised:#fff; --color-surface-soft:#f6f9f4;
-  --color-text-primary:#202537; --color-text-secondary:#526273; --color-text-tertiary:#607080;
-  --color-line:#e3e7de; --color-line-strong:#bbcbbc; --color-overlay:rgba(25,47,46,.48); --color-focus:#235bae;
+  --color-text-primary:#263e33; --color-text-secondary:#607266; --color-text-tertiary:#67786d;
+  --color-line:#e3e9df; --color-line-strong:#bbcbbc; --color-overlay:rgba(25,47,46,.48); --color-focus:#235bae;
   --color-sky:#e1f5f4; --color-sun:#ffda78; --color-coral-soft:#fff0e7;
   --color-blue-soft:#e7f1ff; --color-purple-soft:#f0eafe;
   --radius-sm:12px; --radius-md:16px; --radius-lg:24px; --radius-xl:28px; --radius-round:999px;
@@ -19,7 +19,7 @@
   --font-display:clamp(26px,4vw,34px); --font-h1:28px; --font-h2:22px; --font-title:19px;
   --font-body:17px; --font-caption:14px; --font-button:17px; --font-number:30px;
   --font-family:"NanumSquareRound","Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif;
-  --shadow-sm:0 3px 0 rgba(37,74,57,.08); --shadow-md:0 5px 0 rgba(37,74,57,.1); --shadow-lg:0 16px 48px rgba(22,28,44,.14);
-  --app-max-mobile:800px; --app-max-desktop:1280px; --tabbar-height:80px; --motion-duration:200ms;
+  --shadow-sm:0 2px 8px rgba(37,74,57,.04); --shadow-md:0 8px 28px rgba(37,74,57,.06); --shadow-lg:0 16px 48px rgba(22,28,44,.14);
+  --app-max-mobile:800px; --app-max-desktop:1480px; --tabbar-height:80px; --motion-duration:200ms;
   --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
 }

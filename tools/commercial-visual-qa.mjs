@@ -49,7 +49,7 @@ try {
     for(const tab of ['home','learn','games','collection','my']) {
       await evaluate(`document.querySelector('[data-hw9-tab="${tab}"]').click()`);await pause(300);
       const rect=await evaluate("(()=>{const main=document.querySelector('#hw9Content');const title=main.querySelector('h1');return {color:getComputedStyle(title).color,overflow:main.scrollWidth-main.clientWidth}})()");
-      assert.equal(rect.color,'rgb(32, 37, 55)',`${width}/${tab} heading`);
+      assert.equal(rect.color,'rgb(38, 62, 51)',`${width}/${tab} heading`);
       assert.ok(rect.overflow<=1,`${width}/${tab} horizontal overflow`);
       report.checks.push(`${width}/${tab}: heading and overflow`);
       if(tab==='home'||(width===390&&tab==='games'))await capture(`verified-${tab}-${width}.png`);

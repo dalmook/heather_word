@@ -9,7 +9,7 @@ const baseline=JSON.parse(await read('tests/fixtures/commercial-baseline.json'))
 const hash=s=>createHash('sha256').update(s).digest('hex');
 for(const [path,expected] of Object.entries(baseline.files)) test(`protected baseline file is byte-identical: ${path}`,async()=>assert.equal(hash(await read(path)),expected));
 test('all pre-existing app functions except navigation/render remain byte-identical',async()=>{
- const app=await read('app.js'),matches=[...app.matchAll(/^(?:async )?function (\w+)\(/gm)];
+ const app=(await read('app.js')).replace("const LOCAL_KEY = globalThis.HEATHER_DEMO ? \"heather_word_demo_v1\" : \"heather_word_v3\";", "const LOCAL_KEY = \"heather_word_v3\";"),matches=[...app.matchAll(/^(?:async )?function (\w+)\(/gm)];
  const actual=Object.fromEntries(matches.map((m,i)=>[m[1],app.slice(m.index,matches[i+1]?.index??app.length)]));
  const joined=baseline.appFunctionNames.map(name=>name+':'+hash(actual[name]||'')).join('\n');
  assert.equal(hash(joined),baseline.appFunctionsSha,'A preserved learning function changed');

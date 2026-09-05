@@ -20,7 +20,7 @@ body.hw9-shell-ready:not(.hw9-legacy-active)>.app-shell {display:none!important}
 .hw9-connection i {width:6px;height:6px;border-radius:50%;background:var(--color-text-secondary)}
 .hw9-connection[data-hw9-connection=online] i {background:var(--color-success)}
 .hw9-content {min-width:0;min-height:0;padding:var(--space-5);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scroll-padding:var(--space-5)}
-.hw9-view {max-width:960px;margin:0 auto;min-width:0;animation:hw9-enter var(--motion-duration) ease-out}
+.hw9-view {max-width:1100px;margin:0 auto;min-width:0;animation:hw9-enter var(--motion-duration) ease-out}
 @keyframes hw9-enter {from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .hw9-brand {display:none}
 .hw9-tabbar {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:var(--space-2) var(--space-2) calc(var(--space-2) + var(--safe-bottom));background:var(--color-surface);border-top:1px solid var(--color-line)}
@@ -34,29 +34,34 @@ body.hw9-shell-ready:not(.hw9-legacy-active)>.app-shell {display:none!important}
 .hw9-view-heading p {margin:var(--space-2) 0 0;color:var(--color-text-secondary);font-size:var(--font-caption)}
 /* Home: one illustrated invitation, an honest route, then optional small missions. */
 .hw9-home-grid {display:grid;gap:var(--space-5)}
-.hw9-hero-card {overflow:hidden;border:2px solid #c8e6d8;border-radius:var(--radius-xl);background:var(--color-surface);box-shadow:var(--shadow-md)}
-.kids-scene {position:relative;height:208px;background:var(--color-sky);isolation:isolate;overflow:hidden}
-.kids-scenery {position:absolute;width:100%;height:100%;inset:0;z-index:-1}
-.kids-speech {position:absolute;left:var(--space-4);top:var(--space-4);z-index:1;max-width:58%;padding:var(--space-3) var(--space-4);border-radius:20px 20px 4px 20px;background:#fff;box-shadow:0 3px 0 #aacfbf}
-.kids-speech>span {font-size:var(--font-caption);font-weight:800;color:var(--color-primary)}
-.kids-speech h2 {font-size:clamp(21px,5.5vw,28px);line-height:1.4;margin:var(--space-1) 0 0;letter-spacing:-.045em;word-break:keep-all}
+.hw9-hero-card {overflow:hidden;border:1px solid #dce7d9;border-radius:var(--radius-xl);background:var(--color-surface);box-shadow:var(--shadow-md)}
+.kids-scene {position:relative;height:254px;background:#edf2e5;isolation:isolate;overflow:hidden}
+.kids-scenery {position:absolute;width:100%;height:100%;inset:0;z-index:-2;object-fit:cover;object-position:65% 60%}
+.kids-scene::after {content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(248,248,234,.94),rgba(248,248,234,.82) 32%,rgba(248,248,234,.12) 65%,transparent)}
+.kids-speech {position:relative;width:62%;padding:24px 0 20px 24px}
+.kids-speech h2 {font-size:clamp(24px,5.7vw,35px);line-height:1.35;margin:12px 0;letter-spacing:-.05em;word-break:keep-all;color:#244834}
+.kids-speech h2 em {font-style:normal;color:#467655}
+.kids-speech p {font-size:14px;line-height:1.7;color:#435f4b;margin:0;word-break:keep-all}
+.hw12-adventure-label {display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:#346443}
+.hw12-adventure-label .hw9-icon {width:16px;height:16px}
 .hw9-hero-character {position:absolute;right:var(--space-3);bottom:var(--space-3);display:grid;justify-items:center;width:45%;max-width:200px;gap:0}
 .hw9-partner-art {display:grid;place-items:center;width:100%;max-width:200px;aspect-ratio:1}
 .hw9-partner-art svg:not(.hw9-icon) {width:100%;height:100%;max-height:220px;filter:none}
 .hw9-partner-art.is-medium {max-width:96px}
 .hw9-partner-name {font-size:12px;font-weight:700;color:#294e41;background:#ffffffde;padding:3px 10px;border-radius:var(--radius-round);text-align:center}
-.kids-launch {padding:var(--space-4) var(--space-4) var(--space-3)}
-.hw9-hero-cta {width:100%;justify-content:space-between;font-size:19px!important;letter-spacing:-.025em}
-.kids-launch p {text-align:center;font-size:var(--font-caption);color:var(--color-text-secondary);margin:var(--space-3) 0 0;word-break:keep-all}
+.kids-launch {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;padding:20px 24px}
+.hw12-launch-note {font-weight:800;font-size:16px}
+.kids-launch p {font-size:14px;color:var(--color-text-secondary);margin:2px 0 0;word-break:keep-all}
+.hw9-hero-cta {width:100%;justify-content:space-between;font-size:18px!important;letter-spacing:-.025em;min-height:56px!important}
 .hw9-section-title {display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin-bottom:var(--space-4)}
 .hw9-section-title h2 {margin:0;font-size:var(--font-h2);letter-spacing:-.04em}
 .hw9-section-title .hw9-kicker {margin-bottom:var(--space-1)}
 .hw9-section-title>span {font-size:var(--font-caption);color:var(--color-text-secondary);font-variant-numeric:tabular-nums}
-.kids-journey {min-width:0;padding:var(--space-1) 0}
+.kids-journey {min-width:0;padding:24px;border:1px solid var(--color-line);border-radius:24px;background:#fff}
 .kids-path {position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-1);list-style:none;padding:var(--space-2) 0 0;margin:0}
 .kids-path::before {content:'';position:absolute;inset:38px 12% auto;border-top:5px dashed #c8d8c4;z-index:0}
 .kids-path li {position:relative;display:grid;justify-items:center;gap:var(--space-2);min-width:0;text-align:center}
-.kids-path-node {display:grid;place-items:center;width:58px;height:58px;border-radius:20px;background:#f4eedc;border:3px solid #e2d9bf;color:#726b55;box-shadow:0 4px 0 #e2d9bf}
+.kids-path-node {display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#f2f3e9;border:2px solid #dfe5d4;color:#727b60;box-shadow:0 4px 0 #e3e8dc}
 .kids-path-node svg {width:26px;height:26px}
 .kids-path li.is-current .kids-path-node {color:#fff;background:var(--color-primary);border-color:var(--color-primary);box-shadow:0 4px 0 var(--color-primary-pressed),0 0 0 5px #e0efe3}
 .kids-path li.is-done .kids-path-node {color:var(--color-success);background:var(--color-success-soft);border-color:#a7d2b6;box-shadow:0 4px 0 #a7d2b6}
@@ -66,22 +71,22 @@ body.hw9-shell-ready:not(.hw9-legacy-active)>.app-shell {display:none!important}
 .kids-path-caption {display:flex;justify-content:space-between;gap:var(--space-2);font-size:12px;color:var(--color-text-secondary);margin-top:var(--space-4)}
 .kids-path-caption>span:first-child {display:flex;align-items:center;gap:var(--space-1);color:#865313;font-weight:700}
 .kids-path-caption svg {width:18px;height:18px;fill:#ffda78}
-.hw9-quest-card {padding:var(--space-5);border:2px solid #efdfbb;border-radius:var(--radius-lg);background:#fffdf5}
+.hw9-quest-card {padding:var(--space-5);border:1px solid #e9e6d6;border-radius:var(--radius-lg);background:#fffef8}
 .kids-mission-badge {background:#fff0c5;border-radius:var(--radius-round);padding:6px 10px;white-space:nowrap;color:#78521a!important;font-weight:800}
-.hw9-goal-row {display:grid!important;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:var(--space-3);width:100%;min-height:78px;padding:var(--space-3) 0!important;text-align:left;border-bottom:1px dashed #e9dec4!important}
+.hw9-goal-row {display:grid!important;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:var(--space-3);width:100%;min-height:80px;padding:var(--space-3) 0!important;text-align:left;border-bottom:1px dashed #e9dec4!important}
 .hw9-goal-row:last-of-type {border:0!important}
 .hw9-goal-row>.hw9-icon {width:40px;height:40px;padding:9px;border-radius:14px;background:#ffe7d8;color:#9e4d2e}
 .hw9-goal-row:nth-of-type(2)>.hw9-icon {background:var(--color-blue-soft);color:var(--color-secondary)}
 .hw9-goal-row:nth-of-type(3)>.hw9-icon {background:var(--color-purple-soft);color:#6f4ca2}
-.hw9-goal-row>span {display:grid;min-width:0;font-size:var(--font-button);font-weight:800}
+.hw9-goal-row>span {display:grid;min-width:0;font-size:16px;font-weight:800}
 .hw9-goal-row small {font-size:var(--font-caption);color:var(--color-text-secondary);font-weight:400}
 .hw9-goal-row>strong {font-size:var(--font-caption);font-variant-numeric:tabular-nums;color:var(--color-text-secondary)}
 .hw9-goal-row.is-complete>.hw9-icon {color:var(--color-success);background:var(--color-success-soft)}
-.hw9-quest-card>.hw9-progress {margin-top:var(--space-3)}
+.hw9-quest-card>.hw9-progress {margin-top:var(--space-4)}
 .hw9-quest-card>.hw9-button {margin-top:var(--space-4)}
 .hw9-home-secondary {display:grid;grid-template-columns:1fr;gap:var(--space-3)}
-.hw9-info-tile {display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4)!important;text-align:left;min-width:0;background:var(--color-blue-soft)!important;border-radius:var(--radius-lg)}
-.hw9-info-tile:last-child {background:var(--color-coral-soft)!important}
+.hw9-info-tile {display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4)!important;text-align:left;min-width:0;background:#eef3e7!important;border:1px solid #e2e9d9!important;border-radius:var(--radius-lg)}
+.hw9-info-tile:last-child {background:#f9eee3!important;border-color:#efe2d4!important}
 .hw9-info-icon {display:grid;place-items:center;width:44px;height:44px;border-radius:var(--radius-md);background:#fff;color:var(--color-primary);flex:none}
 .hw9-info-tile>span:nth-child(2) {display:grid;gap:var(--space-1);min-width:0;flex:1}
 .hw9-info-tile small,.hw9-info-tile em {color:var(--color-text-secondary);font-size:var(--font-caption);font-style:normal}
@@ -170,7 +175,7 @@ body.hw9-shell-ready:not(.hw9-legacy-active)>.app-shell {display:none!important}
  .hw9-partner-feature {grid-template-columns:180px minmax(0,1fr)}
 }
 @media(min-width:980px) {
- .hw9-app {max-width:var(--app-max-desktop);grid-template-columns:208px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);border-inline:1px solid var(--color-line)}
+ .hw9-app {max-width:var(--app-max-desktop);grid-template-columns:224px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);border-inline:1px solid var(--color-line)}
  .hw9-header {grid-column:2;grid-row:1;padding-inline:var(--space-8)}
  .hw9-content {grid-column:2;grid-row:2;padding:var(--space-7) var(--space-8)}
  .hw9-tabbar {grid-column:1;grid-row:1/3;display:flex;flex-direction:column;gap:var(--space-2);align-items:stretch;padding:var(--space-7) var(--space-4);border-top:0;border-right:1px solid var(--color-line)}
@@ -179,14 +184,20 @@ body.hw9-shell-ready:not(.hw9-legacy-active)>.app-shell {display:none!important}
  .hw9-brand small {display:block;font-size:var(--font-caption);font-weight:400;color:var(--color-text-secondary);letter-spacing:0}
  .hw9-tabbar button {display:flex;align-items:center;justify-content:flex-start;gap:var(--space-3);padding:var(--space-3) var(--space-4);min-height:52px}
  .hw9-tabbar button b {font-size:var(--font-button)}
- .hw9-home-grid {grid-template-columns:minmax(0,1.45fr) minmax(270px,1fr);gap:var(--space-5);align-items:start}
- .hw9-hero-card {grid-column:1;grid-row:1}
+ .hw9-home-grid {grid-template-columns:minmax(0,1.4fr) minmax(290px,1fr);gap:24px;align-items:start}
+ .hw9-hero-card {grid-column:1/-1;grid-row:1}
  .kids-journey {grid-column:1;grid-row:2}
- .hw9-quest-card {grid-column:2;grid-row:1/3;align-self:stretch}
- .kids-scene {height:236px}
+ .hw9-quest-card {grid-column:2;grid-row:2/4;align-self:stretch}
+ .kids-scene {height:322px}
  .hw9-hero-character {right:var(--space-5);width:46%}
- .kids-speech {left:var(--space-5);top:var(--space-5)}
- .hw9-home-secondary {grid-column:1/-1;grid-row:3}
+ .kids-speech {width:64%;padding:38px 0 24px 36px}
+ .kids-speech h2 {font-size:clamp(32px,3.25vw,43px)}
+ .kids-speech p {font-size:16px}
+ .kids-launch {padding:20px 32px}
+ .hw9-hero-cta {width:auto;min-width:240px;gap:32px}
+ .hw12-nav-note {display:grid!important;margin-top:auto;padding:28px 10px 10px;gap:14px}
+ .hw9-home-secondary {grid-template-columns:1fr}
+ .hw9-home-secondary {grid-column:1;grid-row:3}
  .hw9-game-grid {gap:var(--space-5)}
 }
 @media(max-width:389px) {
@@ -195,7 +206,11 @@ body.hw9-shell-ready:not(.hw9-legacy-active)>.app-shell {display:none!important}
  .hw9-partner-feature {grid-template-columns:80px minmax(0,1fr);padding:var(--space-4)}
  .hw9-game-card {padding:var(--space-3);min-height:254px}
  .kids-scene {height:192px}
- .kids-speech {padding:var(--space-3);left:var(--space-3)}
+ .kids-speech {padding:18px 0 12px 18px;width:68%}
+ .kids-speech h2 {font-size:24px}
+ .kids-speech p {font-size:13px}
+ .kids-launch {padding:16px 18px}
+ .kids-journey {padding:18px 14px}
  .kids-path-node {width:52px;height:52px}
  .kids-path strong {font-size:13px}
 }

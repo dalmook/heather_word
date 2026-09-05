@@ -1,5 +1,7 @@
 /* Single entry point: tokens → shared components → layouts → compatibility adapters. */
-@import url("./ui/tokens.css?v=11.0.0");
-@import url("./ui/components.css?v=11.0.0");
-@import url("./ui/layout.css?v=11.0.0");
-@import url("./ui/legacy.css?v=11.0.0");
+@import url("./ui/tokens.css?v=12.0.0");
+@import url("./ui/components.css?v=12.0.0");
+@import url("./ui/layout.css?v=12.0.0");
+@import url("./ui/legacy.css?v=12.0.0");
+
+@import url("./ui/explorers.css?v=12.0.0");

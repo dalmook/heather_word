@@ -1,6 +1,6 @@
-export const UI_V9_VERSION = "11.0.0";
-export const LOCAL_KEY = "heather_word_v3";
-export const PARENT_GATE_KEY = "heather_parent_gate_v1";
+export const UI_V9_VERSION = "12.0.0";
+export const LOCAL_KEY = globalThis.HEATHER_DEMO ? "heather_word_demo_v1" : "heather_word_v3";
+export const PARENT_GATE_KEY = globalThis.HEATHER_DEMO ? "heather_demo_parent_gate_v1" : "heather_parent_gate_v1";
 export const TABS = Object.freeze(["home", "learn", "games", "collection", "my"]);
 
 export function isPlainObject(value) {

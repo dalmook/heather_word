@@ -35,8 +35,8 @@ test('mode illustrations are decorative and all four modes stay available',async
  for(const label of ['단어','놀이','친구','나']) assert.ok(source.includes(`label: "${label}"`));
  assert.ok(source.includes('?.value || availableCategory(app.snapshot)'));
 });
-test('UI-only renewal keeps data-bearing engines byte-identical to release v10',async()=>{
+test('learning engines retain v10 bytes except the explicit trial storage namespace',async()=>{
  const {createHash}=await import('node:crypto');
  const baseline=JSON.parse(await read('tests/fixtures/kids-baseline.json'));
- for(const [file,hash] of Object.entries(baseline)) assert.equal(createHash('sha256').update(await read(file)).digest('hex'),hash,file);
+ for(const [file,hash] of Object.entries(baseline)) assert.equal(createHash('sha256').update((await read(file)).replace("const LOCAL_KEY = globalThis.HEATHER_DEMO ? \"heather_word_demo_v1\" : \"heather_word_v3\";", "const LOCAL_KEY = \"heather_word_v3\";")).digest('hex'),hash,file);
 });
