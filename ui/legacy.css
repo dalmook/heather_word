@@ -26,7 +26,7 @@ body.hw9-legacy-active .mode-btn {min-height:48px!important;padding:6px 4px!impo
 body.hw9-legacy-active .mode-btn.active {color:var(--color-primary)!important;background:var(--color-primary-soft)!important}
 body.hw9-legacy-active .mode-btn span {font-size:var(--font-caption)!important;font-weight:850!important}
 body.hw9-legacy-active .mode-btn small {font-size:11px!important}
-body.hw9-legacy-active .game-box {flex:1 0 auto!important;min-height:390px!important;padding:18px!important;border:1px solid var(--color-line)!important;border-radius:var(--radius-xl)!important;color:var(--color-text-primary)!important;background:var(--color-surface)!important;box-shadow:var(--shadow-sm)!important}
+body.hw9-legacy-active .game-box {flex:1 0 auto!important;min-height:390px!important;padding:18px!important;border:2px solid #cbded0!important;border-radius:var(--radius-xl)!important;color:var(--color-text-primary)!important;background:var(--color-surface)!important;box-shadow:var(--shadow-sm)!important}
 body.hw9-legacy-active .feedback {flex:0 0 auto!important;min-height:54px!important;margin-top:10px!important;padding:12px!important;border-radius:var(--radius-md)!important;color:var(--color-text-secondary)!important;background:transparent!important;font-size:var(--font-caption)!important}
 body.hw9-legacy-active .shop-scroll,body.hw9-legacy-active .dress-scroll,body.hw9-legacy-active .ranking-list,body.hw9-legacy-active .monster-grid,body.hw9-legacy-active .word-list {overflow:visible!important}
 body.hw9-legacy-active .shop-section,body.hw9-legacy-active .avatar-shop-section,body.hw9-legacy-active .pet-care-card,body.hw9-legacy-active .pet-food-panel,body.hw9-legacy-active .reward-admin-panel,body.hw9-legacy-active .rank-card,body.hw9-legacy-active .collection-hero {margin-bottom:12px!important;padding:16px!important;border:1px solid var(--color-line)!important;border-radius:var(--radius-lg)!important;background:var(--color-surface)!important;box-shadow:none!important}
@@ -45,7 +45,7 @@ body.hw9-shell-ready .dialog h2 {margin:0 0 12px!important;font-size:22px!import
 body.hw9-shell-ready .dialog label {display:grid!important;gap:7px!important;margin-top:12px!important;color:var(--color-text-secondary)!important;font-size:var(--font-caption)!important;font-weight:800!important}
 body.hw9-shell-ready .dialog-actions {display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;margin-top:18px!important}
 
-/* Explicit grid rows keep the adventure content between header and thumb navigation. */
+/* Explicit grid rows keep adventure content above thumb navigation. */
 body.hw9-shell-ready .s2-overlay {z-index:4000!important;color:var(--color-text-primary)!important;background:rgba(22,27,46,.52)!important;backdrop-filter:none!important}
 body.hw9-shell-ready .s2-app {width:min(100%,720px)!important;height:100dvh!important;max-height:100dvh!important;grid-template-rows:auto minmax(0,1fr) auto!important;color:var(--color-text-primary)!important;background:var(--color-bg)!important;box-shadow:var(--shadow-lg)!important;font-family:var(--font-family)!important}
 body.hw9-shell-ready .s2-topbar {grid-row:1;min-height:calc(68px + var(--safe-top))!important;padding:calc(10px + var(--safe-top)) 14px 10px!important;color:var(--color-text-primary)!important;background:var(--color-bg)!important;border-bottom:1px solid var(--color-line)!important;box-shadow:none!important;backdrop-filter:none!important}
@@ -60,9 +60,49 @@ body.hw9-shell-ready .s2-nav button span {display:grid;place-items:center}
 body.hw9-shell-ready .s2-nav button b {font-size:var(--font-caption)}
 body.hw9-shell-ready .s2-nav button.active {color:var(--color-primary)!important;background:var(--color-primary-soft)!important}
 body.hw9-shell-ready .s2-adventure-hero,body.hw9-shell-ready .s2-egg-hero,body.hw9-shell-ready .s2-detail-hero,body.hw9-shell-ready .s2-week-hero,body.hw9-shell-ready .s2-report-hero,body.hw9-shell-ready .s2-stage-card,body.hw9-shell-ready .s2-starter-card,body.hw9-shell-ready .s2-info-box,body.hw9-shell-ready .s2-stage-complete,body.hw9-shell-ready .s2-feedback,body.hw9-shell-ready .s2-collection-summary,body.hw9-shell-ready .s2-character-card,body.hw9-shell-ready .s2-quest-card {border:1px solid var(--color-line)!important;border-radius:var(--radius-lg)!important;color:var(--color-text-primary)!important;background:var(--color-surface)!important;box-shadow:none!important}
-body.hw9-shell-ready .s2-primary {color:#fff!important;background:var(--color-primary)!important;box-shadow:none!important}
+body.hw9-shell-ready .s2-primary {color:#fff!important;background:var(--color-primary)!important;min-height:56px!important;border-radius:16px!important;font-size:17px!important;font-weight:800!important;box-shadow:0 4px 0 var(--color-primary-pressed)!important}
 body.hw9-shell-ready .s2-secondary,body.hw9-shell-ready .s2-wide {border-color:var(--color-line)!important;color:var(--color-text-primary)!important;background:var(--color-surface)!important;box-shadow:none!important}
+body.hw9-shell-ready .s2-secondary {min-height:52px!important;border-radius:16px!important;font-size:16px!important}
 
+/* Child-facing learning: clear instructions, tactile answers, calm feedback. */
+body.hw9-legacy-active .kids-play-hint {margin:0 0 12px;padding:12px 16px;background:var(--color-primary-soft);border-radius:var(--radius-md);color:#246052;font-size:var(--font-button);font-weight:800;text-align:center}
+body.hw9-legacy-active .question-top {background:transparent!important;box-shadow:none!important}
+body.hw9-legacy-active .question-meaning {font-size:clamp(23px,6vw,32px)!important;line-height:1.4!important}
+body.hw9-legacy-active .question-word {color:var(--color-primary)!important}
+body.hw9-legacy-active .choices {gap:12px!important}
+body.hw9-legacy-active .choice {min-height:60px!important;border:2px solid #bdd6ca!important;border-radius:18px!important;background:#f1faf3!important;box-shadow:0 4px 0 #bdd6ca!important;color:var(--color-text-primary)!important;font-size:21px!important;white-space:normal!important;overflow-wrap:anywhere!important}
+body.hw9-legacy-active .choice:active {transform:translateY(3px)!important;box-shadow:0 1px 0 #bdd6ca!important}
+body.hw9-legacy-active .tile {min-width:48px!important;min-height:52px!important;border:2px solid #c0d3ef!important;border-radius:14px!important;background:#eef5ff!important;color:#294e87!important;box-shadow:0 3px 0 #c0d3ef!important;font-size:23px!important}
+body.hw9-legacy-active .answer-bank {border:2px dashed #b6cebe!important;border-radius:18px!important;background:#f7fbf4!important}
+body.hw9-legacy-active .round-complete {background:var(--color-accent-soft);border-radius:24px;padding:24px}
+body.hw9-legacy-active .round-complete>span {display:block;animation:kids-cheer 260ms ease-out}
+body.hw9-legacy-active .answer-review {background:#fff6ed!important;border-radius:20px!important}
+body.hw9-legacy-active .review-word {color:#855123!important}
+body.hw9-legacy-active .feedback.bad {animation:none!important}
+body.hw9-shell-ready .s2-adventure-hero {background:var(--color-sky)!important;border:2px solid #c8e6d8!important}
+body.hw9-shell-ready .s2-map {position:relative;display:grid;gap:20px;padding:8px 0 16px}
+body.hw9-shell-ready .s2-map::before {content:'';position:absolute;left:44px;top:20px;bottom:32px;border-left:5px dashed #c6d7bf;pointer-events:none}
+body.hw9-shell-ready .s2-stage-card {position:relative;border-width:2px!important;min-height:116px}
+body.hw9-shell-ready .s2-stage-card:nth-child(even) {margin-left:20px}
+body.hw9-shell-ready .s2-stage-card:nth-child(1) {background:#e9f6ed!important;border-color:#bddcc8!important}
+body.hw9-shell-ready .s2-stage-card:nth-child(2) {background:#eaf3fe!important;border-color:#bdd2ed!important}
+body.hw9-shell-ready .s2-stage-card:nth-child(3) {background:#fff0e5!important;border-color:#efcfb7!important}
+body.hw9-shell-ready .s2-stage-card:nth-child(4) {background:#f1eafb!important;border-color:#d7c6e9!important}
+body.hw9-shell-ready .s2-stage-card.locked {opacity:.7!important;box-shadow:none!important}
+body.hw9-shell-ready .s2-stage-card.done .s2-stage-number {background:var(--color-success)!important;color:#fff!important}
+body.hw9-shell-ready .s2-stage-card strong {font-size:20px!important}
+body.hw9-shell-ready .s2-stage-card p {font-size:var(--font-caption)!important}
+body.hw9-shell-ready .s2-stage-number {width:52px!important;height:52px!important;min-width:52px;background:#fff!important;color:var(--color-primary)!important;border:2px solid currentColor!important;border-radius:18px!important}
+body.hw9-shell-ready .s2-question-card {border:2px solid #c8dbcc!important;border-radius:var(--radius-xl)!important;background:#fff!important;box-shadow:var(--shadow-sm)!important}
+body.hw9-shell-ready .s2-question-top h3 {font-size:clamp(23px,5vw,30px)!important;color:var(--color-text-primary)!important}
+body.hw9-shell-ready .s2-choice-grid button {min-height:60px!important;border:2px solid #bdd6ca!important;border-radius:18px!important;background:#eff9f2!important;color:var(--color-text-primary)!important;box-shadow:0 4px 0 #bdd6ca!important;font-size:20px!important;overflow-wrap:anywhere}
+body.hw9-shell-ready .s2-letter-bank button,body.hw9-shell-ready .s2-block-answer button {min-width:48px!important;min-height:52px!important;font-size:23px!important;background:#eaf3ff!important;color:#2b528d!important;border:2px solid #bdd2ed!important;box-shadow:0 3px 0 #bdd2ed!important}
+body.hw9-shell-ready .s2-feedback.good {background:var(--color-success-soft)!important;border-color:#a9d5b4!important}
+body.hw9-shell-ready .s2-feedback.review {background:#fff2e3!important;border-color:#edd1a7!important}
+body.hw9-shell-ready .s2-feedback strong {font-size:22px!important}
+body.hw9-shell-ready .s2-stage-complete {background:#fff8dd!important;border-color:#ead491!important}
+body.hw9-shell-ready .s2-stage-complete>span {display:block;animation:kids-cheer 260ms ease-out}
+@keyframes kids-cheer {from{transform:scale(.8) rotate(-7deg)}to{transform:scale(1) rotate(0)}}
 /* Cross-engine interaction contracts. Gameplay artwork stays in its original sheet. */
 body.hw9-shell-ready .s2-app :is(input,select,textarea),body.hw9-shell-ready .dialog :is(input,select,textarea),body.hw9-legacy-active :is(.input,.select,.textarea) {font-size:16px!important}
 body.hw9-shell-ready .s2-app :is(button,input:not([type=checkbox]),select),body.hw9-shell-ready .dialog button {min-height:48px}

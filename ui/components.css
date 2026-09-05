@@ -5,10 +5,10 @@
 .hw9-app button {cursor:pointer;border:0;background:transparent;touch-action:manipulation}
 .hw9-app button:disabled {opacity:.5;cursor:not-allowed;transform:none!important}
 .hw9-app button, .hw9-app input, .hw9-app select {transition:background-color var(--motion-duration),border-color var(--motion-duration),transform var(--motion-duration)}
-.hw9-app button:active:not(:disabled) {transform:translateY(1px)}
+.hw9-app button:active:not(:disabled) {transform:translateY(3px)}
 .hw9-icon {width:22px;height:22px;flex:none;display:block;pointer-events:none}
-.hw9-button {display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);min-height:48px;padding:var(--space-3) var(--space-5);border-radius:var(--radius-md);font-size:var(--font-button)!important;font-weight:700;text-decoration:none;line-height:1.5}
-.hw9-app .hw9-button-primary {background:var(--color-primary);color:#fff}
+.hw9-button {display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);min-height:56px;padding:var(--space-3) var(--space-5);border-radius:var(--radius-md);font-size:var(--font-button)!important;font-weight:800;text-decoration:none;line-height:1.5}
+.hw9-app .hw9-button-primary {background:var(--color-primary);color:#fff;box-shadow:0 4px 0 var(--color-primary-pressed)}
 .hw9-app .hw9-button-primary:hover:not(:disabled) {background:var(--color-primary-hover)}
 .hw9-app .hw9-button-secondary {background:var(--color-surface);border:1px solid var(--color-line-strong)}
 .hw9-app .hw9-button-reward {background:var(--color-success);color:#fff}
@@ -18,8 +18,8 @@
 .hw9-app .hw9-icon-button.subtle {border-color:transparent;color:var(--color-primary)}
 .hw9-app .hw9-icon-button:hover, .hw9-app .hw9-sheet-close:hover {background:var(--color-primary-soft)}
 .hw9-text-button {display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);min-height:48px;padding:var(--space-2);font-size:var(--font-caption)!important;font-weight:700;color:var(--color-primary)!important}
-.hw9-kicker, .hw9-eyebrow {display:block;margin:0 0 var(--space-2);color:var(--color-primary);font-size:var(--font-caption);font-weight:700;letter-spacing:.025em}
-.hw9-progress {height:6px;overflow:hidden;border-radius:var(--radius-round);background:var(--color-line)}
+.hw9-kicker, .hw9-eyebrow {display:block;margin:0 0 var(--space-2);color:var(--color-primary);font-size:var(--font-caption);font-weight:800;letter-spacing:.025em}
+.hw9-progress {height:10px;overflow:hidden;border-radius:var(--radius-round);background:var(--color-line)}
 .hw9-progress i {display:block;height:100%;width:var(--progress,0%);background:var(--color-primary);border-radius:inherit;transition:width var(--motion-duration)}
 .hw9-empty-state {display:grid;justify-items:center;gap:var(--space-3);padding:var(--space-7) var(--space-4);text-align:center}
 .hw9-empty-state>.hw9-icon {width:32px;height:32px;color:var(--color-primary)}

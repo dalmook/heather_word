@@ -21,11 +21,11 @@ test("removes the public admin password and delegates to the parent gate", () =>
 });
 
 test("loads one commercial shell instead of the old layered home patch", () => {
-  assert.match(loader, /RELEASE = "10\.0\.0"/);
+  assert.match(loader, /RELEASE = "11\.0\.0"/);
   assert.match(loader, /ui-v9\.css/);
   assert.match(loader, /ui-v9\.js/);
   assert.doesNotMatch(loader, /season2-polish/);
-  assert.match(index, /firebase-config\.js\?v=10\.0\.0/);
+  assert.match(index, /firebase-config\.js\?v=11\.0\.0/);
 });
 
 test("defines the five top-level destinations and History API navigation", () => {

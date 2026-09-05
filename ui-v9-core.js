@@ -1,4 +1,4 @@
-export const UI_V9_VERSION = "10.0.0";
+export const UI_V9_VERSION = "11.0.0";
 export const LOCAL_KEY = "heather_word_v3";
 export const PARENT_GATE_KEY = "heather_parent_gate_v1";
 export const TABS = Object.freeze(["home", "learn", "games", "collection", "my"]);
