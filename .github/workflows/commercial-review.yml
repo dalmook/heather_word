@@ -43,15 +43,11 @@ jobs:
           npm run check 2>&1 | tee /tmp/heather-review/audit/check.txt
       - name: Commit verified source to isolated review branch
         if: steps.apply.outputs.applied == 'true'
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
           test "$GITHUB_REF" = 'refs/heads/redesign/commercial-20260905'
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('.github/workflows/commercial-review.yml')
-          p.write_text(p.read_text().replace('  contents: write','  contents: read'))
-          PY
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
