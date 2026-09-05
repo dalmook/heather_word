@@ -1,0 +1,37 @@
+name: Character browser review
+on:
+  push:
+    branches: ['character-ip/renewal-20260906']
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Static LOCAL preview
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/character-http.log 2>&1 &
+          for attempt in {1..40}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 0.25
+          done
+          exit 1
+      - name: Character browser states and screenshots
+        env:
+          BASE_URL: http://127.0.0.1:4173
+          CHARACTER_QA_OUTPUT: /tmp/character-visual
+        run: node tools/character-browser-qa.mjs
+      - name: Evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: character-visual-${{ github.sha }}
+          path: /tmp/character-visual
+          retention-days: 14
