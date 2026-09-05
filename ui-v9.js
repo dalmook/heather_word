@@ -41,7 +41,7 @@ const LEGACY_SCREENS = Object.freeze({
 const GAME_META = Object.freeze([
   { mode: "choice", title: "뜻 맞히기", description: "뜻에 맞는 단어를 톡!", reward: "+1", level: "가볍게", icon: "choice" },
   { mode: "block", title: "철자 블록", description: "글자를 순서대로 꾹꾹!", reward: "+15", level: "연습", icon: "blocks" },
-  { mode: "blank", title: "빈칸 완성", description: "빠진 글자를 찾아 봐!", reward: "+40", level: "집중", icon: "blank" },
+  { mode: "blank", title: "빈칸 완성", description: "힌트를 보고 단어를 완성해!", reward: "+40", level: "집중", icon: "blank" },
   { mode: "type", title: "직접 쓰기", description: "생각난 단어를 써 봐!", reward: "+100", level: "도전", icon: "pencil" }
 ]);
 
@@ -250,7 +250,7 @@ function renderLearn() {
   if (app.learnMode === "library") return renderWordLibrary(s);
   return `<section class="hw9-view hw9-learn-view" aria-labelledby="hw9LearnTitle">
       <div class="hw9-view-heading"><div><span class="hw9-kicker">나의 단어 숲</span><h1 id="hw9LearnTitle">보고, 듣고, 기억해!</h1><p>궁금한 단어를 톡 눌러 봐.</p></div></div>
-      <article class="hw9-review-feature ${s.mastery.due ? "has-due" : ""}"><div class="hw9-review-icon">${icon("clock")}</div><div><span class="hw9-kicker">오늘 복습</span><h2>${s.mastery.due ? `${s.mastery.due}개가 기다려요` : "복습은 다 했어!"}</h2><p>${s.mastery.difficult ? `모험에서 우선 연습해요 · 어려운 단어 ${s.mastery.difficult}개` : "새 단어를 만나러 가 볼까?"}</p></div><button type="button" class="hw9-button hw9-button-primary" data-hw9-action="adventure" ${s.wordCount ? "" : "disabled"}>${s.mastery.due ? "모험에서 복습하기" : "새 단어 학습하기"}</button></article>
+      <article class="hw9-review-feature ${s.mastery.due ? "has-due" : ""}"><div class="hw9-review-icon">${icon("clock")}</div><div><span class="hw9-kicker">오늘 복습</span><h2>${s.mastery.due ? `${s.mastery.due}개가 기다려요` : "새 단어를 만나 볼까?"}</h2><p>${s.mastery.difficult ? `모험에서 우선 연습해요 · 어려운 단어 ${s.mastery.difficult}개` : "새 단어를 만나러 가 볼까?"}</p></div><button type="button" class="hw9-button hw9-button-primary" data-hw9-action="adventure" ${s.wordCount ? "" : "disabled"}>${s.mastery.due ? "모험에서 복습하기" : "새 단어 학습하기"}</button></article>
       <div class="hw9-learn-actions"><button type="button" class="hw9-learn-action" data-hw9-action="card" ${s.wordCount ? "" : "disabled"}><span>${icon("book")}</span><div><strong>단어 카드</strong><small>보고 듣기 · 소리 버튼을 톡!</small></div>${icon("chevron")}</button><button type="button" class="hw9-learn-action" data-hw9-action="library"><span>${icon("data")}</span><div><strong>내 단어장</strong><small>${s.wordCount}개 단어가 모여 있어</small></div>${icon("chevron")}</button></div>
       <section class="hw9-section-block"><div class="hw9-section-title"><div><span class="hw9-kicker">주제 고르기</span><h2>무엇을 알아볼까?</h2></div><span>${s.categories.filter((item) => item.count > 0 && item.id !== "all").length}개</span></div>${categoryRows(s)}</section>
     </section>`;
@@ -444,7 +444,7 @@ function refreshPlayHint() {
   const hint = document.getElementById("kidsPlayHint");
   if (!hint) return;
   const mode = document.querySelector(".mode-btn.active")?.dataset.mode || "choice";
-  const instructions = { choice: "뜻에 맞는 영어 단어를 눌러 봐!", block: "글자를 순서대로 눌러 단어를 만들어 봐!", blank: "빈칸에 들어갈 글자를 써 봐!", type: "생각난 영어 단어를 써 봐!" };
+  const instructions = { choice: "뜻에 맞는 영어 단어를 눌러 봐!", block: "글자를 순서대로 눌러 단어를 만들어 봐!", blank: "힌트를 보고 단어 전체를 써 봐!", type: "생각난 영어 단어를 써 봐!" };
   hint.textContent = instructions[mode]; document.getElementById("gameScreen").dataset.kidsMode = mode;
 }
 function enhanceLegacyChrome(screen) {
