@@ -22,7 +22,7 @@ window.HEATHER_FIREBASE_CONFIG = {
 // avatar, pet, collection, LOCAL mode, Firebase sync and Phaser fallback.
 (function installHeatherCommercialLoader() {
   const LOCAL_KEY = "heather_word_v3";
-  const RELEASE = "9.0.0";
+  const RELEASE = "10.0.0";
 
   // Preserve the newest Season 2 revision when the legacy saver writes the
   // same `heather_word_v3` envelope. No existing balance or collection field

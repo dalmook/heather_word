@@ -1,0 +1,564 @@
+/* Legacy screens become focused app screens, not a shrunk desktop page. */
+body.hw9-legacy-active {
+  overflow: hidden !important;
+  background: var(--color-bg) !important;
+}
+
+body.hw9-legacy-active > .app-shell {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 900 !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 760px !important;
+  height: 100dvh !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--color-bg) !important;
+  box-shadow: none !important;
+}
+
+body.hw9-legacy-active .topbar,
+body.hw9-legacy-active #homeScreen {
+  display: none !important;
+}
+
+body.hw9-legacy-active .screen {
+  display: none !important;
+}
+
+body.hw9-legacy-active .screen.active {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: 100dvh !important;
+  min-height: 0 !important;
+  padding: calc(10px + var(--safe-top)) 14px calc(14px + var(--safe-bottom)) !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  background: var(--color-bg) !important;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.hw9-legacy-active .screen.active::-webkit-scrollbar {
+  display: none;
+}
+
+body.hw9-legacy-active .screen-head {
+  position: sticky !important;
+  z-index: 6 !important;
+  top: calc(-10px - var(--safe-top)) !important;
+  display: grid !important;
+  grid-template-columns: 48px minmax(0, 1fr) 48px !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-height: 68px !important;
+  margin: calc(-10px - var(--safe-top)) -14px 14px !important;
+  padding: calc(10px + var(--safe-top)) 14px 10px !important;
+  border-bottom: 1px solid var(--color-line) !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-bg) !important;
+  backdrop-filter: none !important;
+}
+
+body.hw9-legacy-active .screen-head > h2,
+body.hw9-legacy-active .screen-head > div h2 {
+  margin: 0 !important;
+  overflow: hidden !important;
+  color: var(--color-text-primary) !important;
+  font-size: 18px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.04em !important;
+  text-align: center !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.hw9-legacy-active .screen-head > div p {
+  display: none !important;
+}
+
+body.hw9-legacy-active .back-btn,
+body.hw9-legacy-active .round-btn {
+  display: grid !important;
+  place-items: center !important;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  padding: 0 !important;
+  border: 1px solid var(--color-line) !important;
+  border-radius: 14px !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-surface) !important;
+  box-shadow: none !important;
+}
+
+body.hw9-legacy-active .back-btn .hw9-icon,
+body.hw9-legacy-active .round-btn .hw9-icon {
+  width: 21px;
+  height: 21px;
+}
+
+body.hw9-legacy-active .screen-head .select {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 48px !important;
+  padding: 0 12px !important;
+  border: 1px solid var(--color-line) !important;
+  border-radius: 14px !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-surface) !important;
+  font-size: var(--font-button) !important;
+  font-weight: 750 !important;
+}
+
+body.hw9-legacy-active .card-progress,
+body.hw9-legacy-active .round-bar {
+  flex: 0 0 auto !important;
+  min-height: 42px !important;
+  margin: 0 0 12px !important;
+  padding: 10px 13px !important;
+  border: 1px solid var(--color-line) !important;
+  border-radius: 13px !important;
+  color: var(--color-text-secondary) !important;
+  background: var(--color-surface) !important;
+  box-shadow: none !important;
+  font-size: var(--font-caption) !important;
+  font-weight: 800 !important;
+}
+
+body.hw9-legacy-active .word-card {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 330px !important;
+  margin: 0 !important;
+  padding: 28px 20px !important;
+  border: 1px solid var(--color-line) !important;
+  border-radius: var(--radius-xl) !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-surface) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.hw9-legacy-active .card-emoji {
+  margin-bottom: 18px !important;
+  font-size: clamp(52px, 16vw, 82px) !important;
+}
+
+body.hw9-legacy-active .card-word {
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  color: var(--color-text-primary) !important;
+  font-size: clamp(38px, 12vw, 68px) !important;
+  font-weight: 900 !important;
+  line-height: 1.05 !important;
+  letter-spacing: -0.05em !important;
+  text-align: center !important;
+}
+
+body.hw9-legacy-active .card-meaning {
+  margin-top: 13px !important;
+  color: var(--color-text-secondary) !important;
+  font-size: clamp(17px, 5vw, 23px) !important;
+  font-weight: 700 !important;
+}
+
+body.hw9-legacy-active .tag {
+  margin-top: 15px !important;
+  padding: 7px 11px !important;
+  border-radius: var(--radius-round) !important;
+  color: var(--color-primary) !important;
+  background: var(--color-primary-soft) !important;
+  font-size: var(--font-caption) !important;
+  font-weight: 800 !important;
+}
+
+body.hw9-legacy-active .bottom-actions {
+  position: sticky !important;
+  z-index: 5 !important;
+  bottom: calc(-14px - var(--safe-bottom)) !important;
+  flex: 0 0 auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 9px !important;
+  margin: 12px -14px calc(-14px - var(--safe-bottom)) !important;
+  padding: 12px 14px calc(14px + var(--safe-bottom)) !important;
+  border-top: 1px solid var(--color-line) !important;
+  background: rgba(255, 255, 255, .97) !important;
+  backdrop-filter: none !important;
+}
+
+body.hw9-legacy-active .soft-btn,
+body.hw9-legacy-active .manage-btn {
+  min-height: 50px !important;
+  padding: 11px 13px !important;
+  border: 1px solid var(--color-line) !important;
+  border-radius: 14px !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-surface) !important;
+  box-shadow: none !important;
+  font-size: var(--font-button) !important;
+  font-weight: 800 !important;
+}
+
+body.hw9-legacy-active .soft-btn.good {
+  color: #fff !important;
+  border-color: var(--color-primary) !important;
+  background: var(--color-primary) !important;
+}
+
+body.hw9-legacy-active .soft-btn.warn {
+  color: #8b5714 !important;
+  border-color: #f1d8aa !important;
+  background: var(--color-warning-soft) !important;
+}
+
+body.hw9-legacy-active .mode-tabs {
+  flex: 0 0 auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+  margin: 0 0 12px !important;
+  padding: 5px !important;
+  border: 1px solid var(--color-line) !important;
+  border-radius: 16px !important;
+  background: var(--color-surface) !important;
+  box-shadow: none !important;
+}
+
+body.hw9-legacy-active .mode-btn {
+  min-height: 48px !important;
+  padding: 6px 4px !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  color: var(--color-text-secondary) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.hw9-legacy-active .mode-btn.active {
+  color: var(--color-primary) !important;
+  background: var(--color-primary-soft) !important;
+}
+
+body.hw9-legacy-active .mode-btn span {
+  font-size: var(--font-caption) !important;
+  font-weight: 850 !important;
+}
+
+body.hw9-legacy-active .mode-btn small {
+  font-size: 8px !important;
+}
+
+body.hw9-legacy-active .game-box {
+  flex: 1 0 auto !important;
+  min-height: 390px !important;
+  padding: 18px !important;
+  border: 1px solid var(--color-line) !important;
+  border-radius: var(--radius-xl) !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-surface) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.hw9-legacy-active .feedback {
+  flex: 0 0 auto !important;
+  min-height: 54px !important;
+  margin-top: 10px !important;
+  padding: 12px !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--color-text-secondary) !important;
+  background: transparent !important;
+  font-size: var(--font-caption) !important;
+}
+
+body.hw9-legacy-active .shop-scroll,
+body.hw9-legacy-active .dress-scroll,
+body.hw9-legacy-active .ranking-list,
+body.hw9-legacy-active .monster-grid,
+body.hw9-legacy-active .word-list {
+  overflow: visible !important;
+}
+
+body.hw9-legacy-active .shop-section,
+body.hw9-legacy-active .avatar-shop-section,
+body.hw9-legacy-active .pet-care-card,
+body.hw9-legacy-active .pet-food-panel,
+body.hw9-legacy-active .reward-admin-panel,
+body.hw9-legacy-active .rank-card,
+body.hw9-legacy-active .collection-hero {
+  margin-bottom: 12px !important;
+  padding: 16px !important;
+  border: 1px solid var(--color-line) !important;
+  border-radius: var(--radius-lg) !important;
+  background: var(--color-surface) !important;
+  box-shadow: none !important;
+}
+
+body.hw9-legacy-active .shop-grid,
+body.hw9-legacy-active .monster-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+body.hw9-legacy-active .shop-item,
+body.hw9-legacy-active .monster-card,
+body.hw9-legacy-active .word-row,
+body.hw9-legacy-active .ranking-row,
+body.hw9-legacy-active .pet-food-item {
+  border: 1px solid var(--color-line) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--color-surface) !important;
+  box-shadow: none !important;
+}
+
+body.hw9-legacy-active .manage-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 9px !important;
+  margin-bottom: 12px !important;
+}
+
+body.hw9-legacy-active .manage-filter {
+  display: grid !important;
+  grid-template-columns: minmax(110px, .7fr) minmax(0, 1.3fr) !important;
+  gap: 8px !important;
+  margin-bottom: 12px !important;
+}
+
+body.hw9-legacy-active .input,
+body.hw9-legacy-active .select,
+body.hw9-legacy-active .textarea {
+  min-height: 48px !important;
+  border: 1px solid var(--color-line-strong) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--color-text-primary) !important;
+  background: #fff !important;
+  font-size: var(--font-button) !important;
+}
+
+body.hw9-legacy-active #manageScreen .reward-admin-panel {
+  display: none !important;
+}
+
+body.hw9-legacy-active.hw9-admin-claim #manageScreen .reward-admin-panel,
+body.hw9-legacy-active #manageScreen .reward-admin-panel.hw9-admin-allowed {
+  display: block !important;
+}
+
+/* Legacy dialogs, with root still visible behind them. */
+body.hw9-shell-ready .dialog[open] {
+  z-index: 5000 !important;
+  width: min(calc(100% - 24px), 440px) !important;
+  max-height: calc(100dvh - 24px) !important;
+  padding: 22px !important;
+  overflow: auto !important;
+  border: 0 !important;
+  border-radius: var(--radius-xl) !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-surface) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+body.hw9-shell-ready .dialog::backdrop {
+  background: var(--color-overlay) !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+body.hw9-shell-ready .dialog h2 {
+  margin: 0 0 12px !important;
+  font-size: 22px !important;
+  letter-spacing: -0.045em !important;
+}
+
+body.hw9-shell-ready .dialog label {
+  display: grid !important;
+  gap: 7px !important;
+  margin-top: 12px !important;
+  color: var(--color-text-secondary) !important;
+  font-size: var(--font-caption) !important;
+  font-weight: 800 !important;
+}
+
+body.hw9-shell-ready .dialog-actions {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 9px !important;
+  margin-top: 18px !important;
+}
+
+/* Season 2 overlay uses the same system. */
+body.hw9-shell-ready .s2-overlay {
+  z-index: 4000 !important;
+  color: var(--color-text-primary) !important;
+  background: rgba(22, 27, 46, .52) !important;
+  backdrop-filter: blur(6px) !important;
+}
+
+body.hw9-shell-ready .s2-app {
+  width: min(100%, 720px) !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-bg) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+body.hw9-shell-ready .s2-topbar {
+  min-height: calc(68px + var(--safe-top)) !important;
+  padding: calc(10px + var(--safe-top)) 14px 10px !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-bg) !important;
+  border-bottom: 1px solid var(--color-line) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+body.hw9-shell-ready .s2-topbar small {
+  color: var(--color-primary) !important;
+  font-size: var(--font-caption) !important;
+  letter-spacing: .04em !important;
+}
+
+body.hw9-shell-ready .s2-topbar h2 {
+  color: var(--color-text-primary) !important;
+  font-size: 18px !important;
+  letter-spacing: -0.04em !important;
+}
+
+body.hw9-shell-ready .s2-icon-btn {
+  width: 48px !important;
+  height: 48px !important;
+  border: 1px solid var(--color-line) !important;
+  border-radius: 14px !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-surface) !important;
+}
+
+body.hw9-shell-ready .s2-resources span {
+  padding: 5px 8px !important;
+  border-radius: var(--radius-round) !important;
+  color: var(--color-text-secondary) !important;
+  background: var(--color-surface) !important;
+  font-size: var(--font-caption) !important;
+}
+
+body.hw9-shell-ready .s2-content {
+  padding: 16px 14px calc(22px + var(--safe-bottom)) !important;
+  background: var(--color-bg) !important;
+}
+
+body.hw9-shell-ready .s2-nav {
+  position: relative !important;
+  right: auto !important;
+  bottom: auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  width: 100% !important;
+  transform: none !important;
+  padding: 7px 8px calc(7px + var(--safe-bottom)) !important;
+  border: 0 !important;
+  border-top: 1px solid var(--color-line) !important;
+  border-radius: 0 !important;
+  background: rgba(255, 255, 255, .97) !important;
+  box-shadow: none !important;
+}
+
+body.hw9-shell-ready .s2-nav button {
+  display: grid !important;
+  place-items: center !important;
+  align-content: center !important;
+  gap: 3px !important;
+  min-height: 54px !important;
+  padding: 5px 2px !important;
+  border-radius: 14px !important;
+  color: var(--color-text-tertiary) !important;
+  background: transparent !important;
+  font-size: var(--font-caption) !important;
+}
+
+body.hw9-shell-ready .s2-nav button span {
+  display: grid;
+  place-items: center;
+}
+
+body.hw9-shell-ready .s2-nav button b {
+  font-size: var(--font-caption);
+}
+
+body.hw9-shell-ready .s2-nav button.active {
+  color: var(--color-primary) !important;
+  background: var(--color-primary-soft) !important;
+}
+
+body.hw9-shell-ready .s2-adventure-hero,
+body.hw9-shell-ready .s2-egg-hero,
+body.hw9-shell-ready .s2-detail-hero,
+body.hw9-shell-ready .s2-week-hero,
+body.hw9-shell-ready .s2-report-hero,
+body.hw9-shell-ready .s2-stage-card,
+body.hw9-shell-ready .s2-starter-card,
+body.hw9-shell-ready .s2-info-box,
+body.hw9-shell-ready .s2-stage-complete,
+body.hw9-shell-ready .s2-feedback,
+body.hw9-shell-ready .s2-collection-summary,
+body.hw9-shell-ready .s2-character-card,
+body.hw9-shell-ready .s2-quest-card {
+  border: 1px solid var(--color-line) !important;
+  border-radius: var(--radius-lg) !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-surface) !important;
+  box-shadow: none !important;
+}
+
+body.hw9-shell-ready .s2-primary {
+  color: #fff !important;
+  background: var(--color-primary) !important;
+  box-shadow: 0 8px 20px rgba(91, 75, 216, .22) !important;
+}
+
+body.hw9-shell-ready .s2-secondary,
+body.hw9-shell-ready .s2-wide {
+  border-color: var(--color-line) !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-surface) !important;
+  box-shadow: none !important;
+}
+
+
+/* Cross-engine interaction contracts. Gameplay artwork stays in its original sheet. */
+body.hw9-shell-ready .s2-app {font-family:var(--font-family)!important}
+body.hw9-shell-ready .s2-app :is(input,select,textarea),body.hw9-shell-ready .dialog :is(input,select,textarea),body.hw9-legacy-active :is(.input,.select,.textarea) {font-size:16px!important}
+body.hw9-shell-ready .s2-app :is(button,input,select),body.hw9-shell-ready .dialog button {min-height:48px}
+body.hw9-shell-ready .s2-app :is(.s2-muted,.s2-kicker,.s2-note,.s2-hint),body.hw9-legacy-active .feedback {font-size:var(--font-caption)!important}
+body.hw9-shell-ready .s2-nav button {color:var(--color-text-secondary)!important}
+body.hw9-shell-ready .s2-app :is(.s2-btn,.s2-card,.s2-hero,.s2-stage-card) {box-shadow:none!important}
+body.hw9-legacy-active .feedback.good {color:var(--color-success)!important;background:var(--color-success-soft)!important}
+body.hw9-legacy-active .feedback.bad {color:var(--color-danger)!important;background:var(--color-danger-soft)!important}
+body.hw9-shell-ready :is(.screen.active,.s2-content) {scroll-padding-bottom:var(--space-5)}
+body.hw9-shell-ready .s2-content :is(h1,h2,h3,p,strong),body.hw9-legacy-active :is(.card-meaning,.word-row,.screen-head h2) {overflow-wrap:anywhere}
+body.hw9-shell-ready .s2-nav button:focus-visible {outline:3px solid var(--color-focus)!important;outline-offset:-3px!important}
+body.hw9-shell-ready .s2-content {overscroll-behavior:contain}
+@media(min-width:980px) {
+ body.hw9-legacy-active>.app-shell {max-width:880px!important;border-inline:1px solid var(--color-line)!important}
+ body.hw9-shell-ready .s2-app {max-width:880px!important}
+ body.hw9-legacy-active .screen.active {padding-inline:var(--space-7)!important}
+ body.hw9-legacy-active .screen-head,body.hw9-legacy-active .bottom-actions {margin-inline:calc(-1 * var(--space-7))!important;padding-inline:var(--space-7)!important}
+}
+@media(orientation:landscape) and (max-height:600px) {
+ body.hw9-legacy-active .word-card {min-height:200px!important}
+ body.hw9-legacy-active .card-emoji {font-size:48px!important}
+ body.hw9-shell-ready .s2-topbar {min-height:52px!important}
+}

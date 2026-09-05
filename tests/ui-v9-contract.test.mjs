@@ -7,7 +7,7 @@ const [app, loader, ui, css, rules, index] = await Promise.all([
   read("app.js"),
   read("firebase-config.js"),
   read("ui-v9.js"),
-  read("ui-v9.css"),
+  Promise.all(["ui-v9.css","ui/tokens.css","ui/components.css","ui/layout.css","ui/legacy.css"].map(read)).then(parts=>parts.join("\n")),
   read("firestore.rules"),
   read("index.html")
 ]);
@@ -21,11 +21,11 @@ test("removes the public admin password and delegates to the parent gate", () =>
 });
 
 test("loads one commercial shell instead of the old layered home patch", () => {
-  assert.match(loader, /RELEASE = "9\.0\.0"/);
+  assert.match(loader, /RELEASE = "10\.0\.0"/);
   assert.match(loader, /ui-v9\.css/);
   assert.match(loader, /ui-v9\.js/);
   assert.doesNotMatch(loader, /season2-polish/);
-  assert.match(index, /firebase-config\.js\?v=9\.0\.0/);
+  assert.match(index, /firebase-config\.js\?v=10\.0\.0/);
 });
 
 test("defines the five top-level destinations and History API navigation", () => {
@@ -44,7 +44,7 @@ test("uses an SVG icon system and accessibility states", () => {
   assert.match(ui, /aria-live/);
   assert.match(ui, /aria-label/);
   assert.match(css, /:focus-visible/);
-  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(css, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
   assert.match(css, /min-height:\s*48px/);
 });
 
@@ -57,7 +57,7 @@ test("exposes a token-based premium kids design system", () => {
   ]) {
     assert.match(css, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
-  assert.match(css, /@media \(min-width:\s*(?:900|980)px\)/);
+  assert.match(css, /@media\s*\(min-width:\s*(?:900|980)px\)/);
   assert.match(css, /safe-area-inset-bottom/);
   assert.match(`${app}\n${ui}\n${css}`, /visualViewport|keyboard-open|hw9-keyboard-open/);
 });

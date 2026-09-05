@@ -1,4 +1,4 @@
-export const UI_V9_VERSION = "9.0.0";
+export const UI_V9_VERSION = "10.0.0";
 export const LOCAL_KEY = "heather_word_v3";
 export const PARENT_GATE_KEY = "heather_parent_gate_v1";
 export const TABS = Object.freeze(["home", "learn", "games", "collection", "my"]);
@@ -227,6 +227,8 @@ export function snapshotFingerprint(snapshot) {
     bestCombo: snapshot.bestCombo,
     sound: snapshot.sound,
     wordCount: snapshot.wordCount,
+    selectedCategoryId: snapshot.selectedCategoryId,
+    words: snapshot.words.map(({id,word,meaning,categoryId})=>[id,word,meaning,categoryId]),
     knownCount: snapshot.knownCount,
     categories: snapshot.categories.map(({ id, name, count }) => [id, name, count]),
     mission: snapshot.mission,
@@ -258,5 +260,5 @@ export function missionCta(snapshot) {
   if (snapshot.adventure.hasSession || snapshot.adventure.stageIndex > 0) {
     return { label: "이어서 학습하기", note: `${snapshot.adventure.stageIndex + 1}번째 단계부터 계속해요` };
   }
-  return { label: "오늘 학습 시작하기", note: "약 5분 · 중간에 멈춰도 저장돼요" };
+  return { label: "오늘 학습 시작하기", note: "4단계 · 총 21문제 · 중간에 멈춰도 저장돼요" };
 }

@@ -1,0 +1,54 @@
+/* Shared interactive primitives; no screen-specific paint overrides. */
+.hw9-app *, .hw9-app *::before, .hw9-app *::after {box-sizing:border-box}
+.hw9-app [hidden] {display:none!important}
+.hw9-app button, .hw9-app input, .hw9-app select {font:inherit;color:inherit}
+.hw9-app button {cursor:pointer;border:0;background:transparent;touch-action:manipulation}
+.hw9-app button:disabled {opacity:.5;cursor:not-allowed;transform:none!important}
+.hw9-app button, .hw9-app input, .hw9-app select {transition:background-color var(--motion-duration),border-color var(--motion-duration),transform var(--motion-duration)}
+.hw9-app button:active:not(:disabled) {transform:translateY(1px)}
+.hw9-icon {width:22px;height:22px;flex:none;display:block;pointer-events:none}
+.hw9-button {display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);min-height:48px;padding:var(--space-3) var(--space-5);border-radius:var(--radius-md);font-size:var(--font-button)!important;font-weight:700;text-decoration:none;line-height:1.5}
+.hw9-app .hw9-button-primary {background:var(--color-primary);color:#fff}
+.hw9-app .hw9-button-primary:hover:not(:disabled) {background:var(--color-primary-hover)}
+.hw9-app .hw9-button-secondary {background:var(--color-surface);border:1px solid var(--color-line-strong)}
+.hw9-app .hw9-button-reward {background:var(--color-success);color:#fff}
+.hw9-button-wide {width:100%}
+.hw9-icon-button, .hw9-sheet-close {display:inline-grid;place-items:center;min-width:48px;min-height:48px;border-radius:var(--radius-md)}
+.hw9-app .hw9-icon-button {border:1px solid var(--color-line);background:var(--color-surface)}
+.hw9-app .hw9-icon-button.subtle {border-color:transparent;color:var(--color-primary)}
+.hw9-app .hw9-icon-button:hover, .hw9-app .hw9-sheet-close:hover {background:var(--color-primary-soft)}
+.hw9-text-button {display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);min-height:48px;padding:var(--space-2);font-size:var(--font-caption)!important;font-weight:700;color:var(--color-primary)!important}
+.hw9-kicker, .hw9-eyebrow {display:block;margin:0 0 var(--space-2);color:var(--color-primary);font-size:var(--font-caption);font-weight:700;letter-spacing:.025em}
+.hw9-progress {height:6px;overflow:hidden;border-radius:var(--radius-round);background:var(--color-line)}
+.hw9-progress i {display:block;height:100%;width:var(--progress,0%);background:var(--color-primary);border-radius:inherit;transition:width var(--motion-duration)}
+.hw9-empty-state {display:grid;justify-items:center;gap:var(--space-3);padding:var(--space-7) var(--space-4);text-align:center}
+.hw9-empty-state>.hw9-icon {width:32px;height:32px;color:var(--color-primary)}
+.hw9-empty-state h3 {font-size:var(--font-title);margin:0}
+.hw9-empty-state p {margin:0;max-width:38ch;color:var(--color-text-secondary)}
+.hw9-inline-notice {display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3);padding:var(--space-4);background:var(--color-warning-soft);border-radius:var(--radius-md);font-size:var(--font-caption)}
+.hw9-inline-notice button {min-height:48px;text-decoration:underline}
+.hw9-library-tools, .hw9-field {display:grid;gap:var(--space-2)}
+.hw9-library-tools {gap:var(--space-3)}
+.hw9-search-field {display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-4);background:var(--color-surface);border:1px solid var(--color-line-strong);border-radius:var(--radius-md)}
+.hw9-search-field:focus-within {outline:3px solid var(--color-focus);outline-offset:2px}
+.hw9-search-field input {min-width:0;width:100%;height:52px;border:0;background:transparent;outline:0}
+.hw9-app select, .hw9-field input {width:100%;min-width:0;min-height:52px;padding:var(--space-3);border:1px solid var(--color-line-strong);border-radius:var(--radius-md);background:var(--color-surface);font-size:var(--font-body)}
+.hw9-field>span {font-size:var(--font-caption);font-weight:700}
+.hw9-field-error {min-height:24px;color:var(--color-danger);font-size:var(--font-caption);margin:var(--space-2) 0}
+.hw9-parent-dialog {width:min(calc(100% - 24px),460px);max-height:calc(100dvh - 24px);padding:0;overflow:auto;border:0;border-radius:var(--radius-lg);color:var(--color-text-primary);background:var(--color-surface);box-shadow:var(--shadow-lg)}
+.hw9-parent-dialog::backdrop {background:var(--color-overlay)}
+.hw9-parent-sheet {position:relative;display:grid;gap:var(--space-3);padding:var(--space-7) var(--space-5)}
+.hw9-parent-sheet .hw9-sheet-close {position:absolute;right:var(--space-2);top:var(--space-2)}
+.hw9-sheet-icon {display:grid;place-items:center;width:48px;height:48px;color:var(--color-primary);border-radius:var(--radius-md);background:var(--color-primary-soft)}
+.hw9-parent-sheet h2 {margin:0;font-size:var(--font-h2)}
+.hw9-parent-sheet p {margin:0;color:var(--color-text-secondary);font-size:var(--font-caption)}
+.hw9-security-note {font-size:var(--font-caption);color:var(--color-text-secondary);line-height:1.7}
+.hw9-live-region {position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.hw9-toast {position:fixed;z-index:6000;left:50%;bottom:calc(88px + var(--safe-bottom));transform:translateX(-50%);max-width:calc(100vw - 32px);padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:var(--color-text-primary);color:#fff;font-size:var(--font-caption);pointer-events:none}
+.hw9-app :is(button,select,a):focus-visible, body.hw9-shell-ready :is(.screen,.s2-app,dialog) :is(button,input,select,a):focus-visible {outline:3px solid var(--color-focus)!important;outline-offset:3px!important}
+.hw9-app input:focus-visible:not([type=search]) {outline:3px solid var(--color-focus);outline-offset:3px}
+.hw9-skip {position:fixed;z-index:8000;left:var(--space-4);top:-100px;padding:var(--space-3);background:#fff;color:var(--color-primary)}
+.hw9-skip:focus {top:var(--space-4)}
+@media(hover:hover) {.hw9-app :is(.hw9-setting-row,.hw9-category-row,.hw9-learn-action,.hw9-world-menu button,.hw9-info-tile):hover {background:var(--color-surface-soft)}}
+@media(prefers-reduced-motion:reduce) {body.hw9-shell-ready *,body.hw9-shell-ready *::before,body.hw9-shell-ready *::after {transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+.hw9-reduced-motion *, .hw9-reduced-motion *::before, .hw9-reduced-motion *::after {transition:none!important;animation:none!important;scroll-behavior:auto!important}

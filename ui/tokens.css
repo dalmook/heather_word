@@ -1,0 +1,23 @@
+/* Heather Word design system. Compatibility names are stable for legacy views. */
+:root {
+  color-scheme: light;
+  --color-primary:#5b43c4; --color-primary-hover:#4c36af; --color-primary-pressed:#3f2b99;
+  --color-primary-soft:#efecfa; --color-secondary:#38655a;
+  --color-accent:#946016; --color-accent-soft:#fff3de;
+  --color-success:#25654b; --color-success-soft:#e7f3ec;
+  --color-warning:#8b5a0b; --color-warning-soft:#fff3de;
+  --color-danger:#b83244; --color-danger-soft:#fbecef;
+  --color-bg:#f7f8fa; --color-bg-alt:#eff1f5; --color-surface:#fff;
+  --color-surface-raised:#fff; --color-surface-soft:#f7f8fa;
+  --color-text-primary:#202537; --color-text-secondary:#5a6475; --color-text-tertiary:#646d7c;
+  --color-line:#dde1e8; --color-line-strong:#c4cad5; --color-overlay:rgba(22,28,44,.48); --color-focus:#236cb2;
+  --radius-sm:8px; --radius-md:12px; --radius-lg:20px; --radius-xl:20px; --radius-round:999px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px; --space-6:24px;
+  --space-7:32px; --space-8:48px; --space-9:64px;
+  --font-display:clamp(28px,4vw,36px); --font-h1:28px; --font-h2:21px; --font-title:18px;
+  --font-body:16px; --font-caption:13px; --font-button:15px; --font-number:28px;
+  --font-family:"Noto Sans KR","Noto Sans CJK KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --shadow-sm:none; --shadow-md:none; --shadow-lg:0 16px 48px rgba(22,28,44,.14);
+  --app-max-mobile:800px; --app-max-desktop:1280px; --tabbar-height:72px; --motion-duration:180ms;
+  --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+}
