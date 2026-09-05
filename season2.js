@@ -54,7 +54,7 @@ async function loadSeason2FirebaseRuntime() {
   return season2FirebaseRuntimePromise;
 }
 
-const LOCAL_KEY = "heather_word_v3";
+const LOCAL_KEY = globalThis.HEATHER_DEMO ? "heather_word_demo_v1" : "heather_word_v3";
 const SYNC_DELAY_MS = 500;
 const STAGES = Object.freeze([
   {

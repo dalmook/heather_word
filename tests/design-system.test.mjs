@@ -6,7 +6,7 @@ import {readFile} from 'node:fs/promises';
 // without adding a build-time dependency to the static Pages application.
 const read = path => readFile(new URL('../' + path, import.meta.url), 'utf8');
 test('all design system stylesheets have balanced syntax delimiters', async () => {
-  for (const path of ['ui/tokens.css','ui/components.css','ui/layout.css','ui/legacy.css']) {
+  for (const path of ['ui/tokens.css','ui/components.css','ui/layout.css','ui/legacy.css','ui/explorers.css']) {
     const text = (await read(path)).replace(/\/\*[\s\S]*?\*\//g,'').replace(/"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g,'');
     const stack=[];
     for (const character of text) {

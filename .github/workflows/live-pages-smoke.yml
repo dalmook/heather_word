@@ -36,7 +36,7 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/live-proof /tmp/live-assets
           printf '%s\n' "$RELEASE_SHA" > /tmp/live-proof/release-sha.txt
-          assets=(index.html app.js ui-v9.js ui-v9-core.js ui-v9.css firebase-config.js season2.js ui/components.js ui/tokens.css ui/components.css ui/layout.css ui/legacy.css manifest.webmanifest 404.html assets/icons/app-icon.svg assets/icons/app-192.png assets/icons/app-512.png assets/icons/apple-touch-icon.png assets/icons/social-card.png)
+          assets=(starter-context.js ui/parent-insights.js ui/explorers.css assets/art/adventure-forest.webp index.html app.js ui-v9.js ui-v9-core.js ui-v9.css firebase-config.js season2.js ui/components.js ui/tokens.css ui/components.css ui/layout.css ui/legacy.css manifest.webmanifest 404.html assets/icons/app-icon.svg assets/icons/app-192.png assets/icons/app-512.png assets/icons/apple-touch-icon.png assets/icons/social-card.png)
           ok=0
           for attempt in {1..60}; do
             matched=1

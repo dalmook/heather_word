@@ -1,4 +1,5 @@
-import { homeView, wordResults, escapeText, gameArtwork, availableCategory } from "./ui/components.js?v=11.0.0";
+import { parentInsights, parentReportText, parentReportView, parentGuideView } from "./ui/parent-insights.js?v=12.0.0";
+import { homeView, wordResults, escapeText, gameArtwork, availableCategory } from "./ui/components.js?v=12.0.0";
 import {
   UI_V9_VERSION,
   LOCAL_KEY,
@@ -11,13 +12,15 @@ import {
   safeJson,
   snapshotFingerprint,
   tabFromHash
-} from "./ui-v9-core.js?v=11.0.0";
+} from "./ui-v9-core.js?v=12.0.0";
 import {
   SEASON2_CATALOG,
   getSeason2Character,
   getSeason2World,
   renderMonsterSvg
 } from "./monster-catalog-season2.js?v=8.0.0";
+
+const PARENT_SESSION_KEY = globalThis.HEATHER_DEMO ? "heather_demo_parent_unlocked" : "heather_parent_unlocked";
 
 const TAB_META = Object.freeze({
   home: { label: "홈", icon: "home" },
@@ -46,6 +49,8 @@ const GAME_META = Object.freeze([
 ]);
 
 const app = {
+  parentHubView: "guide",
+  hubFocus: null,
   root: null,
   main: null,
   nav: null,
@@ -132,6 +137,7 @@ function greeting() {
 }
 function readEnvelope() { return safeJson(localStorage.getItem(LOCAL_KEY), {}); }
 function connectionState() {
+  if (globalThis.HEATHER_DEMO) return {state:"local",label:"무료 체험 · 기기 저장"};
   const text = document.querySelector("#syncStatus")?.textContent || "";
   if (!navigator.onLine) return { state: "offline", label: "오프라인 저장" };
   if (/실패|규칙|권한/.test(text)) return { state: "warning", label: "기기에 저장" };
@@ -170,15 +176,16 @@ function shellTemplate() {
         <span class="hw9-profile-avatar" aria-hidden="true" data-hw9-profile-avatar>${icon("user")}</span>
         <span class="hw9-profile-copy"><small data-hw9-greeting>오늘도 반가워!</small><strong data-hw9-name>Player</strong></span>
       </button>
-      <div class="hw9-header-actions">
+      <div class="hw9-header-actions"><button type="button" class="hw12-parent-shortcut" data-hw9-action="parent-hub" aria-label="보호자 학습 수첩">${icon("shield")}<span>부모님 공간</span></button>
         <button class="hw9-resource" type="button" data-hw9-tab-jump="my" aria-label="보유 쿠키 확인">${icon("cookie")}<strong data-hw9-coin>0</strong></button>
         <span class="hw9-connection" data-hw9-connection="local"><i></i><span>기기 저장</span></span>
       </div>
     </header>
     <main class="hw9-content" id="hw9Content" tabindex="-1"></main>
     <nav class="hw9-tabbar" aria-label="주요 메뉴">
-      <div class="hw9-brand" aria-label="Heather Word"><span aria-hidden="true">h.</span><div>단어 탐험대<small>Heather Word</small></div></div>
+      <div class="hw9-brand" aria-label="Heather Word"><span aria-hidden="true">h.</span><div>heather word<small>작은 단어, 커다란 세상</small></div></div>
       ${Object.entries(TAB_META).map(([id, item]) => `<button type="button" data-hw9-tab="${id}" aria-label="${item.label}" aria-current="false"><span>${icon(item.icon)}</span><b>${item.label}</b></button>`).join("")}
+      <div class="hw12-nav-note"><span>GROW A LITTLE, EVERY DAY</span><strong>배움은 작은<br>호기심에서 시작돼.</strong><span>아이의 속도로, 함께 자라요.</span></div>
     </nav>
     <dialog class="hw9-parent-dialog" id="hw9ParentDialog" aria-labelledby="hw9ParentTitle">
       <form method="dialog" class="hw9-parent-sheet" data-hw9-parent-form>
@@ -190,9 +197,10 @@ function shellTemplate() {
         <label class="hw9-field" data-hw9-parent-confirm-wrap hidden><span>PIN 다시 입력</span><input data-hw9-parent-confirm type="password" inputmode="numeric" pattern="[0-9]*" minlength="4" maxlength="8" autocomplete="off" placeholder="한 번 더 입력" /></label>
         <p class="hw9-field-error" data-hw9-parent-error role="alert"></p>
         <button class="hw9-button hw9-button-primary hw9-button-wide" type="submit" data-hw9-parent-submit>확인</button>
-        <small class="hw9-security-note">이 PIN은 현재 기기의 보호자 화면 잠금입니다. 상품권 처리 같은 운영 관리자 권한은 Firebase custom claims가 별도로 필요합니다.</small>
+        <small class="hw9-security-note">이 PIN은 현재 기기의 보호자 화면 잠금입니다. 계정 로그인이나 결제 인증을 대신하지 않아요.</small>
       </form>
     </dialog>
+    <dialog id="hw12ParentHub" class="hw12-parent-dialog" aria-labelledby="hw12HubTitle"><div class="hw12-hub-toolbar"><span>heather word <b>with parents</b></span><button class="hw9-icon-button" type="button" data-hw9-action="close-hub" aria-label="보호자 공간 닫기">${icon("close")}</button></div><div data-hw12-hub-content></div></dialog>
     <div class="hw9-live-region" aria-live="polite" aria-atomic="true" data-hw9-live></div>
     <div class="hw9-toast" data-hw9-toast hidden></div>`;
 }
@@ -213,7 +221,7 @@ function renderHeader() {
   if (!app.root || !app.snapshot) return;
   const connection = connectionState(), partner = getSeason2Character(app.snapshot.partnerId);
   app.root.querySelector("[data-hw9-greeting]").textContent = greeting();
-  app.root.querySelector("[data-hw9-name]").textContent = app.snapshot.name;
+  app.root.querySelector("[data-hw9-name]").textContent = app.snapshot.name === "Player" ? "나의 탐험 수첩" : app.snapshot.name;
   app.root.querySelector(".hw9-resource").setAttribute("aria-label", `보유 쿠키 ${formatNumber(app.snapshot.coin)}개 확인`);
   app.root.querySelector("[data-hw9-coin]").textContent = formatNumber(app.snapshot.coin);
   app.root.querySelector("[data-hw9-profile-avatar]").innerHTML = partner ? renderMonsterSvg(partner) : icon("user");
@@ -309,7 +317,9 @@ function renderMy() {
         ${settingRow("shield", "보호자 도구", "단어 추가, 백업, 복원과 관리", 'data-hw9-action="parent"')}
         ${settingRow("lock", "보호자 화면 다시 잠그기", "이 브라우저의 보호자 확인을 종료해요", 'data-hw9-action="lock-parent"')}
       </section>
-      <p class="hw9-integrity-note">랭킹 점수는 현재 클라이언트가 기록하므로 공개 경쟁의 공식 기록으로 사용하지 않습니다. 운영 경쟁 기능에는 서버 검증이 필요합니다.</p></section>`;
+      <button class="hw12-parent-promo" type="button" data-hw9-action="parent-hub"><span>${icon('report')}</span><div><small>WITH PARENTS</small><strong>작은 성장도 놓치지 않도록</strong><p>일주일의 배움과 다음에 만날 단어를 살펴봐요.</p></div>${icon('arrow')}</button>
+      <button type="button" class="hw9-text-button" data-hw9-action="parent-guide">이용 안내와 가족 멤버십</button>${globalThis.HEATHER_DEMO?'<button type="button" class="hw9-text-button" data-hw9-action="exit-demo">체험을 나가고 원래 학습으로</button>':''}
+      <p class="hw9-integrity-note">점수는 나의 학습을 돌아보는 참고 기록이에요.</p></section>`;
 }
 function renderActiveView({ force = false, preserveScroll = false } = {}) {
   const previousScroll = app.main?.scrollTop || 0;
@@ -484,7 +494,31 @@ function claimMission() {
   if (button && !button.disabled) {button.click();announce("오늘 목표 보상을 받았어요");}
 }
 function syncData() {document.querySelector("#syncBtn")?.click();announce("데이터 동기화를 요청했어요");setTimeout(() => refreshSnapshot({ force: true }), 300);}
-function openProfile() {document.querySelector("#profileBtn")?.click();}
+function openProfile() {if(globalThis.HEATHER_DEMO) {announce("체험은 탐험가 이름으로 진행해요. 원래 학습 공간에서 이름을 바꿀 수 있어요.");return;} document.querySelector("#profileBtn")?.click();}
+function openParentHub(view) {
+  if (view === 'report' && window.HEATHER_PARENT_GATE_GRANTED !== true) {
+    openParentGate(() => openParentHub('report')); return;
+  }
+  const dialog=app.root.querySelector('#hw12ParentHub');
+  app.parentHubView=view;app.hubFocus=document.activeElement;
+  const context={icon,demo:globalThis.HEATHER_DEMO===true};
+  dialog.querySelector('[data-hw12-hub-content]').innerHTML=view==='report'?parentReportView(deriveSnapshot(readEnvelope()),context):parentGuideView(context);
+  if(!dialog.open) dialog.showModal();dialog.scrollTop=0;
+}
+function closeParentHub() {
+  app.root.querySelector('#hw12ParentHub')?.close();app.hubFocus?.focus?.({preventScroll:true});
+}
+function printParentReport() {
+  if(app.parentHubView!=='report'||!window.HEATHER_PARENT_GATE_GRANTED) return;
+  document.body.classList.add('hw12-printing');
+  try { window.print(); } finally { document.body.classList.remove('hw12-printing'); }
+}
+async function copyParentReport() {
+  if(app.parentHubView!=='report'||!window.HEATHER_PARENT_GATE_GRANTED) return;
+  const status=app.root.querySelector('[data-hw12-copy-status]');
+  try { await navigator.clipboard.writeText(parentReportText(parentInsights(deriveSnapshot(readEnvelope()))));status.textContent='학습 요약을 복사했어요. 원하는 곳에 붙여 넣어 주세요.'; }
+  catch {status.textContent='이 브라우저에서는 복사가 어려워요. 인쇄 · PDF 저장을 이용해 주세요.';}
+}
 function handleRootClick(event) {
   if(event.target.closest('.hw9-skip')) {event.preventDefault();app.main.focus();return;}
   const tab = event.target.closest("[data-hw9-tab]")?.dataset.hw9Tab;
@@ -505,6 +539,16 @@ function handleRootClick(event) {
   const action = event.target.closest("[data-hw9-action]")?.dataset.hw9Action;
   if (!action) return;
   const actions = {
+    "start-demo": () => { location.href = './?mode=local&demo=1#/home'; },
+    "exit-demo": () => { location.href = './#/home'; },
+    "parent-hub": () => openParentGate(() => openParentHub('report')),
+    "parent-guide": () => openParentHub('guide'),
+    "hub-report": () => { closeParentHub(); openParentGate(() => openParentHub('report')); },
+    "close-hub": closeParentHub,
+    "hub-learn": () => { closeParentHub();setTab('learn'); },
+    "print-report": printParentReport,
+    "copy-report": copyParentReport,
+    "detailed-report": () => { closeParentHub();openReport(); },
     adventure: openAdventure,
     card: () => openLegacy("card"),
     library: () => { app.learnMode = "library"; renderActiveView({ force: true }); },
@@ -513,7 +557,7 @@ function handleRootClick(event) {
     "season2-collection": () => openSeason2View("collection"),
     "season2-settings": () => openSeason2View("settings"),
     report: openReport, profile: openProfile, "toggle-sound": toggleSound, sync: syncData, parent: () => openParentGate(),
-    "lock-parent": () => {sessionStorage.removeItem('heather_parent_unlocked');window.HEATHER_PARENT_GATE_GRANTED=false;legacyBridge()?.setManageGranted?.(false);announce('보호자 화면을 다시 잠갔어요');},
+    "lock-parent": () => {sessionStorage.removeItem(PARENT_SESSION_KEY);window.HEATHER_PARENT_GATE_GRANTED=false;legacyBridge()?.setManageGranted?.(false);announce('보호자 화면을 다시 잠갔어요');},
     "more-words": () => { app.wordLimit+=60; refreshWordResults(); },
     "clear-search": () => {
       app.wordQuery=''; app.wordCategory='all'; app.wordLimit=60;
@@ -539,7 +583,7 @@ async function hashPin(pin, salt) {
 }
 function openParentGate(onGranted) {
   app.parentAction=typeof onGranted==='function'?onGranted:null;
-  if (app.claims.admin || app.claims.guardian || sessionStorage.getItem("heather_parent_unlocked") === "1") {grantParentAccess();return;}
+  if (app.claims.admin || app.claims.guardian || sessionStorage.getItem(PARENT_SESSION_KEY) === "1") {grantParentAccess();return;}
   const dialog = app.root.querySelector("#hw9ParentDialog"), record = parentRecord(), setup = !record?.salt || !record?.hash;
   dialog.dataset.mode = setup ? "setup" : "verify";
   dialog.querySelector("#hw9ParentTitle").textContent = setup ? "보호자 PIN 만들기" : "보호자 PIN 확인";
@@ -566,7 +610,7 @@ async function handleParentSubmit(event) {
       const record = parentRecord(), hash = await hashPin(pin, record.salt);
       if (hash !== record.hash) {error.textContent = "PIN이 맞지 않아요.";return;}
     }
-    sessionStorage.setItem("heather_parent_unlocked", "1");dialog.close();grantParentAccess();
+    sessionStorage.setItem(PARENT_SESSION_KEY, "1");dialog.close();grantParentAccess();
   } catch {error.textContent='PIN을 확인하지 못했어요. 저장소 접근과 HTTPS 연결을 확인해 주세요.';}
   finally { submit.disabled=false; }
 }

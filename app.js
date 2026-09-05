@@ -32,7 +32,7 @@ async function loadFirebaseRuntime() {
 
 const DEFAULT_CATEGORY = { id: "all", name: "전체", emoji: "🌈" };
 const CUSTOM_CATEGORY = { id: "custom", name: "직접추가", emoji: "⭐", base: true };
-const LOCAL_KEY = "heather_word_v3";
+const LOCAL_KEY = globalThis.HEATHER_DEMO ? "heather_word_demo_v1" : "heather_word_v3";
 const MAX_LIST_ROWS = 9999;
 const NEXT_DELAY_MS = 650;
 const MAX_WORD_LENGTH = 60;
