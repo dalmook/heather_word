@@ -13,7 +13,7 @@ concurrency:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -48,17 +48,17 @@ jobs:
         env:
           BASE_URL: http://127.0.0.1:4173/heather_word
           UI_QA_OUTPUT: /tmp/kids-review/audit
-        run: node tools/ui-v9-browser-qa.mjs
+        run: timeout --kill-after=5s 180s node tools/ui-v9-browser-qa.mjs
       - name: Actual pointer, settled layouts and console checks
         if: always()
         env:
           BASE_URL: http://127.0.0.1:4173/heather_word
           UI_QA_OUTPUT: /tmp/kids-review/audit
-        run: node tools/commercial-visual-qa.mjs
+        run: timeout --kill-after=5s 90s node tools/commercial-visual-qa.mjs
       - name: Lighthouse evidence
         if: always()
         run: |
-          npx --yes lighthouse@12.2.1 "http://127.0.0.1:4173/heather_word/?mode=local&lighthouse=1#/home" --chrome-flags="--headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage" --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=/tmp/kids-review/audit/lighthouse.json --quiet
+          timeout --kill-after=5s 120s npx --yes lighthouse@12.2.1 "http://127.0.0.1:4173/heather_word/?mode=local&lighthouse=1#/home" --chrome-flags="--headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage" --only-categories=performance,accessibility,best-practices,seo --output=json --output-path=/tmp/kids-review/audit/lighthouse.json --quiet
       - uses: actions/upload-artifact@v4
         if: always()
         with:
