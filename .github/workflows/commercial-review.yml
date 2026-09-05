@@ -3,10 +3,16 @@ name: Commercial redesign review
 on:
   push:
     branches: ["redesign/commercial-20260905"]
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: commercial-review-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   review:
@@ -14,45 +20,21 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Apply verified review source
-        id: apply
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ -f .review/apply.py ]; then
-            python3 .review/apply.py
-            echo 'applied=true' >> "$GITHUB_OUTPUT"
-          fi
       - name: Install Korean screenshot fonts
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y fonts-noto-cjk
-      - name: Rebuild static brand assets
-        if: steps.apply.outputs.applied == 'true'
-        run: |
-          python3 -m pip install Pillow==11.3.0 CairoSVG==2.8.2
-          python3 tools/build-brand-assets.py
       - name: Verify compatibility contracts
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p /tmp/heather-review/audit
           npm run check 2>&1 | tee /tmp/heather-review/audit/check.txt
-      - name: Commit verified source to isolated review branch
-        if: steps.apply.outputs.applied == 'true'
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$GITHUB_REF" = 'refs/heads/redesign/commercial-20260905'
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'feat: rebuild learning experience with preserved logic and commercial design system'
-          git push origin HEAD:refs/heads/redesign/commercial-20260905
       - name: Capture reviewed source
         if: always()
         run: |
@@ -72,11 +54,17 @@ jobs:
           done
           cat /tmp/heather-http.log
           exit 1
-      - name: Browser regression and responsive screenshots
+      - name: Learning flow regression and responsive screenshots
         env:
           BASE_URL: http://127.0.0.1:4173/heather_word
           UI_QA_OUTPUT: /tmp/heather-review/audit
         run: node tools/ui-v9-browser-qa.mjs
+      - name: Settled visual checks and console warnings
+        if: always()
+        env:
+          BASE_URL: http://127.0.0.1:4173/heather_word
+          UI_QA_OUTPUT: /tmp/heather-review/audit
+        run: node tools/commercial-visual-qa.mjs
       - name: Lighthouse evidence
         if: always()
         run: |
