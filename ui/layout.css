@@ -69,7 +69,7 @@ body.hw9-shell-ready:not(.hw9-legacy-active)>.app-shell {display:none!important}
 .hw9-info-tile>span:nth-child(2) {display:grid;gap:var(--space-1);min-width:0;flex:1}
 .hw9-info-tile small,.hw9-info-tile em {color:var(--color-text-secondary);font-size:var(--font-caption);font-style:normal}
 .hw9-info-tile strong {font-size:var(--font-title)}
-.hw9-review-feature {display:grid;grid-template-columns:40px minmax(0,1fr));gap:var(--space-4);padding:var(--space-5);background:var(--color-primary-soft);border-radius:var(--radius-lg);margin-bottom:var(--space-5)}
+.hw9-review-feature {display:grid;grid-template-columns:40px minmax(0,1fr);gap:var(--space-4);padding:var(--space-5);background:var(--color-primary-soft);border-radius:var(--radius-lg);margin-bottom:var(--space-5)}
 .hw9-review-icon {color:var(--color-primary);padding-top:var(--space-1)}
 .hw9-review-feature h2 {margin:0;font-size:var(--font-h2);letter-spacing:-.03em}
 .hw9-review-feature p {margin:var(--space-2) 0 0;font-size:var(--font-caption);color:var(--color-text-secondary)}
@@ -160,7 +160,7 @@ body.hw9-shell-ready:not(.hw9-legacy-active)>.app-shell {display:none!important}
  .hw9-quest-card {min-height:358px}
  .hw9-home-secondary {grid-column:1/-1}
  .hw9-game-grid {gap:var(--space-5)}
- .hw9-game-card {grid-template-columns:48px minmax(0,1fr));min-height:196px;column-gap:var(--space-4)}
+ .hw9-game-card {grid-template-columns:48px minmax(0,1fr);min-height:196px;column-gap:var(--space-4)}
  .hw9-game-icon {grid-row:1/4}.hw9-game-card p,.hw9-game-card small,.hw9-game-card strong {grid-column:2}
  .hw9-game-level {position:static;grid-column:2;grid-row:1}
  .hw9-game-card strong {grid-row:2}
