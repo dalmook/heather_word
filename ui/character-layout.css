@@ -1,0 +1,68 @@
+/* The canvas is a presentation surface, not a separate avatar layout.
+ * An absolutely sized canvas avoids the legacy grid item's intrinsic minimum
+ * (390px viewport: 375.66px canvas inside a 316px host). object-fit preserves
+ * the fixed 360x460 drawing buffer, including the feet, without stretching.
+ */
+.phaser-dress-room .avatar-game {
+  display: block;
+}
+.phaser-dress-room .avatar-game canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+.phaser-dress-room .fallback-avatar-preview {
+  position: absolute;
+  inset: 8px;
+  width: auto !important;
+  height: auto !important;
+  max-width: none;
+  min-width: 0;
+  min-height: 0 !important;
+  margin: 0 !important;
+  aspect-ratio: auto !important;
+  place-items: center;
+}
+.phaser-dress-room .fallback-avatar-preview > .hw-avatar {
+  min-width: 0;
+  min-height: 0;
+  max-height: 100%;
+}
+.phaser-dress-room .avatar-game-status {
+  position: absolute;
+  inset: 8px 8px auto;
+  max-width: none;
+  margin: 0;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  box-shadow: none;
+}
+.phaser-dress-room:has(.avatar-game-status:not([hidden])) .fallback-avatar-preview {
+  top: 86px;
+}
+@media (max-width: 650px) {
+  .kids-scene { display: flex; flex-direction: column; }
+  .kids-speech { flex: 0 0 auto; }
+  .hw-character-hero {
+    position: relative;
+    flex: 1 1 0;
+    min-height: 0;
+    height: auto;
+    right: auto;
+    bottom: auto;
+    margin: 8px auto 20px;
+    width: 72%;
+  }
+}
+@media (max-width: 350px) {
+  .hw-character-hero { width: 80%; }
+}

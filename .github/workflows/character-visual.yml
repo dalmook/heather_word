@@ -1,0 +1,73 @@
+name: Character browser review
+on:
+  push:
+    branches: ['character-ip/renewal-20260906']
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: character-browser-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Korean fonts and exact source revision
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+          mkdir -p /tmp/character-visual
+          git rev-parse HEAD > /tmp/character-visual/commit.txt
+      - name: Asset generation and behavioral contracts
+        run: |
+          set -o pipefail
+          npm run check 2>&1 | tee /tmp/character-visual/check.log
+          npm run generate:assets
+          git diff --exit-code -- assets
+      - name: Baseline and updated static LOCAL previews
+        run: |
+          mkdir -p /tmp/character-baseline
+          git archive 9d295e2d8375ebbf246c25d2964999f6497f3b90 | tar -x -C /tmp/character-baseline
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/character-http.log 2>&1 &
+          python3 -m http.server 4174 --bind 127.0.0.1 --directory /tmp/character-baseline >/tmp/character-baseline-http.log 2>&1 &
+          for attempt in {1..40}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null && curl -fsS http://127.0.0.1:4174/ >/dev/null; then exit 0; fi
+            sleep 0.25
+          done
+          exit 1
+      - name: Baseline screenshots and measurements
+        env:
+          BASE_URL: http://127.0.0.1:4174
+          CHARACTER_BASELINE: '1'
+          CHARACTER_QA_OUTPUT: /tmp/character-visual/before
+        run: node tools/character-integration-qa.mjs
+      - name: Actual wardrobe, evolution, hatch and learning flows
+        if: success() || failure()
+        env:
+          BASE_URL: http://127.0.0.1:4173
+          CHARACTER_QA_OUTPUT: /tmp/character-visual/after
+        run: node tools/character-integration-qa.mjs
+      - name: Hero and full-body canvas viewport contracts
+        if: success() || failure()
+        env:
+          BASE_URL: http://127.0.0.1:4173
+          CHARACTER_QA_OUTPUT: /tmp/character-visual/geometry
+        run: node tools/character-viewport-audit.mjs
+      - name: Preserve exact source with browser evidence
+        if: always()
+        run: git archive --format=tar.gz HEAD > /tmp/character-visual/source.tar.gz
+      - name: Evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: character-visual-${{ github.sha }}
+          path: /tmp/character-visual
+          retention-days: 14

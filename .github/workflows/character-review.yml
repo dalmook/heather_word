@@ -1,0 +1,34 @@
+name: Character art review
+on:
+  push:
+    branches: ['character-ip/renewal-20260906']
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  character-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Record source and instructions
+        run: |
+          mkdir -p /tmp/character-evidence
+          git rev-parse HEAD | tee /tmp/character-evidence/commit.txt
+          git ls-files '*AGENTS.md' | tee /tmp/character-evidence/instruction-files.txt
+          git archive --format=tar.gz HEAD > /tmp/character-evidence/source.tar.gz
+      - name: Existing contracts
+        run: |
+          set -o pipefail
+          npm run check 2>&1 | tee /tmp/character-evidence/check.log
+      - name: Preserve source snapshot and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: character-review-${{ github.sha }}
+          path: /tmp/character-evidence/
+          retention-days: 7

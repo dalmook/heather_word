@@ -1,5 +1,6 @@
+import {renderAvatarSvg} from './character-avatar.js';
 import { parentInsights, parentReportText, parentReportView, parentGuideView } from "./ui/parent-insights.js?v=12.0.0";
-import { homeView, wordResults, escapeText, gameArtwork, availableCategory } from "./ui/components.js?v=12.0.0";
+import { homeView, wordResults, escapeText, gameArtwork, availableCategory } from "./ui/components.js?v=13.0.0";
 import {
   UI_V9_VERSION,
   LOCAL_KEY,
@@ -18,7 +19,7 @@ import {
   getSeason2Character,
   getSeason2World,
   renderMonsterSvg
-} from "./monster-catalog-season2.js?v=8.0.0";
+} from "./monster-catalog-season2.js?v=13.0.0";
 
 const PARENT_SESSION_KEY = globalThis.HEATHER_DEMO ? "heather_demo_parent_unlocked" : "heather_parent_unlocked";
 
@@ -224,14 +225,14 @@ function renderHeader() {
   app.root.querySelector("[data-hw9-name]").textContent = app.snapshot.name === "Player" ? "나의 탐험 수첩" : app.snapshot.name;
   app.root.querySelector(".hw9-resource").setAttribute("aria-label", `보유 쿠키 ${formatNumber(app.snapshot.coin)}개 확인`);
   app.root.querySelector("[data-hw9-coin]").textContent = formatNumber(app.snapshot.coin);
-  app.root.querySelector("[data-hw9-profile-avatar]").innerHTML = partner ? renderMonsterSvg(partner) : icon("user");
+  app.root.querySelector("[data-hw9-profile-avatar]").innerHTML = renderAvatarSvg(app.snapshot.player.equippedAvatar, window.HEATHER_AVATAR_PARTS || [], {background:false, crop:"36 13 169 154", label:"나의 코디"});
   const status = app.root.querySelector("[data-hw9-connection]");
   status.dataset.hw9Connection = connection.state; status.querySelector("span").textContent = connection.label;
 }
 function progressBar(percent, label = "") {
   return `<div class="hw9-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(percent)}"${label ? ` aria-label="${escapeHtml(label)}"` : ""}><i style="--progress:${Math.max(0, Math.min(100, percent))}%"></i></div>`;
 }
-function renderHome() { return homeView(app.snapshot, { icon, partnerMarkup, missionCta }); }
+function renderHome() { return homeView(app.snapshot, { icon, partnerMarkup, missionCta, avatarMarkup: s => renderAvatarSvg(s.player.equippedAvatar, window.HEATHER_AVATAR_PARTS || [], {background:false}) }); }
 
 function categoryRows(snapshot) {
   const categories = snapshot.categories.filter((category) => category.id !== "all" && category.count > 0);
@@ -301,7 +302,7 @@ function renderMy() {
   const s = app.snapshot, connection = connectionState();
   return `<section class="hw9-view hw9-my-view" aria-labelledby="hw9MyTitle">
       <div class="hw9-view-heading"><div><span class="hw9-kicker">나의 탐험 수첩</span><h1 id="hw9MyTitle">${escapeHtml(s.name)}의 기록</h1><p>내가 해낸 일들을 만나 봐.</p></div></div>
-      <article class="hw9-profile-card"><div class="hw9-profile-visual">${partnerMarkup(s, "medium")}</div><div><h2>${escapeHtml(s.name)}</h2><p>${connection.label} · ${s.settings.ageBand === "challenge" ? "도전 모드" : "쉬운 모드"}</p><button type="button" class="hw9-text-button" data-hw9-action="profile">이름 바꾸기 ${icon("chevron")}</button></div></article>
+      <article class="hw9-profile-card"><div class="hw9-profile-visual">${renderAvatarSvg(s.player.equippedAvatar, window.HEATHER_AVATAR_PARTS || [], {label:"저장한 나의 코디"})}</div><div><h2>${escapeHtml(s.name)}</h2><p>${connection.label} · ${s.settings.ageBand === "challenge" ? "도전 모드" : "쉬운 모드"}</p><button type="button" class="hw9-text-button" data-hw9-action="profile">이름 바꾸기 ${icon("chevron")}</button></div></article>
       <div class="hw9-stat-strip"><div><span>${icon("star")}</span><strong>${formatNumber(s.score)}</strong><small>점수</small></div><div><span>${icon("cookie")}</span><strong>${formatNumber(s.coin)}</strong><small>쿠키</small></div><div><span>${icon("flame")}</span><strong>${s.bestCombo}</strong><small>최고 콤보</small></div></div>
       <section class="hw9-settings-group"><h2>기록과 꾸미기</h2>
         ${settingRow("trophy", "나의 기록", "내가 차곡차곡 모은 점수", 'data-hw9-legacy="rank"')}
@@ -334,7 +335,7 @@ function renderActiveView({ force = false, preserveScroll = false } = {}) {
 }
 function refreshSnapshot({ force = false } = {}) {
   if (app.destroyed) return;
-  const next=deriveSnapshot(readEnvelope()), fingerprint=snapshotFingerprint(next), changed=fingerprint!==app.fingerprint;
+  const next=deriveSnapshot(readEnvelope()), fingerprint=snapshotFingerprint(next)+JSON.stringify(next.player.equippedAvatar||{}), changed=fingerprint!==app.fingerprint;
   app.snapshot=next; renderHeader();
   if(changed||force) {
     app.fingerprint=fingerprint;

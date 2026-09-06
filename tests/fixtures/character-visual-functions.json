@@ -1,0 +1,17 @@
+{
+  "sourceCommit": "9d295e2d8375ebbf246c25d2964999f6497f3b90",
+  "functions": {
+    "ensureAvatarRuntime": "94a3defe64134aff688d4e8c2554bb392054c377d7ba949f9dea07832261f032",
+    "renderHomePet": "628003d8db1ef90300ccb18663730fcc832aaebef9d81883a4a760c32adf498d",
+    "renderAvatar": "38d2192c780e87aef7f4e4771353812c56912e7699667237c06f8c8c27f3c57e",
+    "renderPhaserAvatar": "cc7c17f0d2a129ca202a91bcc7e7300d82ba42a116fdd24e83c800aad9a09734",
+    "downloadAvatarImage": "bffecfc7c23f0d1681d2f19c89d1d314d605b0a250bc282cc50fcfb3f54d0e23",
+    "renderEquippedAccessory": "3746290b067a2cdfbc240e48f0f22001f77769b54a326bd9febf13a1c20d426d",
+    "renderAvatarPurchaseProduct": "c0873f01b37574271c258ee2c7dc44f0b9377c0989ca0398fc73974e7266c2a3",
+    "renderAvatarProduct": "9f53a1a405938525b78ffa4c4b3a8f62d8755b83e1b2c4abe9c98afbfb13cab0",
+    "renderShopProduct": "30bd2ff1e19236d9ef8a657456f6545b361b10f9f3a94bd4fe8119300b919115",
+    "renderPetProduct": "091e0944234999cc2b2ebaa3f4323f8dbf77fc3947a157d7d41376cfa7dd27fb",
+    "renderPetCare": "f898d07d6d7ac507b3e0d9d57d695ff6eac868df8535483b65e9f4db5f6d0805",
+    "renderCollection": "1cdc8cf22eb17d493ad634052c186d338f47b9bd5687a6250ddc9bfb95ba1be0"
+  }
+}

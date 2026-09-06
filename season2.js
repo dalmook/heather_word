@@ -1,3 +1,7 @@
+import {renderEggSvg} from './character-companions.js';
+import {showCharacterReveal,closeCharacterReveal} from './character-ui.js';
+import {CHARACTER_HOOKS} from './character-personalities.js';
+import {characterAcquisitionRecord} from './character-progress.js';
 import {
   SEASON2_SCHEMA_VERSION,
   migratePlayer,
@@ -25,7 +29,7 @@ import {
   getSpeciesStages,
   getStageOneCharacters,
   renderMonsterSvg
-} from "./monster-catalog-season2.js?v=8.0.0";
+} from "./monster-catalog-season2.js?v=13.0.0";
 let getApps;
 let initializeApp;
 let getAuth;
@@ -419,7 +423,7 @@ function renderHomePanel() {
     </button>
     <div class="s2-home-mini-grid">
       <button class="s2-mini-card" data-s2-view="collection">
-        <div class="s2-mini-art">${partner ? renderMonsterSvg(partner) : "<span class='s2-egg-placeholder'>🥚</span>"}</div>
+        <div class="s2-mini-art">${partner ? renderMonsterSvg(partner) : renderEggSvg()}</div>
         <div><small>현재 파트너</small><strong>${escapeHtml(partner?.name || "스타터를 골라요")}</strong><span>친밀도 ${safeInt(app.season2.monsterAffinity[partner?.id]?.points)}</span></div>
       </button>
       <button class="s2-mini-card" data-s2-action="open-egg">
@@ -447,6 +451,7 @@ function renderOverlayHeader() {
 }
 
 function openSeason2(view = "adventure") {
+  closeCharacterReveal();
   if (!app.root) return;
   if(view === "report" && window.HEATHER_PARENT_GATE_GRANTED !== true) {openReport();return;}
   app.view = view;
@@ -458,6 +463,7 @@ function openSeason2(view = "adventure") {
 }
 
 function closeSeason2() {
+  closeCharacterReveal();
   if (!app.root) return;
   app.root.hidden = true;
   document.body.classList.remove("s2-open");
@@ -486,7 +492,7 @@ function renderAdventureView() {
   const totalStars = daily.stars.reduce((sum, value) => sum + value, 0);
   return `
     <section class="s2-adventure-hero">
-      <div class="s2-partner-stage">${partner ? renderMonsterSvg(partner) : "<div class='s2-large-egg'>🥚</div>"}</div>
+      <div class="s2-partner-stage">${partner ? renderMonsterSvg(partner) : renderEggSvg()}</div>
       <div><span>${escapeHtml(todayKey())}</span><h3>${daily.completed ? "오늘의 모험 완주!" : "단어 길을 함께 걸어요"}</h3><p>${daily.completed ? `별 ${totalStars}/12개를 모았어요. 틀린 단어도 모두 학습 기록에 남았어요.` : "오답 때문에 길이 막히지 않아요. 끝까지 도전한 것도 별로 인정해요."}</p></div>
     </section>
     ${!app.season2.starterClaimed ? `<button class="s2-starter-callout" data-s2-view="starter"><strong>🎁 첫 파트너를 골라요</strong><span>한 번 선택하면 바로 함께 모험할 수 있어요.</span></button>` : ""}
@@ -527,8 +533,8 @@ function renderEggView() {
   const world = getSeason2World(egg.worldId);
   const ready = egg.progress >= 100;
   return `<section class="s2-egg-hero">
-      <div class="s2-egg-visual ${ready ? "ready" : ""}"><span>${world.icon}</span><b>🥚</b></div>
-      <div><small>선택한 세계</small><h3>${escapeHtml(world.name)}의 알</h3><p>${ready ? "새로운 캐릭터를 확정으로 만날 준비가 됐어요." : "실제 단어 학습과 모험 완주로 게이지가 올라요. 쉬어도 줄지 않아요."}</p></div>
+      <div class="s2-egg-visual ${ready ? "ready" : ""}"><span>${world.icon}</span><b>${renderEggSvg({ariaLabel:world.name+"의 알"})}</b></div>
+      <div><small>선택한 세계</small><h3>${escapeHtml(world.name)}의 알</h3><p>${ready ? "부화 결과를 만날 준비가 됐어요." : "실제 단어 학습과 모험 완주로 게이지가 올라요. 쉬어도 줄지 않아요."}</p></div>
     </section>
     <div class="s2-gauge"><div><span>부화 진행도</span><strong>${egg.progress}%</strong></div><i><em style="width:${egg.progress}%"></em></i></div>
     <label class="s2-field">다음에 만날 세계<select data-s2-egg-world>${SEASON2_WORLDS.map((item) => `<option value="${item.id}" ${item.id === egg.worldId ? "selected" : ""}>${item.icon} ${escapeHtml(item.name)}</option>`).join("")}</select></label>
@@ -553,10 +559,10 @@ function renderCollectionView() {
   const acquired = Object.keys(app.season2.season2Collection).filter((id) => getSeason2Character(id)).length;
   return `<section class="s2-collection-summary"><div><span>수집 진행</span><strong>${acquired} / 60</strong></div><div><span>완전히 기억한 단어</span><strong>${app.season2.endgameProgress.masteryStars}</strong></div><div><span>파트너 친밀도</span><strong>${safeInt(app.season2.monsterAffinity[app.season2.partnerId]?.points)}</strong></div></section>
     <div class="s2-filters">
-      <select data-s2-filter="world"><option value="all">전체 세계</option>${SEASON2_WORLDS.map((world) => `<option value="${world.id}" ${app.collectionFilters.world === world.id ? "selected" : ""}>${world.icon} ${escapeHtml(world.name)}</option>`).join("")}</select>
-      <select data-s2-filter="rarity"><option value="all">전체 등급</option>${Object.entries(RARITY_LABELS).map(([id, name]) => `<option value="${id}" ${app.collectionFilters.rarity === id ? "selected" : ""}>${name}</option>`).join("")}</select>
-      <select data-s2-filter="owned"><option value="all">획득 전체</option><option value="owned" ${app.collectionFilters.owned === "owned" ? "selected" : ""}>획득</option><option value="locked" ${app.collectionFilters.owned === "locked" ? "selected" : ""}>미획득</option></select>
-      <select data-s2-filter="stage"><option value="all">진화 전체</option><option value="1" ${app.collectionFilters.stage === "1" ? "selected" : ""}>1단계</option><option value="2" ${app.collectionFilters.stage === "2" ? "selected" : ""}>2단계</option><option value="3" ${app.collectionFilters.stage === "3" ? "selected" : ""}>3단계</option></select>
+      <select aria-label="친구의 세계" data-s2-filter="world"><option value="all">전체 세계</option>${SEASON2_WORLDS.map((world) => `<option value="${world.id}" ${app.collectionFilters.world === world.id ? "selected" : ""}>${world.icon} ${escapeHtml(world.name)}</option>`).join("")}</select>
+      <select aria-label="친구 등급" data-s2-filter="rarity"><option value="all">전체 등급</option>${Object.entries(RARITY_LABELS).map(([id, name]) => `<option value="${id}" ${app.collectionFilters.rarity === id ? "selected" : ""}>${name}</option>`).join("")}</select>
+      <select aria-label="보유 상태" data-s2-filter="owned"><option value="all">획득 전체</option><option value="owned" ${app.collectionFilters.owned === "owned" ? "selected" : ""}>획득</option><option value="locked" ${app.collectionFilters.owned === "locked" ? "selected" : ""}>미획득</option></select>
+      <select aria-label="진화 단계" data-s2-filter="stage"><option value="all">진화 전체</option><option value="1" ${app.collectionFilters.stage === "1" ? "selected" : ""}>1단계</option><option value="2" ${app.collectionFilters.stage === "2" ? "selected" : ""}>2단계</option><option value="3" ${app.collectionFilters.stage === "3" ? "selected" : ""}>3단계</option></select>
     </div>
     ${visible.length ? `<div class="s2-collection-grid">${visible.map(renderCollectionCard).join("")}</div>` : `<div class="s2-empty"><span>🔎</span><h3>조건에 맞는 캐릭터가 없어요</h3><p>필터를 바꿔 다시 찾아보세요.</p></div>`}
     ${visible.length < list.length ? `<button class="s2-secondary s2-wide" data-s2-action="load-more">더 보기 (${list.length - visible.length})</button>` : ""}`;
@@ -580,22 +586,34 @@ function renderCharacterDetail() {
   const owned = Boolean(app.season2.season2Collection[character.id]);
   const world = getSeason2World(character.worldId);
   const stages = getSpeciesStages(character.speciesId);
-  const next = stages.find((item) => item.evolutionStage === character.evolutionStage + 1);
+  const next = stages.find(item => item.evolutionStage === character.evolutionStage + 1);
   const affinity = safeInt(app.season2.monsterAffinity[character.id]?.points);
   const requirement = next ? evolutionRequirement(character.evolutionStage) : null;
-  const canEvolve = Boolean(next && owned && affinity >= requirement.affinity && app.season2.evolutionMaterials >= requirement.materials && !app.season2.season2Collection[next.id]);
-  return `<button class="s2-text-back" data-s2-view="collection">← 도감으로</button>
-    <section class="s2-detail-hero ${owned ? "" : "locked"}"><div>${renderMonsterSvg(character, { locked: !owned })}</div><div><small>${world.icon} ${escapeHtml(world.name)} · ${escapeHtml(character.rarityLabel)}</small><h3>${owned ? escapeHtml(character.name) : "아직 만나지 못한 친구"}</h3><p>${owned ? escapeHtml(character.description) : escapeHtml(world.hint)}</p></div></section>
+  const nextOwned = Boolean(next && app.season2.season2Collection[next.id]);
+  const canEvolve = Boolean(next && owned && affinity >= requirement.affinity && app.season2.evolutionMaterials >= requirement.materials && !nextOwned);
+  const obtained = owned ? characterAcquisitionRecord(app.season2, character.id) : null;
+  const dateLabel = obtained ? new Date(obtained.at).toLocaleDateString("ko-KR") : "기록 없음";
+  return `<button class="s2-text-back" data-s2-view="collection">← 친구 도감</button>
+    <section class="s2-detail-hero ${owned ? "" : "locked"}" style="--character-world:${world.color}">
+      <div class="s2-detail-art">${renderMonsterSvg(character, {locked:!owned})}</div>
+      <div><span class="hw-character-rarity" data-rarity="${character.rarity}">${escapeHtml(character.rarityLabel)} · ${character.evolutionStage}단계</span><small>${world.icon} ${escapeHtml(world.name)}</small>
+      <h3>${owned ? escapeHtml(character.name) : "아직 만나지 못한 친구"}</h3><p>${owned ? escapeHtml(character.description) : escapeHtml(world.hint)}</p>
+      ${owned ? `<p class="hw-character-hook">${escapeHtml(CHARACTER_HOOKS[character.speciesId] || "")}</p>` : ""}</div></section>
     <dl class="s2-detail-list">
-      <div><dt>진화 단계</dt><dd>${character.evolutionStage}단계 · ${escapeHtml(character.stageLabel)}</dd></div>
+      <div><dt>성장</dt><dd>${character.evolutionStage}단계 · ${escapeHtml(character.stageLabel)}</dd></div>
       <div><dt>성격</dt><dd>${owned ? escapeHtml(character.personality) : "만난 뒤 알 수 있어요"}</dd></div>
-      <div><dt>좋아하는 모드</dt><dd>${owned ? escapeHtml(MODE_LABELS[character.favoriteMode] || character.favoriteMode) : "?"}</dd></div>
-      <div><dt>함께 공부한 단어</dt><dd>${safeInt(app.season2.monsterAffinity[character.id]?.wordsStudied)}</dd></div>
+      <div><dt>좋아하는 놀이</dt><dd>${owned ? escapeHtml(MODE_LABELS[character.favoriteMode] || character.favoriteMode) : "아직 비밀이에요"}</dd></div>
+      <div><dt>함께 맞힌 단어</dt><dd>${safeInt(app.season2.monsterAffinity[character.id]?.wordsStudied)}개</dd></div>
       <div><dt>친밀도</dt><dd>${affinity}</dd></div>
+      <div><dt>처음 만난 날</dt><dd>${owned ? escapeHtml(dateLabel) : "아직 만나기 전"}</dd></div>
     </dl>
-    <div class="s2-evolution-line">${stages.map((stage) => `<div class="${app.season2.season2Collection[stage.id] ? "owned" : ""}">${renderMonsterSvg(stage, { locked: !app.season2.season2Collection[stage.id] })}<span>${app.season2.season2Collection[stage.id] ? escapeHtml(stage.name) : `${stage.evolutionStage}단계`}</span></div>`).join("<b>→</b>")}</div>
-    ${owned ? `<button class="s2-primary s2-wide" data-s2-action="set-partner" data-character-id="${character.id}" ${app.season2.partnerId === character.id ? "disabled" : ""}>${app.season2.partnerId === character.id ? "현재 파트너" : "파트너로 함께하기"}</button>` : ""}
-    ${next && owned && !app.season2.season2Collection[next.id] ? `<div class="s2-info-box"><strong>다음 진화: ${escapeHtml(next.name)}</strong><p>친밀도 ${affinity}/${requirement.affinity} · 진화 재료 ${app.season2.evolutionMaterials}/${requirement.materials}</p></div><button class="s2-secondary s2-wide" data-s2-action="evolve" data-character-id="${character.id}" data-next-id="${next.id}" data-stage="${character.evolutionStage}" ${canEvolve ? "" : "disabled"}>${canEvolve ? "진화하기" : "조건을 더 채워요"}</button>` : ""}`;
+    <section class="hw-evolution-story"><h4>우리의 성장 이야기</h4><div class="s2-evolution-line">${stages.map(stage => {
+      const known = Boolean(app.season2.season2Collection[stage.id]);
+      return `<button type="button" class="${known ? "owned" : "locked"} ${stage.id === character.id ? "is-current" : ""}" data-s2-action="character-detail" data-character-id="${stage.id}" aria-label="${known ? escapeAttr(stage.name) : `${stage.evolutionStage}단계 실루엣`} 보기" ${stage.id === character.id ? 'aria-current="true"' : ''}>${renderMonsterSvg(stage,{locked:!known})}<span>${known ? escapeHtml(stage.name) : `${stage.evolutionStage}단계`}</span></button>`;
+    }).join('<b aria-hidden="true">→</b>')}</div></section>
+    ${owned ? `<button class="s2-primary s2-wide" data-s2-action="set-partner" data-character-id="${character.id}" ${app.season2.partnerId === character.id ? "disabled" : ""}>${app.season2.partnerId === character.id ? "지금 함께하는 파트너" : "이 친구와 함께 공부하기"}</button>` : `<div class="s2-info-box"><strong>이 세계의 친구를 만나려면</strong><p>알 화면에서 ${escapeHtml(world.name)}을 골라 보세요. 아직 없는 1단계 친구부터 만날 수 있어요.</p><button class="s2-secondary" data-s2-action="open-egg">알과 세계 고르기</button></div>`}
+    ${next && owned && !nextOwned ? `<section class="hw-next-evolution"><h4>다음 모습까지 한 걸음</h4><p>친밀도 ${affinity}/${requirement.affinity} · 진화 재료 ${app.season2.evolutionMaterials}/${requirement.materials}</p><div class="s2-gauge" role="progressbar" aria-label="다음 진화에 필요한 친밀도" aria-valuemin="0" aria-valuemax="${requirement.affinity}" aria-valuenow="${Math.min(affinity,requirement.affinity)}"><i><em style="width:${Math.min(100,Math.round(affinity/requirement.affinity*100))}%"></em></i></div><p>${canEvolve ? "준비가 됐어요. 새로운 모습을 만나 볼까요?" : affinity < requirement.affinity ? "파트너로 함께 공부하며 친밀도를 모아요." : "오늘의 모험을 완주하며 진화 재료를 모아요."}</p><button class="s2-secondary s2-wide" data-s2-action="evolve" data-character-id="${character.id}" data-next-id="${next.id}" data-stage="${character.evolutionStage}" ${canEvolve ? "" : "disabled"}>${canEvolve ? "새 모습으로 진화하기" : "차근차근 함께 자라요"}</button></section>` : nextOwned ? `<div class="s2-info-box">다음 모습도 도감에 있어요. 위의 성장 이야기에서 살펴보세요.</div>` : owned ? `<div class="s2-info-box">마지막 진화에 도착했어요. 이제 더 많은 단어를 함께 만나봐요.</div>` : ""}
+    ${owned && app.season2.partnerId === character.id ? '<button class="s2-secondary s2-wide" data-s2-view="adventure">파트너와 모험 시작</button>' : ''}`;
 }
 
 function renderWeeklyView() {
@@ -661,7 +679,7 @@ function renderStageView() {
       <div class="s2-question-top"><span>${escapeHtml(word.emoji || "📘")}</span><div><small>${escapeHtml(MODE_LABELS[question.mode] || question.mode)} 문제</small><h3>${escapeHtml(word.meaning || "뜻을 확인해요")}</h3></div><button data-s2-action="speak" data-text="${escapeAttr(word.word)}" aria-label="발음 듣기">🔊</button></div>
       ${renderQuestionBody(session, question, word)}
       ${session.feedback ? renderQuestionFeedback(session.feedback, word) : ""}
-    </section>`;
+    </section>${renderStudyPartner(session.feedback?.type)}`;
 }
 
 function renderBossMonster() {
@@ -704,7 +722,7 @@ function renderStageComplete(session) {
   const stage = STAGES[session.stageIndex];
   const next = STAGES[session.stageIndex + 1];
   const eggReady = app.season2.incubatingEgg.progress >= 100;
-  return `<section class="s2-stage-complete"><span>${session.stageIndex === 3 ? "🏆" : "⭐"}</span><h3>${escapeHtml(stage.title)} 완료!</h3><div class="s2-stars">${"★".repeat(session.stars)}${"☆".repeat(3 - session.stars)}</div><p>정답 ${session.correct}/${session.questions.length} · 끝까지 완주한 것도 별에 포함했어요.</p><div class="s2-reward-row"><span>🔎 발견 포인트</span><span>💎 진화 재료</span><span>🥚 부화 ${app.season2.incubatingEgg.progress}%</span></div>${eggReady ? `<button class="s2-primary s2-wide" data-s2-action="open-egg">🥚 알이 부화할 준비가 됐어요</button>` : ""}<button class="s2-secondary s2-wide" data-s2-action="finish-stage">${next ? `${next.icon} 다음 스테이지` : "🗺️ 모험 지도로"}</button></section>`;
+  return `<section class="s2-stage-complete"><div class="hw-stage-friend">${renderStudyPartner("correct", true)}</div><h3>${escapeHtml(stage.title)} 완료!</h3><div class="s2-stars">${"★".repeat(session.stars)}${"☆".repeat(3 - session.stars)}</div><p>정답 ${session.correct}/${session.questions.length} · 끝까지 완주한 것도 별에 포함했어요.</p><div class="s2-reward-row"><span>🔎 발견 포인트</span><span>💎 진화 재료</span><span>🥚 부화 ${app.season2.incubatingEgg.progress}%</span></div>${eggReady ? `<button class="s2-primary s2-wide" data-s2-action="open-egg">🥚 알이 부화할 준비가 됐어요</button>` : ""}<button class="s2-secondary s2-wide" data-s2-action="finish-stage">${next ? `${next.icon} 다음 스테이지` : "🗺️ 모험 지도로"}</button></section>`;
 }
 
 function startStage(stageIndex) {
@@ -814,12 +832,14 @@ function handleChange(event) {
 }
 
 function chooseStarter(characterId) {
+  const previouslyClaimed = app.season2.starterClaimed;
   app.season2 = claimStarter(app.season2, characterId, SEASON2_STARTERS, new Date());
   persistSeason2();
   const character = getSeason2Character(characterId);
   showToast("첫 파트너!", `${character?.name || "새 친구"}와 함께 모험을 시작해요.`);
   app.view = "adventure";
   renderAll();
+  if (!previouslyClaimed && app.season2.season2Collection[characterId]) showCharacterReveal(character);
 }
 
 function hatchEgg() {
@@ -837,6 +857,7 @@ function hatchEgg() {
   app.detailId = result.characterId;
   app.view = "detail";
   renderAll();
+  if (!result.duplicate) showCharacterReveal(character);
 }
 
 function setPartner(characterId) {
@@ -858,6 +879,7 @@ function evolve(characterId, nextId, stage) {
   app.detailId = nextId;
   showToast("진화 성공!", `${getSeason2Character(nextId)?.name || "새 모습"}으로 진화했어요.`);
   renderAll();
+  showCharacterReveal(getSeason2Character(nextId), {kind:"evolution", previous:getSeason2Character(characterId)});
 }
 
 function claimWeekly() {
@@ -1172,4 +1194,9 @@ function escapeHtml(value) {
 
 function escapeAttr(value) {
   return escapeHtml(value).replaceAll("`", "&#096;");
+}
+
+function renderStudyPartner(reaction = "idle", large = false) {
+  const partner = getSeason2Character(app.season2.partnerId);
+  return `<aside class="s2-study-partner ${large ? "is-large" : ""}" data-reaction="${reaction === "correct" ? "correct" : reaction === "idle" ? "idle" : "review"}"><div>${partner ? renderMonsterSvg(partner,{mood:reaction === "correct" ? "happy" : "idle"}) : renderEggSvg()}</div><p>${reaction === "correct" ? "같이 해냈어!" : reaction === "idle" ? "천천히 생각해도 괜찮아." : "괜찮아. 한 번 더 같이 해보자."}</p></aside>`;
 }

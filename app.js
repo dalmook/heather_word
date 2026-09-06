@@ -1,3 +1,7 @@
+import {renderLegacyMonster, renderPetSvg, renderCharmSvg, renderEggSvg} from './character-companions.js';
+import {renderAvatarSvg, renderAvatarItemSvg, downloadAvatarPng} from './character-avatar.js';
+import './character-ui.js';
+let legacyCollectionPage = null;
 let initializeApp;
 let getAuth;
 let signInAnonymously;
@@ -498,7 +502,7 @@ function ensureAvatarRuntime() {
   avatarRuntimePromise = loadOptionalScript(
     "https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js",
     "heather-phaser-runtime"
-  ).then(() => loadOptionalScript("./avatar-phaser.js?v=9.0.0", "heather-avatar-runtime"))
+  ).then(() => loadOptionalScript("./avatar-phaser.js?v=13.0.0", "heather-avatar-runtime"))
     .then(() => {
       if (!window.Phaser || !window.HeatherAvatarPhaser?.mount) throw new Error("Avatar renderer unavailable");
     });
@@ -1056,18 +1060,13 @@ function render() {
 }
 
 function renderHomePet(targetElement, currentMonster = getCurrentMonster()) {
-  const emoji = currentMonster?.emoji || "🥚";
-
-  if (!targetElement) {
-    if (dom.petEmoji) dom.petEmoji.textContent = emoji;
-    return;
-  }
-
-  targetElement.classList.remove("avatar-preview", "drafting");
-  targetElement.classList.add("home-pet-emoji");
-  targetElement.style.setProperty("--pet-size", "96px");
-  targetElement.setAttribute("aria-label", currentMonster?.name ? `현재 모은 최종 펫 ${currentMonster.name}` : "현재 모은 최종 펫");
-  targetElement.textContent = emoji;
+  const target = targetElement || dom.petEmoji;
+  if (!target) return;
+  target.classList.remove("avatar-preview", "drafting");
+  target.classList.add("home-pet-emoji");
+  target.style.setProperty("--pet-size", "120px");
+  target.setAttribute("aria-label", `XP 도감 친구 ${currentMonster.name}`);
+  target.innerHTML = renderLegacyMonster(currentMonster);
 }
 
 function renderProfileButton() {
@@ -1735,36 +1734,14 @@ function getAvatarItem(itemId) {
 }
 
 function renderAvatar(targetElement, equippedAvatar = state.player.equippedAvatar, options = {}) {
-  if (!targetElement) {
-    if (dom.petEmoji) dom.petEmoji.textContent = getCurrentMonster().emoji;
-    return;
-  }
-
-  const avatarSource = {
-    ...(equippedAvatar || {}),
-    ...(options.draftAvatar || {})
-  };
-  const avatar = normalizeEquippedAvatar(avatarSource, state.player.ownedAvatarItems, {
+  if (!targetElement) return;
+  const avatar = normalizeEquippedAvatar({...(equippedAvatar || {}), ...(options.draftAvatar || {})}, state.player.ownedAvatarItems, {
     allowUnowned: Boolean(options.draftAvatar) || Boolean(options.allowUnowned)
   });
-  // DOM previews use the existing aligned SVG assets only. Generated Phaser-only
-  // pieces (top/bottom/shoes/background/effect) are intentionally skipped here
-  // so the home hero never stacks mismatched emoji/shape layers over SVG parts.
-  const layerOrder = ["body", "outfit", "face", "hair", "accessory"];
-  const layers = layerOrder
-    .filter((slot) => !(avatar.outfit && ["top", "bottom"].includes(slot)))
-    .map((slot) => avatar[slot])
-    .filter(Boolean)
-    .map((itemId) => getAvatarItem(itemId))
-    .filter((item) => item?.src);
-
   targetElement.classList.add("avatar-preview");
-  if (options.compact) targetElement.classList.add("compact");
+  targetElement.classList.toggle("compact", Boolean(options.compact));
   targetElement.classList.toggle("drafting", Boolean(options.draftAvatar));
-  targetElement.innerHTML = layers.map((item) => {
-    if (item.src) return `<img class="avatar-layer avatar-layer-${escapeHtml(item.slot)}" src="${escapeHtml(item.src)}" alt="">`;
-    return `<span class="avatar-layer avatar-layer-${escapeHtml(item.slot)} avatar-generated-layer" aria-hidden="true">${escapeHtml(item.icon || "✨")}</span>`;
-  }).join("");
+  targetElement.innerHTML = renderAvatarSvg(avatar, AVATAR_ITEMS, {label: options.draftAvatar ? "입어 보는 중인 코디" : "나의 탐험가 코디"});
 }
 
 function getCurrentAvatarLook() {
@@ -1775,7 +1752,7 @@ function getCurrentAvatarLook() {
 }
 
 function renderPhaserAvatar(options = {}) {
-  if (!dom.avatarGame || avatarGameFailed) return;
+  if (state.screen !== "dress" || !dom.avatarGame || avatarGameFailed) return;
   const avatar = getCurrentAvatarLook();
 
   if (!window.Phaser || !window.HeatherAvatarPhaser?.mount) {
@@ -1832,15 +1809,15 @@ function saveAvatarLook() {
   showToast("코디 저장 완료", "새로고침해도 아바타가 유지돼요");
 }
 
-function downloadAvatarImage() {
-  const downloaded = avatarGameController?.download?.("heather-avatar.png");
-  if (downloaded) {
-    showToast("이미지 저장", "heather-avatar.png 파일로 저장했어요");
-    return;
+async function downloadAvatarImage() {
+  try {
+    await downloadAvatarPng(getCurrentAvatarLook(), AVATAR_ITEMS, "heather-avatar.png");
+    showToast("이미지 저장", "현재 미리보기를 PNG로 준비했어요");
+  } catch (error) {
+    console.info("Avatar export unavailable", error);
+    showToast("이미지 저장 실패", "코디는 그대로예요. 잠시 뒤 다시 눌러 주세요.");
   }
-  showToast("이미지 저장 실패", "Phaser 캔버스가 준비된 뒤 다시 눌러 주세요");
 }
-
 
 function getShopTheme(themeId) {
   return SHOP_THEMES.find((theme) => theme.id === themeId);
@@ -1924,7 +1901,7 @@ function getPetGrowthStage(level) {
 function renderEquippedAccessory() {
   if (!dom.equippedAccessory) return;
   const item = getShopItem(state.player.equippedItem);
-  dom.equippedAccessory.textContent = item ? item.emoji : "";
+  dom.equippedAccessory.innerHTML = item ? renderCharmSvg(item) : "";
   dom.equippedAccessory.title = item ? `착용 중: ${item.name}` : "";
 }
 
@@ -1995,7 +1972,7 @@ function renderAvatarPurchaseProduct(item) {
   return `
     <article class="shop-product avatar-product rarity-${escapeHtml(rarity)} ${owned ? "owned" : ""} ${equipped ? "equipped" : ""}">
       <div class="avatar-item-preview">
-        ${item.src ? `<img src="${escapeHtml(item.src)}" alt="">` : `<span>${escapeHtml(item.icon || "✨")}</span>`}
+        ${renderAvatarItemSvg(item, AVATAR_ITEMS, getCurrentAvatarLook())}
       </div>
       <div class="avatar-product-copy">
         <span class="rarity-badge rarity-${escapeHtml(rarity)}">${escapeHtml(rarityLabel)}</span>
@@ -2050,7 +2027,7 @@ function renderAvatarProduct(item) {
   return `
     <article class="shop-product avatar-product rarity-${escapeHtml(rarity)} ${owned ? "owned" : "for-sale"} ${equipped ? "equipped" : ""} ${previewing ? "previewing" : ""}" data-avatar-preview-id="${escapeHtml(item.id)}">
       <div class="avatar-item-preview">
-        ${item.src ? `<img src="${escapeHtml(item.src)}" alt="">` : `<span>${escapeHtml(item.icon || "✨")}</span>`}
+        ${renderAvatarItemSvg(item, AVATAR_ITEMS, getCurrentAvatarLook())}
       </div>
       <div class="avatar-product-copy">
         <span class="rarity-badge rarity-${escapeHtml(rarity)}">${escapeHtml(rarityLabel)}</span>
@@ -2074,7 +2051,7 @@ function renderShopProduct(product, type) {
 
   return `
     <article class="shop-product ${owned ? "owned" : ""} ${equipped ? "equipped" : ""}">
-      <div class="shop-product-emoji">${escapeHtml(product.emoji)}</div>
+      <div class="shop-product-emoji">${type === "item" ? renderCharmSvg(product) : escapeHtml(product.emoji)}</div>
       <div>
         <strong>${escapeHtml(product.name)}</strong>
         <small>${owned ? "구매완료" : `🍪 ${product.cost}`}</small>
@@ -2092,7 +2069,7 @@ function renderPetProduct(pet) {
 
   return `
     <article class="shop-product pet-product ${owned ? "owned" : ""} ${equipped ? "equipped" : ""}">
-      <div class="shop-product-emoji">${escapeHtml(pet.emoji)}</div>
+      <div class="shop-product-emoji">${renderPetSvg(pet)}</div>
       <div>
         <strong>${escapeHtml(pet.name)}</strong>
         <small>${owned ? pet.trait : `🍪 ${pet.cost} · ${pet.trait}`}</small>
@@ -2361,7 +2338,7 @@ function renderPetCare() {
   const stage = getPetGrowthStage(stats.level);
   const face = hasPet ? pet.emoji : "🥚";
 
-  dom.petCareEmoji.textContent = face;
+  dom.petCareEmoji.innerHTML = hasPet ? renderPetSvg(pet, {level:stats.level, mood:stats.mood >= 70 ? "happy" : "idle"}) : renderEggSvg();
   dom.petCareEmoji.style.setProperty("--pet-size", `${hasPet ? stage.size : 76}px`);
   dom.petCareEmoji.classList.toggle("sleepy", hasPet && stats.hunger < 25);
   dom.petCareName.textContent = hasPet ? pet.name : "아직 펫이 없어요";
@@ -2845,29 +2822,33 @@ function getCurrentMonster() {
 
 function renderCollection() {
   if (!dom.monsterGrid) return;
-
   const current = getCurrentMonster();
+  const pageSize = 60;
+  const totalPages = Math.ceil(MONSTER_CATALOG.length / pageSize);
+  if (legacyCollectionPage === null) legacyCollectionPage = Math.floor((current.unlockedCount - 1) / pageSize);
+  legacyCollectionPage = Math.max(0, Math.min(totalPages - 1, legacyCollectionPage));
+  const start = legacyCollectionPage * pageSize;
   dom.monsterCount.textContent = `${current.unlockedCount}/${MONSTER_CATALOG.length}`;
   dom.collectionHero.innerHTML = `
-    <span class="collection-emoji">${escapeHtml(current.emoji)}</span>
-    <div>
-      <small>현재 파트너 · #${String(current.number).padStart(3, "0")}</small>
-      <strong>${escapeHtml(current.name)}</strong>
-      <p>${current.complete ? "도감 완성! 최고의 수집가예요." : `다음 몬스터까지 ${current.remaining} XP`}</p>
-    </div>
-  `;
-  dom.monsterGrid.innerHTML = MONSTER_CATALOG.map((monster, index) => {
-    const unlocked = index < current.unlockedCount;
-    return `
-      <article class="monster-tile ${unlocked ? `unlocked ${monster.tone}` : "locked"}">
-        <span>${unlocked ? escapeHtml(monster.emoji) : "?"}</span>
-        <b>#${String(monster.number).padStart(3, "0")}</b>
-        <small>${unlocked ? escapeHtml(monster.name) : `${monster.min} XP`}</small>
-      </article>
-    `;
-  }).join("");
+    <span class="collection-emoji">${renderLegacyMonster(current)}</span>
+    <div><small>XP 도감 친구 · #${String(current.number).padStart(3, "0")}</small><strong>${escapeHtml(current.name)}</strong>
+    <p>${current.complete ? "도감 완성! 최고의 수집가예요." : `다음 몬스터까지 ${current.remaining} XP`}</p></div>`;
+  const pager = `<nav class="hw-legacy-pages" aria-label="XP 도감 페이지">
+    <button type="button" class="soft-btn" data-legacy-page="${legacyCollectionPage - 1}" ${legacyCollectionPage === 0 ? "disabled" : ""}>← 이전</button>
+    <span>${start + 1}–${Math.min(start + pageSize, MONSTER_CATALOG.length)} / ${MONSTER_CATALOG.length}</span>
+    <button type="button" class="soft-btn" data-legacy-page="${legacyCollectionPage + 1}" ${legacyCollectionPage === totalPages - 1 ? "disabled" : ""}>다음 →</button></nav>`;
+  dom.monsterGrid.innerHTML = pager + MONSTER_CATALOG.slice(start, start + pageSize).map((monster, offset) => {
+    const unlocked = start + offset < current.unlockedCount;
+    return `<article class="monster-tile ${unlocked ? `unlocked ${monster.tone}` : "locked"}">
+      <span>${renderLegacyMonster(monster, {locked:!unlocked, ariaLabel:unlocked ? monster.name : `미획득 XP 도감 친구 ${monster.number}`})}</span>
+      <b>#${String(monster.number).padStart(3, "0")}</b><small>${unlocked ? escapeHtml(monster.name) : `${monster.min} XP`}</small></article>`;
+  }).join("") + pager;
+  dom.monsterGrid.querySelectorAll("[data-legacy-page]").forEach(button => button.addEventListener("click", () => {
+    legacyCollectionPage = Number(button.dataset.legacyPage); renderCollection();
+    const next = dom.monsterGrid.querySelector("[data-legacy-page]:not(:disabled)"); next?.focus({preventScroll:true});
+    dom.monsterGrid.scrollIntoView({block:"start",behavior:"auto"});
+  }));
 }
-
 
 function awardCurrentCard() {
   if (state.cardLocked) return;
