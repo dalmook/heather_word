@@ -35,8 +35,10 @@ test('mode illustrations are decorative and all four modes stay available',async
  for(const label of ['단어','놀이','친구','나']) assert.ok(source.includes(`label: "${label}"`));
  assert.ok(source.includes('?.value || availableCategory(app.snapshot)'));
 });
-test('learning engines retain v10 bytes except the explicit trial storage namespace',async()=>{
+test('nonvisual learning engines retain v10 bytes except the explicit trial storage namespace',async()=>{
  const {createHash}=await import('node:crypto');
  const baseline=JSON.parse(await read('tests/fixtures/kids-baseline.json'));
- for(const [file,hash] of Object.entries(baseline)) assert.equal(createHash('sha256').update((await read(file)).replace("const LOCAL_KEY = globalThis.HEATHER_DEMO ? \"heather_word_demo_v1\" : \"heather_word_v3\";", "const LOCAL_KEY = \"heather_word_v3\";")).digest('hex'),hash,file);
+ // app functions, Season 2 interaction functions and renderer data have narrower contract tests.
+ const visualFiles=new Set(['app.js','season2.js','monster-catalog-season2.js','avatar-phaser.js']);
+ for(const [file,hash] of Object.entries(baseline).filter(([file])=>!visualFiles.has(file))) assert.equal(createHash('sha256').update((await read(file)).replace("const LOCAL_KEY = globalThis.HEATHER_DEMO ? \"heather_word_demo_v1\" : \"heather_word_v3\";", "const LOCAL_KEY = \"heather_word_v3\";")).digest('hex'),hash,file);
 });

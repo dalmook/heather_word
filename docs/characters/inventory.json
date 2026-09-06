@@ -1,0 +1,4110 @@
+{
+  "baseCommit": "9d295e2d8375ebbf246c25d2964999f6497f3b90",
+  "schemaChanged": false,
+  "season2": [
+    {
+      "id": "s2_cookie_crumb_bear_1",
+      "season": 2,
+      "worldId": "cookie",
+      "speciesId": "crumb_bear",
+      "evolutionStage": 1,
+      "name": "포실곰",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "첫 만남",
+      "personality": "차분하고 든든해요",
+      "favoriteMode": "choice",
+      "description": "쿠키 부스러기로 단어 지도를 그리는 마을 안내자예요.",
+      "palette": [
+        "#f6c177",
+        "#8b5e34",
+        "#fff7ed"
+      ],
+      "shape": "bear",
+      "prop": "cookie",
+      "image": "./assets/monsters/season2/cookie/crumb_bear_1.svg",
+      "hook": "쿠키 지도를 접어 주머니에 넣어요.",
+      "source": "character-art.js#DRAW.crumb_bear",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_cookie_crumb_bear_2",
+      "season": 2,
+      "worldId": "cookie",
+      "speciesId": "crumb_bear",
+      "evolutionStage": 2,
+      "name": "쿠키배달곰",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "성장",
+      "personality": "차분하고 든든해요",
+      "favoriteMode": "choice",
+      "description": "쿠키 부스러기로 단어 지도를 그리는 마을 안내자예요.",
+      "palette": [
+        "#f6c177",
+        "#8b5e34",
+        "#fff7ed"
+      ],
+      "shape": "bear",
+      "prop": "cookie",
+      "image": "./assets/monsters/season2/cookie/crumb_bear_2.svg",
+      "hook": "쿠키 지도를 접어 주머니에 넣어요.",
+      "source": "character-art.js#DRAW.crumb_bear",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_cookie_crumb_bear_3",
+      "season": 2,
+      "worldId": "cookie",
+      "speciesId": "crumb_bear",
+      "evolutionStage": 3,
+      "name": "쿠키수호곰",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "최종 진화",
+      "personality": "차분하고 든든해요",
+      "favoriteMode": "choice",
+      "description": "쿠키 부스러기로 단어 지도를 그리는 마을 안내자예요.",
+      "palette": [
+        "#f6c177",
+        "#8b5e34",
+        "#fff7ed"
+      ],
+      "shape": "bear",
+      "prop": "cookie",
+      "image": "./assets/monsters/season2/cookie/crumb_bear_3.svg",
+      "hook": "쿠키 지도를 접어 주머니에 넣어요.",
+      "source": "character-art.js#DRAW.crumb_bear",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_cookie_jam_mouse_1",
+      "season": 2,
+      "worldId": "cookie",
+      "speciesId": "jam_mouse",
+      "evolutionStage": 1,
+      "name": "잼쥐",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "첫 만남",
+      "personality": "빠르고 재치 있어요",
+      "favoriteMode": "block",
+      "description": "글자 블록을 잼 병에 차곡차곡 모아요.",
+      "palette": [
+        "#fb7185",
+        "#7f1d1d",
+        "#fff1f2"
+      ],
+      "shape": "mouse",
+      "prop": "jar",
+      "image": "./assets/monsters/season2/cookie/jam_mouse_1.svg",
+      "hook": "새 글자를 찾으면 잼 병을 톡톡 두드려요.",
+      "source": "character-art.js#DRAW.jam_mouse",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_cookie_jam_mouse_2",
+      "season": 2,
+      "worldId": "cookie",
+      "speciesId": "jam_mouse",
+      "evolutionStage": 2,
+      "name": "베리달리",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "성장",
+      "personality": "빠르고 재치 있어요",
+      "favoriteMode": "block",
+      "description": "글자 블록을 잼 병에 차곡차곡 모아요.",
+      "palette": [
+        "#fb7185",
+        "#7f1d1d",
+        "#fff1f2"
+      ],
+      "shape": "mouse",
+      "prop": "jar",
+      "image": "./assets/monsters/season2/cookie/jam_mouse_2.svg",
+      "hook": "새 글자를 찾으면 잼 병을 톡톡 두드려요.",
+      "source": "character-art.js#DRAW.jam_mouse",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_cookie_jam_mouse_3",
+      "season": 2,
+      "worldId": "cookie",
+      "speciesId": "jam_mouse",
+      "evolutionStage": 3,
+      "name": "잼도사",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "최종 진화",
+      "personality": "빠르고 재치 있어요",
+      "favoriteMode": "block",
+      "description": "글자 블록을 잼 병에 차곡차곡 모아요.",
+      "palette": [
+        "#fb7185",
+        "#7f1d1d",
+        "#fff1f2"
+      ],
+      "shape": "mouse",
+      "prop": "jar",
+      "image": "./assets/monsters/season2/cookie/jam_mouse_3.svg",
+      "hook": "새 글자를 찾으면 잼 병을 톡톡 두드려요.",
+      "source": "character-art.js#DRAW.jam_mouse",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_cloud_mist_fox_1",
+      "season": 2,
+      "worldId": "cloud",
+      "speciesId": "mist_fox",
+      "evolutionStage": 1,
+      "name": "몽실여우",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "첫 만남",
+      "personality": "호기심이 많아요",
+      "favoriteMode": "blank",
+      "description": "구름 사이에 숨은 철자를 꼬리로 찾아내요.",
+      "palette": [
+        "#dbeafe",
+        "#2563eb",
+        "#ffffff"
+      ],
+      "shape": "fox",
+      "prop": "cloud",
+      "image": "./assets/monsters/season2/cloud/mist_fox_1.svg",
+      "hook": "구름 꼬리로 바람의 방향을 가리켜요.",
+      "source": "character-art.js#DRAW.mist_fox",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_cloud_mist_fox_2",
+      "season": 2,
+      "worldId": "cloud",
+      "speciesId": "mist_fox",
+      "evolutionStage": 2,
+      "name": "바람꼬리",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "성장",
+      "personality": "호기심이 많아요",
+      "favoriteMode": "blank",
+      "description": "구름 사이에 숨은 철자를 꼬리로 찾아내요.",
+      "palette": [
+        "#dbeafe",
+        "#2563eb",
+        "#ffffff"
+      ],
+      "shape": "fox",
+      "prop": "cloud",
+      "image": "./assets/monsters/season2/cloud/mist_fox_2.svg",
+      "hook": "구름 꼬리로 바람의 방향을 가리켜요.",
+      "source": "character-art.js#DRAW.mist_fox",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_cloud_mist_fox_3",
+      "season": 2,
+      "worldId": "cloud",
+      "speciesId": "mist_fox",
+      "evolutionStage": 3,
+      "name": "하늘꼬리",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "최종 진화",
+      "personality": "호기심이 많아요",
+      "favoriteMode": "blank",
+      "description": "구름 사이에 숨은 철자를 꼬리로 찾아내요.",
+      "palette": [
+        "#dbeafe",
+        "#2563eb",
+        "#ffffff"
+      ],
+      "shape": "fox",
+      "prop": "cloud",
+      "image": "./assets/monsters/season2/cloud/mist_fox_3.svg",
+      "hook": "구름 꼬리로 바람의 방향을 가리켜요.",
+      "source": "character-art.js#DRAW.mist_fox",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_cloud_breeze_owl_1",
+      "season": 2,
+      "worldId": "cloud",
+      "speciesId": "breeze_owl",
+      "evolutionStage": 1,
+      "name": "솔솔부엉",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "첫 만남",
+      "personality": "생각이 깊어요",
+      "favoriteMode": "type",
+      "description": "바람 소리를 듣고 정확한 철자를 기록해요.",
+      "palette": [
+        "#a5f3fc",
+        "#0e7490",
+        "#ecfeff"
+      ],
+      "shape": "owl",
+      "prop": "scroll",
+      "image": "./assets/monsters/season2/cloud/breeze_owl_1.svg",
+      "hook": "생각할 때 두 날개를 책처럼 모아요.",
+      "source": "character-art.js#DRAW.breeze_owl",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_cloud_breeze_owl_2",
+      "season": 2,
+      "worldId": "cloud",
+      "speciesId": "breeze_owl",
+      "evolutionStage": 2,
+      "name": "바람부엉",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "성장",
+      "personality": "생각이 깊어요",
+      "favoriteMode": "type",
+      "description": "바람 소리를 듣고 정확한 철자를 기록해요.",
+      "palette": [
+        "#a5f3fc",
+        "#0e7490",
+        "#ecfeff"
+      ],
+      "shape": "owl",
+      "prop": "scroll",
+      "image": "./assets/monsters/season2/cloud/breeze_owl_2.svg",
+      "hook": "생각할 때 두 날개를 책처럼 모아요.",
+      "source": "character-art.js#DRAW.breeze_owl",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_cloud_breeze_owl_3",
+      "season": 2,
+      "worldId": "cloud",
+      "speciesId": "breeze_owl",
+      "evolutionStage": 3,
+      "name": "날개현자",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "최종 진화",
+      "personality": "생각이 깊어요",
+      "favoriteMode": "type",
+      "description": "바람 소리를 듣고 정확한 철자를 기록해요.",
+      "palette": [
+        "#a5f3fc",
+        "#0e7490",
+        "#ecfeff"
+      ],
+      "shape": "owl",
+      "prop": "scroll",
+      "image": "./assets/monsters/season2/cloud/breeze_owl_3.svg",
+      "hook": "생각할 때 두 날개를 책처럼 모아요.",
+      "source": "character-art.js#DRAW.breeze_owl",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ocean_bubble_fin_1",
+      "season": 2,
+      "worldId": "ocean",
+      "speciesId": "bubble_fin",
+      "evolutionStage": 1,
+      "name": "버블핀",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "첫 만남",
+      "personality": "밝고 씩씩해요",
+      "favoriteMode": "blank",
+      "description": "물방울 속에 새로운 단어를 담아 헤엄쳐요.",
+      "palette": [
+        "#22d3ee",
+        "#0e7490",
+        "#cffafe"
+      ],
+      "shape": "fish",
+      "prop": "bubble",
+      "image": "./assets/monsters/season2/ocean/bubble_fin_1.svg",
+      "hook": "기쁜 날에는 지느러미로 물결을 그려요.",
+      "source": "character-art.js#DRAW.bubble_fin",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ocean_bubble_fin_2",
+      "season": 2,
+      "worldId": "ocean",
+      "speciesId": "bubble_fin",
+      "evolutionStage": 2,
+      "name": "물결핀",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "성장",
+      "personality": "밝고 씩씩해요",
+      "favoriteMode": "blank",
+      "description": "물방울 속에 새로운 단어를 담아 헤엄쳐요.",
+      "palette": [
+        "#22d3ee",
+        "#0e7490",
+        "#cffafe"
+      ],
+      "shape": "fish",
+      "prop": "bubble",
+      "image": "./assets/monsters/season2/ocean/bubble_fin_2.svg",
+      "hook": "기쁜 날에는 지느러미로 물결을 그려요.",
+      "source": "character-art.js#DRAW.bubble_fin",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ocean_bubble_fin_3",
+      "season": 2,
+      "worldId": "ocean",
+      "speciesId": "bubble_fin",
+      "evolutionStage": 3,
+      "name": "바다날개",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "최종 진화",
+      "personality": "밝고 씩씩해요",
+      "favoriteMode": "blank",
+      "description": "물방울 속에 새로운 단어를 담아 헤엄쳐요.",
+      "palette": [
+        "#22d3ee",
+        "#0e7490",
+        "#cffafe"
+      ],
+      "shape": "fish",
+      "prop": "bubble",
+      "image": "./assets/monsters/season2/ocean/bubble_fin_3.svg",
+      "hook": "기쁜 날에는 지느러미로 물결을 그려요.",
+      "source": "character-art.js#DRAW.bubble_fin",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ocean_coral_otter_1",
+      "season": 2,
+      "worldId": "ocean",
+      "speciesId": "coral_otter",
+      "evolutionStage": 1,
+      "name": "조개달",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "첫 만남",
+      "personality": "친절하고 꼼꼼해요",
+      "favoriteMode": "choice",
+      "description": "조개껍데기에 뜻과 철자를 함께 새겨요.",
+      "palette": [
+        "#fdba74",
+        "#9a3412",
+        "#fff7ed"
+      ],
+      "shape": "otter",
+      "prop": "shell",
+      "image": "./assets/monsters/season2/ocean/coral_otter_1.svg",
+      "hook": "마음에 드는 조개를 꼭 안고 다녀요.",
+      "source": "character-art.js#DRAW.coral_otter",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ocean_coral_otter_2",
+      "season": 2,
+      "worldId": "ocean",
+      "speciesId": "coral_otter",
+      "evolutionStage": 2,
+      "name": "산호달",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "성장",
+      "personality": "친절하고 꼼꼼해요",
+      "favoriteMode": "choice",
+      "description": "조개껍데기에 뜻과 철자를 함께 새겨요.",
+      "palette": [
+        "#fdba74",
+        "#9a3412",
+        "#fff7ed"
+      ],
+      "shape": "otter",
+      "prop": "shell",
+      "image": "./assets/monsters/season2/ocean/coral_otter_2.svg",
+      "hook": "마음에 드는 조개를 꼭 안고 다녀요.",
+      "source": "character-art.js#DRAW.coral_otter",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ocean_coral_otter_3",
+      "season": 2,
+      "worldId": "ocean",
+      "speciesId": "coral_otter",
+      "evolutionStage": 3,
+      "name": "물빛현자",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "최종 진화",
+      "personality": "친절하고 꼼꼼해요",
+      "favoriteMode": "choice",
+      "description": "조개껍데기에 뜻과 철자를 함께 새겨요.",
+      "palette": [
+        "#fdba74",
+        "#9a3412",
+        "#fff7ed"
+      ],
+      "shape": "otter",
+      "prop": "shell",
+      "image": "./assets/monsters/season2/ocean/coral_otter_3.svg",
+      "hook": "마음에 드는 조개를 꼭 안고 다녀요.",
+      "source": "character-art.js#DRAW.coral_otter",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_dinosaur_sprout_rex_1",
+      "season": 2,
+      "worldId": "dinosaur",
+      "speciesId": "sprout_rex",
+      "evolutionStage": 1,
+      "name": "새싹렉스",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "첫 만남",
+      "personality": "용감하고 끈기 있어요",
+      "favoriteMode": "type",
+      "description": "긴 단어도 한 글자씩 끝까지 따라가요.",
+      "palette": [
+        "#84cc16",
+        "#365314",
+        "#ecfccb"
+      ],
+      "shape": "trex",
+      "prop": "leaf",
+      "image": "./assets/monsters/season2/dinosaur/sprout_rex_1.svg",
+      "hook": "한 걸음마다 머리의 새싹이 살랑거려요.",
+      "source": "character-art.js#DRAW.sprout_rex",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_dinosaur_sprout_rex_2",
+      "season": 2,
+      "worldId": "dinosaur",
+      "speciesId": "sprout_rex",
+      "evolutionStage": 2,
+      "name": "숲길렉스",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "성장",
+      "personality": "용감하고 끈기 있어요",
+      "favoriteMode": "type",
+      "description": "긴 단어도 한 글자씩 끝까지 따라가요.",
+      "palette": [
+        "#84cc16",
+        "#365314",
+        "#ecfccb"
+      ],
+      "shape": "trex",
+      "prop": "leaf",
+      "image": "./assets/monsters/season2/dinosaur/sprout_rex_2.svg",
+      "hook": "한 걸음마다 머리의 새싹이 살랑거려요.",
+      "source": "character-art.js#DRAW.sprout_rex",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_dinosaur_sprout_rex_3",
+      "season": 2,
+      "worldId": "dinosaur",
+      "speciesId": "sprout_rex",
+      "evolutionStage": 3,
+      "name": "숲왕렉스",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "최종 진화",
+      "personality": "용감하고 끈기 있어요",
+      "favoriteMode": "type",
+      "description": "긴 단어도 한 글자씩 끝까지 따라가요.",
+      "palette": [
+        "#84cc16",
+        "#365314",
+        "#ecfccb"
+      ],
+      "shape": "trex",
+      "prop": "leaf",
+      "image": "./assets/monsters/season2/dinosaur/sprout_rex_3.svg",
+      "hook": "한 걸음마다 머리의 새싹이 살랑거려요.",
+      "source": "character-art.js#DRAW.sprout_rex",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_dinosaur_stone_trike_1",
+      "season": 2,
+      "worldId": "dinosaur",
+      "speciesId": "stone_trike",
+      "evolutionStage": 1,
+      "name": "콩뿔",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "첫 만남",
+      "personality": "묵묵하고 믿음직해요",
+      "favoriteMode": "block",
+      "description": "세 개의 뿔로 글자 블록을 제자리에 밀어요.",
+      "palette": [
+        "#a3e635",
+        "#3f6212",
+        "#f7fee7"
+      ],
+      "shape": "trike",
+      "prop": "rune",
+      "image": "./assets/monsters/season2/dinosaur/stone_trike_1.svg",
+      "hook": "돌길에서 가장 튼튼한 자리를 찾아줘요.",
+      "source": "character-art.js#DRAW.stone_trike",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_dinosaur_stone_trike_2",
+      "season": 2,
+      "worldId": "dinosaur",
+      "speciesId": "stone_trike",
+      "evolutionStage": 2,
+      "name": "돌빛뿔",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "성장",
+      "personality": "묵묵하고 믿음직해요",
+      "favoriteMode": "block",
+      "description": "세 개의 뿔로 글자 블록을 제자리에 밀어요.",
+      "palette": [
+        "#a3e635",
+        "#3f6212",
+        "#f7fee7"
+      ],
+      "shape": "trike",
+      "prop": "rune",
+      "image": "./assets/monsters/season2/dinosaur/stone_trike_2.svg",
+      "hook": "돌길에서 가장 튼튼한 자리를 찾아줘요.",
+      "source": "character-art.js#DRAW.stone_trike",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_dinosaur_stone_trike_3",
+      "season": 2,
+      "worldId": "dinosaur",
+      "speciesId": "stone_trike",
+      "evolutionStage": 3,
+      "name": "산맥뿔",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "최종 진화",
+      "personality": "묵묵하고 믿음직해요",
+      "favoriteMode": "block",
+      "description": "세 개의 뿔로 글자 블록을 제자리에 밀어요.",
+      "palette": [
+        "#a3e635",
+        "#3f6212",
+        "#f7fee7"
+      ],
+      "shape": "trike",
+      "prop": "rune",
+      "image": "./assets/monsters/season2/dinosaur/stone_trike_3.svg",
+      "hook": "돌길에서 가장 튼튼한 자리를 찾아줘요.",
+      "source": "character-art.js#DRAW.stone_trike",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_magic_rune_cat_1",
+      "season": 2,
+      "worldId": "magic",
+      "speciesId": "rune_cat",
+      "evolutionStage": 1,
+      "name": "룬냥",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "첫 만남",
+      "personality": "장난스럽고 영리해요",
+      "favoriteMode": "blank",
+      "description": "빈칸에 꼭 맞는 룬 문자를 찾아내요.",
+      "palette": [
+        "#c4b5fd",
+        "#6d28d9",
+        "#faf5ff"
+      ],
+      "shape": "cat",
+      "prop": "wand",
+      "image": "./assets/monsters/season2/magic/rune_cat_1.svg",
+      "hook": "빈칸을 보면 꼬리부터 동그랗게 말아요.",
+      "source": "character-art.js#DRAW.rune_cat",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_magic_rune_cat_2",
+      "season": 2,
+      "worldId": "magic",
+      "speciesId": "rune_cat",
+      "evolutionStage": 2,
+      "name": "마법냥",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "성장",
+      "personality": "장난스럽고 영리해요",
+      "favoriteMode": "blank",
+      "description": "빈칸에 꼭 맞는 룬 문자를 찾아내요.",
+      "palette": [
+        "#c4b5fd",
+        "#6d28d9",
+        "#faf5ff"
+      ],
+      "shape": "cat",
+      "prop": "wand",
+      "image": "./assets/monsters/season2/magic/rune_cat_2.svg",
+      "hook": "빈칸을 보면 꼬리부터 동그랗게 말아요.",
+      "source": "character-art.js#DRAW.rune_cat",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_magic_rune_cat_3",
+      "season": 2,
+      "worldId": "magic",
+      "speciesId": "rune_cat",
+      "evolutionStage": 3,
+      "name": "별룬냥",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "최종 진화",
+      "personality": "장난스럽고 영리해요",
+      "favoriteMode": "blank",
+      "description": "빈칸에 꼭 맞는 룬 문자를 찾아내요.",
+      "palette": [
+        "#c4b5fd",
+        "#6d28d9",
+        "#faf5ff"
+      ],
+      "shape": "cat",
+      "prop": "wand",
+      "image": "./assets/monsters/season2/magic/rune_cat_3.svg",
+      "hook": "빈칸을 보면 꼬리부터 동그랗게 말아요.",
+      "source": "character-art.js#DRAW.rune_cat",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_magic_page_golem_1",
+      "season": 2,
+      "worldId": "magic",
+      "speciesId": "page_golem",
+      "evolutionStage": 1,
+      "name": "책콩",
+      "rarity": "legend",
+      "rarityLabel": "전설",
+      "stageLabel": "첫 만남",
+      "personality": "말수는 적지만 박식해요",
+      "favoriteMode": "type",
+      "description": "공부한 단어가 쌓일수록 책장이 갑옷으로 변해요.",
+      "palette": [
+        "#fef3c7",
+        "#92400e",
+        "#fffbeb"
+      ],
+      "shape": "book",
+      "prop": "quill",
+      "image": "./assets/monsters/season2/magic/page_golem_1.svg",
+      "hook": "새로 알게 된 말은 책갈피로 표시해요.",
+      "source": "character-art.js#DRAW.page_golem",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_magic_page_golem_2",
+      "season": 2,
+      "worldId": "magic",
+      "speciesId": "page_golem",
+      "evolutionStage": 2,
+      "name": "책걸음",
+      "rarity": "legend",
+      "rarityLabel": "전설",
+      "stageLabel": "성장",
+      "personality": "말수는 적지만 박식해요",
+      "favoriteMode": "type",
+      "description": "공부한 단어가 쌓일수록 책장이 갑옷으로 변해요.",
+      "palette": [
+        "#fef3c7",
+        "#92400e",
+        "#fffbeb"
+      ],
+      "shape": "book",
+      "prop": "quill",
+      "image": "./assets/monsters/season2/magic/page_golem_2.svg",
+      "hook": "새로 알게 된 말은 책갈피로 표시해요.",
+      "source": "character-art.js#DRAW.page_golem",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_magic_page_golem_3",
+      "season": 2,
+      "worldId": "magic",
+      "speciesId": "page_golem",
+      "evolutionStage": 3,
+      "name": "큰책현자",
+      "rarity": "legend",
+      "rarityLabel": "전설",
+      "stageLabel": "최종 진화",
+      "personality": "말수는 적지만 박식해요",
+      "favoriteMode": "type",
+      "description": "공부한 단어가 쌓일수록 책장이 갑옷으로 변해요.",
+      "palette": [
+        "#fef3c7",
+        "#92400e",
+        "#fffbeb"
+      ],
+      "shape": "book",
+      "prop": "quill",
+      "image": "./assets/monsters/season2/magic/page_golem_3.svg",
+      "hook": "새로 알게 된 말은 책갈피로 표시해요.",
+      "source": "character-art.js#DRAW.page_golem",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_robot_gear_bot_1",
+      "season": 2,
+      "worldId": "robot",
+      "speciesId": "gear_bot",
+      "evolutionStage": 1,
+      "name": "톱니봇",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "첫 만남",
+      "personality": "정확하고 성실해요",
+      "favoriteMode": "type",
+      "description": "철자를 정확히 입력할 때마다 회로가 반짝여요.",
+      "palette": [
+        "#94a3b8",
+        "#334155",
+        "#e2e8f0"
+      ],
+      "shape": "robot",
+      "prop": "gear",
+      "image": "./assets/monsters/season2/robot/gear_bot_1.svg",
+      "hook": "생각을 마치면 작은 화면에 미소가 떠요.",
+      "source": "character-art.js#DRAW.gear_bot",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_robot_gear_bot_2",
+      "season": 2,
+      "worldId": "robot",
+      "speciesId": "gear_bot",
+      "evolutionStage": 2,
+      "name": "척척봇",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "성장",
+      "personality": "정확하고 성실해요",
+      "favoriteMode": "type",
+      "description": "철자를 정확히 입력할 때마다 회로가 반짝여요.",
+      "palette": [
+        "#94a3b8",
+        "#334155",
+        "#e2e8f0"
+      ],
+      "shape": "robot",
+      "prop": "gear",
+      "image": "./assets/monsters/season2/robot/gear_bot_2.svg",
+      "hook": "생각을 마치면 작은 화면에 미소가 떠요.",
+      "source": "character-art.js#DRAW.gear_bot",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_robot_gear_bot_3",
+      "season": 2,
+      "worldId": "robot",
+      "speciesId": "gear_bot",
+      "evolutionStage": 3,
+      "name": "든든기어",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "최종 진화",
+      "personality": "정확하고 성실해요",
+      "favoriteMode": "type",
+      "description": "철자를 정확히 입력할 때마다 회로가 반짝여요.",
+      "palette": [
+        "#94a3b8",
+        "#334155",
+        "#e2e8f0"
+      ],
+      "shape": "robot",
+      "prop": "gear",
+      "image": "./assets/monsters/season2/robot/gear_bot_3.svg",
+      "hook": "생각을 마치면 작은 화면에 미소가 떠요.",
+      "source": "character-art.js#DRAW.gear_bot",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_robot_drill_mole_1",
+      "season": 2,
+      "worldId": "robot",
+      "speciesId": "drill_mole",
+      "evolutionStage": 1,
+      "name": "볼트두더",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "첫 만남",
+      "personality": "집중력이 강해요",
+      "favoriteMode": "block",
+      "description": "헷갈리는 철자 아래를 파고들어 차이를 찾아요.",
+      "palette": [
+        "#fbbf24",
+        "#78350f",
+        "#fef3c7"
+      ],
+      "shape": "mole",
+      "prop": "drill",
+      "image": "./assets/monsters/season2/robot/drill_mole_1.svg",
+      "hook": "길을 찾기 전에 헬멧을 꼭 고쳐 써요.",
+      "source": "character-art.js#DRAW.drill_mole",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_robot_drill_mole_2",
+      "season": 2,
+      "worldId": "robot",
+      "speciesId": "drill_mole",
+      "evolutionStage": 2,
+      "name": "굴착두더",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "성장",
+      "personality": "집중력이 강해요",
+      "favoriteMode": "block",
+      "description": "헷갈리는 철자 아래를 파고들어 차이를 찾아요.",
+      "palette": [
+        "#fbbf24",
+        "#78350f",
+        "#fef3c7"
+      ],
+      "shape": "mole",
+      "prop": "drill",
+      "image": "./assets/monsters/season2/robot/drill_mole_2.svg",
+      "hook": "길을 찾기 전에 헬멧을 꼭 고쳐 써요.",
+      "source": "character-art.js#DRAW.drill_mole",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_robot_drill_mole_3",
+      "season": 2,
+      "worldId": "robot",
+      "speciesId": "drill_mole",
+      "evolutionStage": 3,
+      "name": "땅속대장",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "최종 진화",
+      "personality": "집중력이 강해요",
+      "favoriteMode": "block",
+      "description": "헷갈리는 철자 아래를 파고들어 차이를 찾아요.",
+      "palette": [
+        "#fbbf24",
+        "#78350f",
+        "#fef3c7"
+      ],
+      "shape": "mole",
+      "prop": "drill",
+      "image": "./assets/monsters/season2/robot/drill_mole_3.svg",
+      "hook": "길을 찾기 전에 헬멧을 꼭 고쳐 써요.",
+      "source": "character-art.js#DRAW.drill_mole",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_space_orbit_bunny_1",
+      "season": 2,
+      "worldId": "space",
+      "speciesId": "orbit_bunny",
+      "evolutionStage": 1,
+      "name": "별토끼",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "첫 만남",
+      "personality": "상상력이 풍부해요",
+      "favoriteMode": "choice",
+      "description": "카테고리 사이를 궤도처럼 오가며 단어를 모아요.",
+      "palette": [
+        "#a5b4fc",
+        "#3730a3",
+        "#eef2ff"
+      ],
+      "shape": "rabbit",
+      "prop": "planet",
+      "image": "./assets/monsters/season2/space/orbit_bunny_1.svg",
+      "hook": "먼 별을 보려고 두 귀를 쫑긋 세워요.",
+      "source": "character-art.js#DRAW.orbit_bunny",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_space_orbit_bunny_2",
+      "season": 2,
+      "worldId": "space",
+      "speciesId": "orbit_bunny",
+      "evolutionStage": 2,
+      "name": "궤도토끼",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "성장",
+      "personality": "상상력이 풍부해요",
+      "favoriteMode": "choice",
+      "description": "카테고리 사이를 궤도처럼 오가며 단어를 모아요.",
+      "palette": [
+        "#a5b4fc",
+        "#3730a3",
+        "#eef2ff"
+      ],
+      "shape": "rabbit",
+      "prop": "planet",
+      "image": "./assets/monsters/season2/space/orbit_bunny_2.svg",
+      "hook": "먼 별을 보려고 두 귀를 쫑긋 세워요.",
+      "source": "character-art.js#DRAW.orbit_bunny",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_space_orbit_bunny_3",
+      "season": 2,
+      "worldId": "space",
+      "speciesId": "orbit_bunny",
+      "evolutionStage": 3,
+      "name": "은하토끼",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "최종 진화",
+      "personality": "상상력이 풍부해요",
+      "favoriteMode": "choice",
+      "description": "카테고리 사이를 궤도처럼 오가며 단어를 모아요.",
+      "palette": [
+        "#a5b4fc",
+        "#3730a3",
+        "#eef2ff"
+      ],
+      "shape": "rabbit",
+      "prop": "planet",
+      "image": "./assets/monsters/season2/space/orbit_bunny_3.svg",
+      "hook": "먼 별을 보려고 두 귀를 쫑긋 세워요.",
+      "source": "character-art.js#DRAW.orbit_bunny",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_space_comet_hound_1",
+      "season": 2,
+      "worldId": "space",
+      "speciesId": "comet_hound",
+      "evolutionStage": 1,
+      "name": "꼬리별멍",
+      "rarity": "legend",
+      "rarityLabel": "전설",
+      "stageLabel": "첫 만남",
+      "personality": "활기차고 충성스러워요",
+      "favoriteMode": "type",
+      "description": "정답 콤보가 이어지면 혜성 꼬리가 길어져요.",
+      "palette": [
+        "#818cf8",
+        "#312e81",
+        "#fef08a"
+      ],
+      "shape": "hound",
+      "prop": "comet",
+      "image": "./assets/monsters/season2/space/comet_hound_1.svg",
+      "hook": "친구가 멈추면 먼저 돌아와 기다려요.",
+      "source": "character-art.js#DRAW.comet_hound",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_space_comet_hound_2",
+      "season": 2,
+      "worldId": "space",
+      "speciesId": "comet_hound",
+      "evolutionStage": 2,
+      "name": "혜성멍",
+      "rarity": "legend",
+      "rarityLabel": "전설",
+      "stageLabel": "성장",
+      "personality": "활기차고 충성스러워요",
+      "favoriteMode": "type",
+      "description": "정답 콤보가 이어지면 혜성 꼬리가 길어져요.",
+      "palette": [
+        "#818cf8",
+        "#312e81",
+        "#fef08a"
+      ],
+      "shape": "hound",
+      "prop": "comet",
+      "image": "./assets/monsters/season2/space/comet_hound_2.svg",
+      "hook": "친구가 멈추면 먼저 돌아와 기다려요.",
+      "source": "character-art.js#DRAW.comet_hound",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_space_comet_hound_3",
+      "season": 2,
+      "worldId": "space",
+      "speciesId": "comet_hound",
+      "evolutionStage": 3,
+      "name": "별길수호멍",
+      "rarity": "legend",
+      "rarityLabel": "전설",
+      "stageLabel": "최종 진화",
+      "personality": "활기차고 충성스러워요",
+      "favoriteMode": "type",
+      "description": "정답 콤보가 이어지면 혜성 꼬리가 길어져요.",
+      "palette": [
+        "#818cf8",
+        "#312e81",
+        "#fef08a"
+      ],
+      "shape": "hound",
+      "prop": "comet",
+      "image": "./assets/monsters/season2/space/comet_hound_3.svg",
+      "hook": "친구가 멈추면 먼저 돌아와 기다려요.",
+      "source": "character-art.js#DRAW.comet_hound",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ice_frost_seal_1",
+      "season": 2,
+      "worldId": "ice",
+      "speciesId": "frost_seal",
+      "evolutionStage": 1,
+      "name": "눈송이물범",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "첫 만남",
+      "personality": "느긋하고 다정해요",
+      "favoriteMode": "blank",
+      "description": "며칠 뒤 기억한 단어를 얼음별로 보관해요.",
+      "palette": [
+        "#e0f2fe",
+        "#0369a1",
+        "#ffffff"
+      ],
+      "shape": "seal",
+      "prop": "snowflake",
+      "image": "./assets/monsters/season2/ice/frost_seal_1.svg",
+      "hook": "눈송이를 코끝에 올려놓고 놀아요.",
+      "source": "character-art.js#DRAW.frost_seal",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ice_frost_seal_2",
+      "season": 2,
+      "worldId": "ice",
+      "speciesId": "frost_seal",
+      "evolutionStage": 2,
+      "name": "눈바람물범",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "성장",
+      "personality": "느긋하고 다정해요",
+      "favoriteMode": "blank",
+      "description": "며칠 뒤 기억한 단어를 얼음별로 보관해요.",
+      "palette": [
+        "#e0f2fe",
+        "#0369a1",
+        "#ffffff"
+      ],
+      "shape": "seal",
+      "prop": "snowflake",
+      "image": "./assets/monsters/season2/ice/frost_seal_2.svg",
+      "hook": "눈송이를 코끝에 올려놓고 놀아요.",
+      "source": "character-art.js#DRAW.frost_seal",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ice_frost_seal_3",
+      "season": 2,
+      "worldId": "ice",
+      "speciesId": "frost_seal",
+      "evolutionStage": 3,
+      "name": "오로라코",
+      "rarity": "common",
+      "rarityLabel": "일반",
+      "stageLabel": "최종 진화",
+      "personality": "느긋하고 다정해요",
+      "favoriteMode": "blank",
+      "description": "며칠 뒤 기억한 단어를 얼음별로 보관해요.",
+      "palette": [
+        "#e0f2fe",
+        "#0369a1",
+        "#ffffff"
+      ],
+      "shape": "seal",
+      "prop": "snowflake",
+      "image": "./assets/monsters/season2/ice/frost_seal_3.svg",
+      "hook": "눈송이를 코끝에 올려놓고 놀아요.",
+      "source": "character-art.js#DRAW.frost_seal",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ice_glacier_yak_1",
+      "season": 2,
+      "worldId": "ice",
+      "speciesId": "glacier_yak",
+      "evolutionStage": 1,
+      "name": "솜뿔",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "첫 만남",
+      "personality": "참을성이 많아요",
+      "favoriteMode": "type",
+      "description": "천천히 반복해도 끝까지 기억을 지켜줘요.",
+      "palette": [
+        "#bae6fd",
+        "#075985",
+        "#f8fafc"
+      ],
+      "shape": "yak",
+      "prop": "ice",
+      "image": "./assets/monsters/season2/ice/glacier_yak_1.svg",
+      "hook": "찬바람이 불면 친구 곁을 지켜줘요.",
+      "source": "character-art.js#DRAW.glacier_yak",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ice_glacier_yak_2",
+      "season": 2,
+      "worldId": "ice",
+      "speciesId": "glacier_yak",
+      "evolutionStage": 2,
+      "name": "빙하솜뿔",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "성장",
+      "personality": "참을성이 많아요",
+      "favoriteMode": "type",
+      "description": "천천히 반복해도 끝까지 기억을 지켜줘요.",
+      "palette": [
+        "#bae6fd",
+        "#075985",
+        "#f8fafc"
+      ],
+      "shape": "yak",
+      "prop": "ice",
+      "image": "./assets/monsters/season2/ice/glacier_yak_2.svg",
+      "hook": "찬바람이 불면 친구 곁을 지켜줘요.",
+      "source": "character-art.js#DRAW.glacier_yak",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ice_glacier_yak_3",
+      "season": 2,
+      "worldId": "ice",
+      "speciesId": "glacier_yak",
+      "evolutionStage": 3,
+      "name": "눈산지킴이",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "최종 진화",
+      "personality": "참을성이 많아요",
+      "favoriteMode": "type",
+      "description": "천천히 반복해도 끝까지 기억을 지켜줘요.",
+      "palette": [
+        "#bae6fd",
+        "#075985",
+        "#f8fafc"
+      ],
+      "shape": "yak",
+      "prop": "ice",
+      "image": "./assets/monsters/season2/ice/glacier_yak_3.svg",
+      "hook": "찬바람이 불면 친구 곁을 지켜줘요.",
+      "source": "character-art.js#DRAW.glacier_yak",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_jungle_ruin_gecko_1",
+      "season": 2,
+      "worldId": "jungle",
+      "speciesId": "ruin_gecko",
+      "evolutionStage": 1,
+      "name": "이끼도마",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "첫 만남",
+      "personality": "관찰력이 뛰어나요",
+      "favoriteMode": "block",
+      "description": "틀렸던 철자 흔적을 벽화에서 다시 찾아요.",
+      "palette": [
+        "#4ade80",
+        "#166534",
+        "#f0fdf4"
+      ],
+      "shape": "gecko",
+      "prop": "idol",
+      "image": "./assets/monsters/season2/jungle/ruin_gecko_1.svg",
+      "hook": "벽화의 작은 무늬까지 찬찬히 살펴요.",
+      "source": "character-art.js#DRAW.ruin_gecko",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_jungle_ruin_gecko_2",
+      "season": 2,
+      "worldId": "jungle",
+      "speciesId": "ruin_gecko",
+      "evolutionStage": 2,
+      "name": "유적도마",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "성장",
+      "personality": "관찰력이 뛰어나요",
+      "favoriteMode": "block",
+      "description": "틀렸던 철자 흔적을 벽화에서 다시 찾아요.",
+      "palette": [
+        "#4ade80",
+        "#166534",
+        "#f0fdf4"
+      ],
+      "shape": "gecko",
+      "prop": "idol",
+      "image": "./assets/monsters/season2/jungle/ruin_gecko_2.svg",
+      "hook": "벽화의 작은 무늬까지 찬찬히 살펴요.",
+      "source": "character-art.js#DRAW.ruin_gecko",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_jungle_ruin_gecko_3",
+      "season": 2,
+      "worldId": "jungle",
+      "speciesId": "ruin_gecko",
+      "evolutionStage": 3,
+      "name": "숲돌수호자",
+      "rarity": "rare",
+      "rarityLabel": "희귀",
+      "stageLabel": "최종 진화",
+      "personality": "관찰력이 뛰어나요",
+      "favoriteMode": "block",
+      "description": "틀렸던 철자 흔적을 벽화에서 다시 찾아요.",
+      "palette": [
+        "#4ade80",
+        "#166534",
+        "#f0fdf4"
+      ],
+      "shape": "gecko",
+      "prop": "idol",
+      "image": "./assets/monsters/season2/jungle/ruin_gecko_3.svg",
+      "hook": "벽화의 작은 무늬까지 찬찬히 살펴요.",
+      "source": "character-art.js#DRAW.ruin_gecko",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ghost_whisper_ghost_1",
+      "season": 2,
+      "worldId": "ghost",
+      "speciesId": "whisper_ghost",
+      "evolutionStage": 1,
+      "name": "소곤유령",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "첫 만남",
+      "personality": "조용하지만 응원을 잘해요",
+      "favoriteMode": "choice",
+      "description": "오래된 오답 노트에서 다시 볼 단어를 꺼내줘요.",
+      "palette": [
+        "#ddd6fe",
+        "#5b21b6",
+        "#faf5ff"
+      ],
+      "shape": "ghost",
+      "prop": "book",
+      "image": "./assets/monsters/season2/ghost/whisper_ghost_1.svg",
+      "hook": "큰 소리 대신 작은 책갈피로 응원해요.",
+      "source": "character-art.js#DRAW.whisper_ghost",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ghost_whisper_ghost_2",
+      "season": 2,
+      "worldId": "ghost",
+      "speciesId": "whisper_ghost",
+      "evolutionStage": 2,
+      "name": "책장소곤",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "성장",
+      "personality": "조용하지만 응원을 잘해요",
+      "favoriteMode": "choice",
+      "description": "오래된 오답 노트에서 다시 볼 단어를 꺼내줘요.",
+      "palette": [
+        "#ddd6fe",
+        "#5b21b6",
+        "#faf5ff"
+      ],
+      "shape": "ghost",
+      "prop": "book",
+      "image": "./assets/monsters/season2/ghost/whisper_ghost_2.svg",
+      "hook": "큰 소리 대신 작은 책갈피로 응원해요.",
+      "source": "character-art.js#DRAW.whisper_ghost",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_ghost_whisper_ghost_3",
+      "season": 2,
+      "worldId": "ghost",
+      "speciesId": "whisper_ghost",
+      "evolutionStage": 3,
+      "name": "기억지기",
+      "rarity": "hero",
+      "rarityLabel": "영웅",
+      "stageLabel": "최종 진화",
+      "personality": "조용하지만 응원을 잘해요",
+      "favoriteMode": "choice",
+      "description": "오래된 오답 노트에서 다시 볼 단어를 꺼내줘요.",
+      "palette": [
+        "#ddd6fe",
+        "#5b21b6",
+        "#faf5ff"
+      ],
+      "shape": "ghost",
+      "prop": "book",
+      "image": "./assets/monsters/season2/ghost/whisper_ghost_3.svg",
+      "hook": "큰 소리 대신 작은 책갈피로 응원해요.",
+      "source": "character-art.js#DRAW.whisper_ghost",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_dragon_ember_drake_1",
+      "season": 2,
+      "worldId": "dragon",
+      "speciesId": "ember_drake",
+      "evolutionStage": 1,
+      "name": "불씨용",
+      "rarity": "legend",
+      "rarityLabel": "전설",
+      "stageLabel": "첫 만남",
+      "personality": "도전을 즐겨요",
+      "favoriteMode": "boss",
+      "description": "보스의 방패를 하나씩 깨며 거대한 날개를 펼쳐요.",
+      "palette": [
+        "#fb7185",
+        "#991b1b",
+        "#ffedd5"
+      ],
+      "shape": "dragon",
+      "prop": "flame",
+      "image": "./assets/monsters/season2/dragon/ember_drake_1.svg",
+      "hook": "처음 가는 길에서는 날개를 활짝 펴요.",
+      "source": "character-art.js#DRAW.ember_drake",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_dragon_ember_drake_2",
+      "season": 2,
+      "worldId": "dragon",
+      "speciesId": "ember_drake",
+      "evolutionStage": 2,
+      "name": "날갯불용",
+      "rarity": "legend",
+      "rarityLabel": "전설",
+      "stageLabel": "성장",
+      "personality": "도전을 즐겨요",
+      "favoriteMode": "boss",
+      "description": "보스의 방패를 하나씩 깨며 거대한 날개를 펼쳐요.",
+      "palette": [
+        "#fb7185",
+        "#991b1b",
+        "#ffedd5"
+      ],
+      "shape": "dragon",
+      "prop": "flame",
+      "image": "./assets/monsters/season2/dragon/ember_drake_2.svg",
+      "hook": "처음 가는 길에서는 날개를 활짝 펴요.",
+      "source": "character-art.js#DRAW.ember_drake",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_dragon_ember_drake_3",
+      "season": 2,
+      "worldId": "dragon",
+      "speciesId": "ember_drake",
+      "evolutionStage": 3,
+      "name": "화산날개",
+      "rarity": "legend",
+      "rarityLabel": "전설",
+      "stageLabel": "최종 진화",
+      "personality": "도전을 즐겨요",
+      "favoriteMode": "boss",
+      "description": "보스의 방패를 하나씩 깨며 거대한 날개를 펼쳐요.",
+      "palette": [
+        "#fb7185",
+        "#991b1b",
+        "#ffedd5"
+      ],
+      "shape": "dragon",
+      "prop": "flame",
+      "image": "./assets/monsters/season2/dragon/ember_drake_3.svg",
+      "hook": "처음 가는 길에서는 날개를 활짝 펴요.",
+      "source": "character-art.js#DRAW.ember_drake",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_star_crown_deer_1",
+      "season": 2,
+      "worldId": "star",
+      "speciesId": "crown_deer",
+      "evolutionStage": 1,
+      "name": "별사슴",
+      "rarity": "legend",
+      "rarityLabel": "전설",
+      "stageLabel": "첫 만남",
+      "personality": "우아하고 따뜻해요",
+      "favoriteMode": "type",
+      "description": "완전히 기억한 단어가 별자리 왕관으로 이어져요.",
+      "palette": [
+        "#fde68a",
+        "#a16207",
+        "#fffbeb"
+      ],
+      "shape": "deer",
+      "prop": "star",
+      "image": "./assets/monsters/season2/star/crown_deer_1.svg",
+      "hook": "별이 뜨면 조용히 고개를 들어 인사해요.",
+      "source": "character-art.js#DRAW.crown_deer",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_star_crown_deer_2",
+      "season": 2,
+      "worldId": "star",
+      "speciesId": "crown_deer",
+      "evolutionStage": 2,
+      "name": "별빛사슴",
+      "rarity": "legend",
+      "rarityLabel": "전설",
+      "stageLabel": "성장",
+      "personality": "우아하고 따뜻해요",
+      "favoriteMode": "type",
+      "description": "완전히 기억한 단어가 별자리 왕관으로 이어져요.",
+      "palette": [
+        "#fde68a",
+        "#a16207",
+        "#fffbeb"
+      ],
+      "shape": "deer",
+      "prop": "star",
+      "image": "./assets/monsters/season2/star/crown_deer_2.svg",
+      "hook": "별이 뜨면 조용히 고개를 들어 인사해요.",
+      "source": "character-art.js#DRAW.crown_deer",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    },
+    {
+      "id": "s2_star_crown_deer_3",
+      "season": 2,
+      "worldId": "star",
+      "speciesId": "crown_deer",
+      "evolutionStage": 3,
+      "name": "별왕관사슴",
+      "rarity": "legend",
+      "rarityLabel": "전설",
+      "stageLabel": "최종 진화",
+      "personality": "우아하고 따뜻해요",
+      "favoriteMode": "type",
+      "description": "완전히 기억한 단어가 별자리 왕관으로 이어져요.",
+      "palette": [
+        "#fde68a",
+        "#a16207",
+        "#fffbeb"
+      ],
+      "shape": "deer",
+      "prop": "star",
+      "image": "./assets/monsters/season2/star/crown_deer_3.svg",
+      "hook": "별이 뜨면 조용히 고개를 들어 인사해요.",
+      "source": "character-art.js#DRAW.crown_deer",
+      "renderer": "renderMonsterSvg → renderCharacterArt",
+      "surfaces": [
+        "home partner",
+        "collection",
+        "detail",
+        "evolution",
+        "study partner",
+        "stage result",
+        "unlock"
+      ],
+      "fields": [
+        "season2Collection",
+        "partnerId",
+        "monsterAffinity",
+        "evolutionMaterials"
+      ]
+    }
+  ],
+  "avatar": [
+    {
+      "id": "background_studio_01",
+      "slot": "background",
+      "name": "핑크 스튜디오",
+      "cost": 0,
+      "rarity": "basic",
+      "color": "#ffe4f2",
+      "accent": "#dbeafe",
+      "icon": "🎀",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/background_studio_01.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "background_sky_02",
+      "slot": "background",
+      "name": "구름 하늘",
+      "cost": 220,
+      "rarity": "basic",
+      "color": "#dbeafe",
+      "accent": "#bfdbfe",
+      "icon": "☁️",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/background_sky_02.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "background_cookie_03",
+      "slot": "background",
+      "name": "쿠키 무대",
+      "cost": 360,
+      "rarity": "rare",
+      "color": "#fef3c7",
+      "accent": "#fed7aa",
+      "icon": "🍪",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/background_cookie_03.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "background_rainbow_04",
+      "slot": "background",
+      "name": "무지개 쇼룸",
+      "cost": 640,
+      "rarity": "epic",
+      "color": "#fbcfe8",
+      "accent": "#c4b5fd",
+      "icon": "🌈",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/background_rainbow_04.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "body_basic_01",
+      "slot": "body",
+      "name": "기본 바디",
+      "cost": 0,
+      "rarity": "basic",
+      "src": "./assets/avatar/body/body01.svg",
+      "color": "#ffd7b5",
+      "accent": "#fb7185",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/body_basic_01.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "body_peach_02",
+      "slot": "body",
+      "name": "피치 바디",
+      "cost": 120,
+      "rarity": "basic",
+      "src": "./assets/avatar/body/body02.svg",
+      "color": "#ffc9a9",
+      "accent": "#f472b6",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/body_peach_02.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "body_honey_03",
+      "slot": "body",
+      "name": "허니 바디",
+      "cost": 160,
+      "rarity": "basic",
+      "src": "./assets/avatar/body/body03.svg",
+      "color": "#f6c58f",
+      "accent": "#fb923c",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/body_honey_03.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "body_mocha_04",
+      "slot": "body",
+      "name": "모카 바디",
+      "cost": 180,
+      "rarity": "rare",
+      "src": "./assets/avatar/body/body04.svg",
+      "color": "#b87952",
+      "accent": "#f59e0b",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/body_mocha_04.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "body_lavender_05",
+      "slot": "body",
+      "name": "라벤더 판타지 바디",
+      "cost": 420,
+      "rarity": "epic",
+      "src": "./assets/avatar/body/body05.svg",
+      "color": "#ddd6fe",
+      "accent": "#a78bfa",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/body_lavender_05.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "face_round_01",
+      "slot": "face",
+      "name": "방긋 얼굴",
+      "cost": 0,
+      "rarity": "basic",
+      "src": "./assets/avatar/face/face01.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/face_round_01.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "face_smile_02",
+      "slot": "face",
+      "name": "반짝 미소",
+      "cost": 180,
+      "rarity": "basic",
+      "src": "./assets/avatar/face/face02.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/face_smile_02.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "face_wink_03",
+      "slot": "face",
+      "name": "윙크 얼굴",
+      "cost": 260,
+      "rarity": "rare",
+      "src": "./assets/avatar/face/face03.svg",
+      "variant": "wink",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/face_wink_03.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "face_shy_04",
+      "slot": "face",
+      "name": "수줍은 볼",
+      "cost": 360,
+      "rarity": "rare",
+      "src": "./assets/avatar/face/face04.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/face_shy_04.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "face_sparkle_05",
+      "slot": "face",
+      "name": "프린세스 눈빛",
+      "cost": 520,
+      "rarity": "epic",
+      "src": "./assets/avatar/face/face05.svg",
+      "variant": "sparkle",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/face_sparkle_05.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "hair_basic_01",
+      "slot": "hair",
+      "name": "동글 앞머리",
+      "cost": 0,
+      "rarity": "basic",
+      "src": "./assets/avatar/hair/hair01.svg",
+      "color": "#6b3f22",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/hair_basic_01.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "hair_bob_02",
+      "slot": "hair",
+      "name": "보송 단발",
+      "cost": 220,
+      "rarity": "basic",
+      "src": "./assets/avatar/hair/hair02.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/hair_bob_02.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "hair_twintail_03",
+      "slot": "hair",
+      "name": "리본 트윈테일",
+      "cost": 320,
+      "rarity": "rare",
+      "src": "./assets/avatar/hair/hair03.svg",
+      "color": "#7c2d12",
+      "accent": "#fb7185",
+      "variant": "twintail",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/hair_twintail_03.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "hair_star_04",
+      "slot": "hair",
+      "name": "별빛 블루",
+      "cost": 420,
+      "rarity": "rare",
+      "src": "./assets/avatar/hair/hair04.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/hair_star_04.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "hair_curl_05",
+      "slot": "hair",
+      "name": "몽글 웨이브",
+      "cost": 520,
+      "rarity": "epic",
+      "src": "./assets/avatar/hair/hair05.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/hair_curl_05.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "hair_princess_06",
+      "slot": "hair",
+      "name": "프린세스 롱",
+      "cost": 680,
+      "rarity": "epic",
+      "src": "./assets/avatar/hair/hair06.svg",
+      "color": "#8b5cf6",
+      "variant": "long",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/hair_princess_06.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "hair_mint_07",
+      "slot": "hair",
+      "name": "민트 포니",
+      "cost": 760,
+      "rarity": "epic",
+      "src": "./assets/avatar/hair/hair07.svg",
+      "color": "#2dd4bf",
+      "variant": "ponytail",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/hair_mint_07.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "hair_rainbow_08",
+      "slot": "hair",
+      "name": "무지개 헤어",
+      "cost": 980,
+      "rarity": "legend",
+      "src": "./assets/avatar/hair/hair08.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/hair_rainbow_08.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "outfit_basic_01",
+      "slot": "outfit",
+      "name": "기본 티셔츠",
+      "cost": 0,
+      "rarity": "basic",
+      "src": "./assets/avatar/outfit/outfit01.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/outfit_basic_01.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "outfit_school_02",
+      "slot": "outfit",
+      "name": "학교 조끼",
+      "cost": 260,
+      "rarity": "basic",
+      "src": "./assets/avatar/outfit/outfit02.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/outfit_school_02.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "outfit_cookie_03",
+      "slot": "outfit",
+      "name": "쿠키 후드",
+      "cost": 360,
+      "rarity": "rare",
+      "src": "./assets/avatar/outfit/outfit03.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/outfit_cookie_03.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "outfit_rainbow_04",
+      "slot": "outfit",
+      "name": "무지개 원피스",
+      "cost": 460,
+      "rarity": "rare",
+      "src": "./assets/avatar/outfit/outfit04.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/outfit_rainbow_04.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "outfit_hero_05",
+      "slot": "outfit",
+      "name": "용감 망토",
+      "cost": 620,
+      "rarity": "epic",
+      "src": "./assets/avatar/outfit/outfit05.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/outfit_hero_05.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "outfit_princess_06",
+      "slot": "outfit",
+      "name": "핑크 드레스",
+      "cost": 760,
+      "rarity": "epic",
+      "src": "./assets/avatar/outfit/outfit06.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/outfit_princess_06.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "outfit_magic_07",
+      "slot": "outfit",
+      "name": "마법학교 로브",
+      "cost": 840,
+      "rarity": "epic",
+      "src": "./assets/avatar/outfit/outfit07.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/outfit_magic_07.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "outfit_ballet_08",
+      "slot": "outfit",
+      "name": "발레 리본",
+      "cost": 920,
+      "rarity": "epic",
+      "src": "./assets/avatar/outfit/outfit08.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/outfit_ballet_08.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "outfit_star_09",
+      "slot": "outfit",
+      "name": "별무대 의상",
+      "cost": 1060,
+      "rarity": "legend",
+      "src": "./assets/avatar/outfit/outfit09.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/outfit_star_09.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "outfit_queen_10",
+      "slot": "outfit",
+      "name": "여왕 드레스",
+      "cost": 1280,
+      "rarity": "legend",
+      "src": "./assets/avatar/outfit/outfit10.svg",
+      "color": "#f472b6",
+      "accent": "#fef08a",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/outfit_queen_10.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "top_sky_01",
+      "slot": "top",
+      "name": "하늘 티셔츠",
+      "cost": 0,
+      "rarity": "basic",
+      "color": "#60a5fa",
+      "accent": "#fef08a",
+      "icon": "👕",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/top_sky_01.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "top_cookie_02",
+      "slot": "top",
+      "name": "쿠키 후디",
+      "cost": 260,
+      "rarity": "basic",
+      "color": "#f59e0b",
+      "accent": "#fff7ed",
+      "icon": "🍪",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/top_cookie_02.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "top_heart_03",
+      "slot": "top",
+      "name": "하트 니트",
+      "cost": 420,
+      "rarity": "rare",
+      "color": "#fb7185",
+      "accent": "#ffffff",
+      "icon": "💗",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/top_heart_03.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "top_star_04",
+      "slot": "top",
+      "name": "별빛 재킷",
+      "cost": 720,
+      "rarity": "epic",
+      "color": "#7c3aed",
+      "accent": "#fde047",
+      "icon": "⭐",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/top_star_04.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "bottom_denim_01",
+      "slot": "bottom",
+      "name": "데님 반바지",
+      "cost": 0,
+      "rarity": "basic",
+      "color": "#2563eb",
+      "icon": "🩳",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/bottom_denim_01.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "bottom_skirt_02",
+      "slot": "bottom",
+      "name": "핑크 스커트",
+      "cost": 240,
+      "rarity": "basic",
+      "color": "#f9a8d4",
+      "icon": "🎀",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/bottom_skirt_02.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "bottom_rainbow_03",
+      "slot": "bottom",
+      "name": "무지개 치마",
+      "cost": 520,
+      "rarity": "rare",
+      "color": "#a78bfa",
+      "icon": "🌈",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/bottom_rainbow_03.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "shoes_cookie_01",
+      "slot": "shoes",
+      "name": "쿠키 운동화",
+      "cost": 0,
+      "rarity": "basic",
+      "color": "#92400e",
+      "icon": "👟",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/shoes_cookie_01.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "shoes_mint_02",
+      "slot": "shoes",
+      "name": "민트 스니커즈",
+      "cost": 220,
+      "rarity": "basic",
+      "color": "#14b8a6",
+      "icon": "👟",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/shoes_mint_02.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "shoes_star_03",
+      "slot": "shoes",
+      "name": "별빛 구두",
+      "cost": 520,
+      "rarity": "rare",
+      "color": "#f59e0b",
+      "icon": "✨",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/shoes_star_03.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "accessory_ribbon_01",
+      "slot": "accessory",
+      "name": "딸기 리본",
+      "cost": 150,
+      "rarity": "basic",
+      "src": "./assets/avatar/accessory/ribbon01.svg",
+      "color": "#f472b6",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/accessory_ribbon_01.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "accessory_glasses_02",
+      "slot": "accessory",
+      "name": "동글 안경",
+      "cost": 180,
+      "rarity": "basic",
+      "src": "./assets/avatar/accessory/glasses01.svg",
+      "variant": "glasses",
+      "color": "#334155",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/accessory_glasses_02.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "accessory_star_03",
+      "slot": "accessory",
+      "name": "별 머리핀",
+      "cost": 210,
+      "rarity": "rare",
+      "src": "./assets/avatar/accessory/star01.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/accessory_star_03.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "accessory_crown_04",
+      "slot": "accessory",
+      "name": "작은 왕관",
+      "cost": 300,
+      "rarity": "rare",
+      "src": "./assets/avatar/accessory/crown01.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/accessory_crown_04.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "accessory_bag_05",
+      "slot": "accessory",
+      "name": "하트 가방",
+      "cost": 340,
+      "rarity": "rare",
+      "src": "./assets/avatar/accessory/bag01.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/accessory_bag_05.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "accessory_headset_06",
+      "slot": "accessory",
+      "name": "리듬 헤드셋",
+      "cost": 420,
+      "rarity": "rare",
+      "src": "./assets/avatar/accessory/headset01.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/accessory_headset_06.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "accessory_wings_07",
+      "slot": "accessory",
+      "name": "구름 날개",
+      "cost": 520,
+      "rarity": "epic",
+      "src": "./assets/avatar/accessory/wings01.svg",
+      "variant": "wings",
+      "color": "#bae6fd",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/accessory_wings_07.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "accessory_magic_08",
+      "slot": "accessory",
+      "name": "마법 지팡이",
+      "cost": 680,
+      "rarity": "epic",
+      "src": "./assets/avatar/accessory/magic01.svg",
+      "variant": "magic",
+      "color": "#a855f7",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/accessory_magic_08.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "accessory_tiara_09",
+      "slot": "accessory",
+      "name": "진주 티아라",
+      "cost": 760,
+      "rarity": "epic",
+      "src": "./assets/avatar/accessory/tiara01.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/accessory_tiara_09.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "accessory_cape_10",
+      "slot": "accessory",
+      "name": "별빛 케이프",
+      "cost": 840,
+      "rarity": "epic",
+      "src": "./assets/avatar/accessory/cape01.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/accessory_cape_10.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "accessory_aura_11",
+      "slot": "accessory",
+      "name": "반짝 오라",
+      "cost": 980,
+      "rarity": "legend",
+      "src": "./assets/avatar/accessory/aura01.svg",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/accessory_aura_11.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "accessory_royal_12",
+      "slot": "accessory",
+      "name": "로열 세트",
+      "cost": 1180,
+      "rarity": "legend",
+      "src": "./assets/avatar/accessory/royal01.svg",
+      "color": "#f59e0b",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/accessory_royal_12.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "effect_sparkle_01",
+      "slot": "effect",
+      "name": "반짝 별가루",
+      "cost": 360,
+      "rarity": "rare",
+      "color": "#fde047",
+      "icon": "✨",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/effect_sparkle_01.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    },
+    {
+      "id": "effect_love_02",
+      "slot": "effect",
+      "name": "하트 버블",
+      "cost": 560,
+      "rarity": "epic",
+      "color": "#fb7185",
+      "icon": "💖",
+      "source": "character-avatar.js",
+      "preview": "assets/avatar/previews/effect_love_02.svg",
+      "surfaces": [
+        "home",
+        "profile",
+        "shop",
+        "dress",
+        "PNG"
+      ],
+      "fields": [
+        "ownedAvatarItems",
+        "equippedAvatar",
+        "avatarPreviewDraft (memory only)"
+      ]
+    }
+  ],
+  "pets": [
+    {
+      "id": "cookie_puppy",
+      "emoji": "🐶",
+      "name": "쿠키강아지",
+      "cost": 900,
+      "trait": "기분 보너스",
+      "source": "character-companions.js#renderPetSvg",
+      "asset": "assets/companions/pets/cookie_puppy.svg",
+      "surfaces": [
+        "shop",
+        "pet care"
+      ],
+      "fields": [
+        "ownedPets",
+        "equippedPet",
+        "petCare"
+      ]
+    },
+    {
+      "id": "mellow_cat",
+      "emoji": "🐱",
+      "name": "마시멜로냥",
+      "cost": 980,
+      "trait": "포만감 보너스",
+      "source": "character-companions.js#renderPetSvg",
+      "asset": "assets/companions/pets/mellow_cat.svg",
+      "surfaces": [
+        "shop",
+        "pet care"
+      ],
+      "fields": [
+        "ownedPets",
+        "equippedPet",
+        "petCare"
+      ]
+    },
+    {
+      "id": "star_bunny",
+      "emoji": "🐰",
+      "name": "별토끼",
+      "cost": 1100,
+      "trait": "성장 보너스",
+      "source": "character-companions.js#renderPetSvg",
+      "asset": "assets/companions/pets/star_bunny.svg",
+      "surfaces": [
+        "shop",
+        "pet care"
+      ],
+      "fields": [
+        "ownedPets",
+        "equippedPet",
+        "petCare"
+      ]
+    },
+    {
+      "id": "cloud_penguin",
+      "emoji": "🐧",
+      "name": "구름펭귄",
+      "cost": 1250,
+      "trait": "간식 보너스",
+      "source": "character-companions.js#renderPetSvg",
+      "asset": "assets/companions/pets/cloud_penguin.svg",
+      "surfaces": [
+        "shop",
+        "pet care"
+      ],
+      "fields": [
+        "ownedPets",
+        "equippedPet",
+        "petCare"
+      ]
+    },
+    {
+      "id": "jelly_dragon",
+      "emoji": "🐲",
+      "name": "젤리드래곤",
+      "cost": 1500,
+      "trait": "전설 펫",
+      "source": "character-companions.js#renderPetSvg",
+      "asset": "assets/companions/pets/jelly_dragon.svg",
+      "surfaces": [
+        "shop",
+        "pet care"
+      ],
+      "fields": [
+        "ownedPets",
+        "equippedPet",
+        "petCare"
+      ]
+    }
+  ],
+  "charms": [
+    {
+      "id": "ribbon",
+      "emoji": "🎀",
+      "name": "리본",
+      "cost": 120,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/ribbon.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "star_pin",
+      "emoji": "⭐",
+      "name": "별핀",
+      "cost": 150,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/star_pin.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "flower_crown",
+      "emoji": "🌼",
+      "name": "꽃왕관",
+      "cost": 180,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/flower_crown.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "heart_pin",
+      "emoji": "💖",
+      "name": "하트핀",
+      "cost": 220,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/heart_pin.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "sunglasses",
+      "emoji": "😎",
+      "name": "선글라스",
+      "cost": 260,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/sunglasses.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "magic_hat",
+      "emoji": "🎩",
+      "name": "마법모자",
+      "cost": 320,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/magic_hat.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "party_hat",
+      "emoji": "🥳",
+      "name": "파티모자",
+      "cost": 360,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/party_hat.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "headphones",
+      "emoji": "🎧",
+      "name": "헤드폰",
+      "cost": 420,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/headphones.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "school_bag",
+      "emoji": "🎒",
+      "name": "책가방",
+      "cost": 480,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/school_bag.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "medal",
+      "emoji": "🏅",
+      "name": "금메달",
+      "cost": 540,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/medal.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "crown",
+      "emoji": "👑",
+      "name": "왕관",
+      "cost": 620,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/crown.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "wings",
+      "emoji": "🪽",
+      "name": "날개",
+      "cost": 700,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/wings.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "crystal",
+      "emoji": "💎",
+      "name": "반짝보석",
+      "cost": 780,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/crystal.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "rainbow_aura",
+      "emoji": "🌈",
+      "name": "무지개오라",
+      "cost": 860,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/rainbow_aura.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "rocket_pack",
+      "emoji": "🚀",
+      "name": "로켓팩",
+      "cost": 960,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/rocket_pack.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "moon_charm",
+      "emoji": "🌙",
+      "name": "달빛참",
+      "cost": 1040,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/moon_charm.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "trophy",
+      "emoji": "🏆",
+      "name": "챔피언컵",
+      "cost": 1120,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/trophy.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    },
+    {
+      "id": "legend_crown",
+      "emoji": "✨",
+      "name": "전설왕관",
+      "cost": 1250,
+      "source": "character-companions.js#renderCharmSvg",
+      "asset": "assets/companions/charms/legend_crown.svg",
+      "fields": [
+        "ownedItems",
+        "equippedItem"
+      ],
+      "surfaces": [
+        "shop",
+        "legacy home accessory"
+      ]
+    }
+  ],
+  "legacy": {
+    "count": 1000,
+    "source": "app.js MONSTER_CATALOG, character-companions.js",
+    "identity": "monster_001…monster_1000",
+    "families": [
+      "egg",
+      "chick",
+      "cloud",
+      "rabbit",
+      "panda",
+      "fox",
+      "unicorn",
+      "dragon",
+      "phoenix",
+      "star",
+      "whale",
+      "butterfly",
+      "tiger",
+      "octopus",
+      "frog",
+      "lion",
+      "penguin",
+      "trex",
+      "bear",
+      "crown"
+    ],
+    "unlock": "derived from existing xp thresholds, no new unlock map",
+    "changes": "20 family shape system; 60 entries per page; all 1000 IDs accessible",
+    "surfaces": [
+      "legacy home",
+      "XP collection",
+      "fallback companion"
+    ]
+  }
+}

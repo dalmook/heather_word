@@ -1,0 +1,362 @@
+[
+  {
+    "speciesId": "crumb_bear",
+    "stage": 1,
+    "oldName": "포실곰",
+    "newName": "포실곰"
+  },
+  {
+    "speciesId": "crumb_bear",
+    "stage": 2,
+    "oldName": "쿠키가드",
+    "newName": "쿠키배달곰"
+  },
+  {
+    "speciesId": "crumb_bear",
+    "stage": 3,
+    "oldName": "크럼블킹",
+    "newName": "쿠키수호곰"
+  },
+  {
+    "speciesId": "jam_mouse",
+    "stage": 1,
+    "oldName": "잼쥐",
+    "newName": "잼쥐"
+  },
+  {
+    "speciesId": "jam_mouse",
+    "stage": 2,
+    "oldName": "베리러너",
+    "newName": "베리달리"
+  },
+  {
+    "speciesId": "jam_mouse",
+    "stage": 3,
+    "oldName": "잼마스터",
+    "newName": "잼도사"
+  },
+  {
+    "speciesId": "mist_fox",
+    "stage": 1,
+    "oldName": "몽실여우",
+    "newName": "몽실여우"
+  },
+  {
+    "speciesId": "mist_fox",
+    "stage": 2,
+    "oldName": "바람여우",
+    "newName": "바람꼬리"
+  },
+  {
+    "speciesId": "mist_fox",
+    "stage": 3,
+    "oldName": "스카이테일",
+    "newName": "하늘꼬리"
+  },
+  {
+    "speciesId": "breeze_owl",
+    "stage": 1,
+    "oldName": "솔솔부엉",
+    "newName": "솔솔부엉"
+  },
+  {
+    "speciesId": "breeze_owl",
+    "stage": 2,
+    "oldName": "윈드위저드",
+    "newName": "바람부엉"
+  },
+  {
+    "speciesId": "breeze_owl",
+    "stage": 3,
+    "oldName": "템페스트오울",
+    "newName": "날개현자"
+  },
+  {
+    "speciesId": "bubble_fin",
+    "stage": 1,
+    "oldName": "버블핀",
+    "newName": "버블핀"
+  },
+  {
+    "speciesId": "bubble_fin",
+    "stage": 2,
+    "oldName": "아쿠아핀",
+    "newName": "물결핀"
+  },
+  {
+    "speciesId": "bubble_fin",
+    "stage": 3,
+    "oldName": "오션피닉스",
+    "newName": "바다날개"
+  },
+  {
+    "speciesId": "coral_otter",
+    "stage": 1,
+    "oldName": "조개달",
+    "newName": "조개달"
+  },
+  {
+    "speciesId": "coral_otter",
+    "stage": 2,
+    "oldName": "코랄다이버",
+    "newName": "산호달"
+  },
+  {
+    "speciesId": "coral_otter",
+    "stage": 3,
+    "oldName": "리프세이지",
+    "newName": "물빛현자"
+  },
+  {
+    "speciesId": "sprout_rex",
+    "stage": 1,
+    "oldName": "새싹렉스",
+    "newName": "새싹렉스"
+  },
+  {
+    "speciesId": "sprout_rex",
+    "stage": 2,
+    "oldName": "정글렉스",
+    "newName": "숲길렉스"
+  },
+  {
+    "speciesId": "sprout_rex",
+    "stage": 3,
+    "oldName": "킹티라노",
+    "newName": "숲왕렉스"
+  },
+  {
+    "speciesId": "stone_trike",
+    "stage": 1,
+    "oldName": "콩뿔",
+    "newName": "콩뿔"
+  },
+  {
+    "speciesId": "stone_trike",
+    "stage": 2,
+    "oldName": "룬트리케라",
+    "newName": "돌빛뿔"
+  },
+  {
+    "speciesId": "stone_trike",
+    "stage": 3,
+    "oldName": "에인션트혼",
+    "newName": "산맥뿔"
+  },
+  {
+    "speciesId": "rune_cat",
+    "stage": 1,
+    "oldName": "룬냥",
+    "newName": "룬냥"
+  },
+  {
+    "speciesId": "rune_cat",
+    "stage": 2,
+    "oldName": "스펠캣",
+    "newName": "마법냥"
+  },
+  {
+    "speciesId": "rune_cat",
+    "stage": 3,
+    "oldName": "아케인링스",
+    "newName": "별룬냥"
+  },
+  {
+    "speciesId": "page_golem",
+    "stage": 1,
+    "oldName": "책콩",
+    "newName": "책콩"
+  },
+  {
+    "speciesId": "page_golem",
+    "stage": 2,
+    "oldName": "페이지골렘",
+    "newName": "책걸음"
+  },
+  {
+    "speciesId": "page_golem",
+    "stage": 3,
+    "oldName": "그랜드렉시콘",
+    "newName": "큰책현자"
+  },
+  {
+    "speciesId": "gear_bot",
+    "stage": 1,
+    "oldName": "톱니봇",
+    "newName": "톱니봇"
+  },
+  {
+    "speciesId": "gear_bot",
+    "stage": 2,
+    "oldName": "기어가디언",
+    "newName": "척척봇"
+  },
+  {
+    "speciesId": "gear_bot",
+    "stage": 3,
+    "oldName": "메가스펠봇",
+    "newName": "든든기어"
+  },
+  {
+    "speciesId": "drill_mole",
+    "stage": 1,
+    "oldName": "볼트두더",
+    "newName": "볼트두더"
+  },
+  {
+    "speciesId": "drill_mole",
+    "stage": 2,
+    "oldName": "드릴러너",
+    "newName": "굴착두더"
+  },
+  {
+    "speciesId": "drill_mole",
+    "stage": 3,
+    "oldName": "코어브레이커",
+    "newName": "땅속대장"
+  },
+  {
+    "speciesId": "orbit_bunny",
+    "stage": 1,
+    "oldName": "별토끼",
+    "newName": "별토끼"
+  },
+  {
+    "speciesId": "orbit_bunny",
+    "stage": 2,
+    "oldName": "코스믹버니",
+    "newName": "궤도토끼"
+  },
+  {
+    "speciesId": "orbit_bunny",
+    "stage": 3,
+    "oldName": "갤럭시래빗",
+    "newName": "은하토끼"
+  },
+  {
+    "speciesId": "comet_hound",
+    "stage": 1,
+    "oldName": "꼬리별멍",
+    "newName": "꼬리별멍"
+  },
+  {
+    "speciesId": "comet_hound",
+    "stage": 2,
+    "oldName": "코멧하운드",
+    "newName": "혜성멍"
+  },
+  {
+    "speciesId": "comet_hound",
+    "stage": 3,
+    "oldName": "노바센티널",
+    "newName": "별길수호멍"
+  },
+  {
+    "speciesId": "frost_seal",
+    "stage": 1,
+    "oldName": "눈송이물범",
+    "newName": "눈송이물범"
+  },
+  {
+    "speciesId": "frost_seal",
+    "stage": 2,
+    "oldName": "프로스트씰",
+    "newName": "눈바람물범"
+  },
+  {
+    "speciesId": "frost_seal",
+    "stage": 3,
+    "oldName": "오로라월러스",
+    "newName": "오로라코"
+  },
+  {
+    "speciesId": "glacier_yak",
+    "stage": 1,
+    "oldName": "솜뿔",
+    "newName": "솜뿔"
+  },
+  {
+    "speciesId": "glacier_yak",
+    "stage": 2,
+    "oldName": "글레이셔야크",
+    "newName": "빙하솜뿔"
+  },
+  {
+    "speciesId": "glacier_yak",
+    "stage": 3,
+    "oldName": "폴라워든",
+    "newName": "눈산지킴이"
+  },
+  {
+    "speciesId": "ruin_gecko",
+    "stage": 1,
+    "oldName": "이끼도마",
+    "newName": "이끼도마"
+  },
+  {
+    "speciesId": "ruin_gecko",
+    "stage": 2,
+    "oldName": "루인게코",
+    "newName": "유적도마"
+  },
+  {
+    "speciesId": "ruin_gecko",
+    "stage": 3,
+    "oldName": "템플카멜레온",
+    "newName": "숲돌수호자"
+  },
+  {
+    "speciesId": "whisper_ghost",
+    "stage": 1,
+    "oldName": "소곤유령",
+    "newName": "소곤유령"
+  },
+  {
+    "speciesId": "whisper_ghost",
+    "stage": 2,
+    "oldName": "북위스퍼",
+    "newName": "책장소곤"
+  },
+  {
+    "speciesId": "whisper_ghost",
+    "stage": 3,
+    "oldName": "아카이브팬텀",
+    "newName": "기억지기"
+  },
+  {
+    "speciesId": "ember_drake",
+    "stage": 1,
+    "oldName": "불씨용",
+    "newName": "불씨용"
+  },
+  {
+    "speciesId": "ember_drake",
+    "stage": 2,
+    "oldName": "엠버드레이크",
+    "newName": "날갯불용"
+  },
+  {
+    "speciesId": "ember_drake",
+    "stage": 3,
+    "oldName": "볼케이노와이번",
+    "newName": "화산날개"
+  },
+  {
+    "speciesId": "crown_deer",
+    "stage": 1,
+    "oldName": "별사슴",
+    "newName": "별사슴"
+  },
+  {
+    "speciesId": "crown_deer",
+    "stage": 2,
+    "oldName": "셀레스티얼디어",
+    "newName": "별빛사슴"
+  },
+  {
+    "speciesId": "crown_deer",
+    "stage": 3,
+    "oldName": "코로나스타그",
+    "newName": "별왕관사슴"
+  }
+]

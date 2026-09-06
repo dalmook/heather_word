@@ -28,7 +28,7 @@ export function gameArtwork(mode) {
   return `<svg viewBox="0 0 96 76" fill="none" aria-hidden="true" focusable="false">${art[mode] || art.choice}</svg>`;
 }
 
-export function homeView(s, {icon,partnerMarkup}) {
+export function homeView(s, {icon,partnerMarkup,avatarMarkup=()=>""}) {
   const empty=!s.wordCount, demo=globalThis.HEATHER_DEMO===true;
   const stage=Math.min(4,Math.max(0,s.adventure.stageIndex));
   const name=s.name==='Player'?'탐험가':s.name;
@@ -43,8 +43,9 @@ export function homeView(s, {icon,partnerMarkup}) {
     ${demo?'<div class="hw12-demo-banner"><span><b>무료 체험 중</b> · 이 브라우저에 따로 저장돼요</span><button type="button" data-hw9-action="exit-demo">원래 학습으로</button></div>':''}
     <div class="hw9-home-grid">
       <article class="hw9-hero-card">
-        <div class="kids-scene"><img class="kids-scenery" src="./assets/art/adventure-forest.webp" alt="" width="1536" height="1024" fetchpriority="high" decoding="async" />
+        <div class="kids-scene"><img class="kids-scenery" src="./assets/art/word-garden.svg" alt="" width="1536" height="1024" fetchpriority="high" decoding="async" />
           <div class="kids-speech"><span class="hw12-adventure-label">${icon('sparkles')} ${empty?'작은 탐험가를 기다려요':'오늘의 단어 모험'}</span><h2>${empty?'영어가 자라는<br><em>마법 같은 모험.</em>':s.adventure.completed?'오늘의 모험,<br><em>끝까지 해냈어!</em>':s.adventure.hasSession?'우리의 모험은<br><em>계속되는 거야.</em>':'단어 하나 배우면,<br><em>세상이 더 커져!</em>'}</h2><p>${empty?'친구들과 보고, 듣고, 놀다 보면<br>어느새 단어가 내 것이 돼요.':s.adventure.completed?'별을 모은 너의 도전을 기억해.<br>다음에는 어떤 단어를 만나 볼까?':'틀려도 괜찮아. 천천히 가도 좋아.<br>오늘도 함께 한 걸음, 출발!'}</p></div>
+          <div class="hw-character-hero"><div class="hw-hero-avatar">${avatarMarkup(s)}</div><div class="hw-hero-partner">${partnerMarkup(s)}</div><span>${s.partnerId?"나와 함께하는 친구":"나의 첫 탐험을 기다려요"}</span></div>
         </div>
         <div class="kids-launch"><div><span class="hw12-launch-note">${empty?'가입 없이 60개 단어 체험':'4단계 · 21문제 · 이어서 학습'}</span><p>${empty?'동물부터 자연까지, 6개 주제':'작은 도전이 모여 커다란 자신감으로'}</p></div><button class="hw9-button hw9-button-primary hw9-hero-cta" type="button" data-hw9-action="${empty?'start-demo':'adventure'}"><span>${empty?'무료로 탐험 시작':s.adventure.completed?'오늘 모험 다시 보기':stage>0||s.adventure.hasSession?'이어서 탐험하기':'탐험 시작!'}</span>${icon('arrow')}</button></div>
       </article>
