@@ -56,7 +56,12 @@ try{
  const sheet=async({name,cards,cols=6,width=1200,height=2400,artSize=160})=>{
   await send('Page.navigate',{url:'about:blank'});await wait("location.href==='about:blank'",'sheet context');await viewport(width,height);
   const html=`<html lang="ko"><head><meta charset="utf-8"><style>body{margin:0;padding:20px;box-sizing:border-box;background:#f5f2ea;font:13px 'Noto Sans CJK KR',sans-serif;display:grid;grid-template-columns:repeat(${cols},minmax(0,1fr));gap:12px}article{min-width:0;text-align:center;background:#fff;border-radius:16px;padding:8px;break-inside:avoid}svg{display:block;width:100%;height:${artSize}px}b,small{display:block;word-break:keep-all}small{font-size:10px;color:#54635c;margin-top:4px}</style></head><body>${cards.map(c=>`<article>${c.svg}<b>${c.name}</b><small>${c.caption||''}</small></article>`).join('')}</body></html>`;
-  const tree=await send('Page.getFrameTree');await send('Page.setDocumentContent',{frameId:tree.frameTree.frame.id,html});await capture(name,200);
+  const tree=await send('Page.getFrameTree');await send('Page.setDocumentContent',{frameId:tree.frameTree.frame.id,html});
+  await evaluate('document.fonts.ready');await settled();
+  const contentHeight=await evaluate('Math.ceil(document.querySelector("article:last-child").getBoundingClientRect().bottom+20)');
+  await viewport(width,contentHeight);await settled();
+  await check(`document.querySelectorAll('article').length===${cards.length}&&document.querySelector('article:last-child').getBoundingClientRect().bottom<=innerHeight-10`,`${name}: every card and final-row label fits the sheet`);
+  await capture(name,200);
  };
  await navigate();
  const served=await evaluate(`(async()=>{const c=await import(${JSON.stringify(base+'/monster-catalog-season2.js')});return c.SEASON2_CATALOG.map(x=>({...x,svg:c.renderMonsterSvg(x),silhouette:c.renderMonsterSvg(x,{locked:true})}));})()`);
