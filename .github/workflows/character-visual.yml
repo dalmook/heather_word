@@ -55,6 +55,12 @@ jobs:
           BASE_URL: http://127.0.0.1:4173
           CHARACTER_QA_OUTPUT: /tmp/character-visual/after
         run: node tools/character-integration-qa.mjs
+      - name: Hero and full-body canvas viewport contracts
+        if: success() || failure()
+        env:
+          BASE_URL: http://127.0.0.1:4173
+          CHARACTER_QA_OUTPUT: /tmp/character-visual/geometry
+        run: node tools/character-viewport-audit.mjs
       - name: Preserve exact source with browser evidence
         if: always()
         run: git archive --format=tar.gz HEAD > /tmp/character-visual/source.tar.gz
