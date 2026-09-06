@@ -1,10 +1,18 @@
-/* Character layout contracts verified against real Chromium screenshots.
- * Phaser FIT writes centering margins; legacy 100% canvas rules otherwise
- * combine those margins with a full-size canvas and crop the feet.
+/* The canvas is a presentation surface, not a separate avatar layout.
+ * An absolutely sized canvas avoids the legacy grid item's intrinsic minimum
+ * (390px viewport: 375.66px canvas inside a 316px host). object-fit preserves
+ * the fixed 360x460 drawing buffer, including the feet, without stretching.
  */
+.phaser-dress-room .avatar-game {
+  display: block;
+}
 .phaser-dress-room .avatar-game canvas {
+  position: absolute;
+  inset: 0;
   width: 100% !important;
   height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
   max-width: 100% !important;
   max-height: 100% !important;
   margin: 0 !important;
