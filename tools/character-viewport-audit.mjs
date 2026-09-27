@@ -25,8 +25,11 @@ try {
   await send('Emulation.setDeviceMetricsOverride',{width,height:width===1440?900:844,deviceScaleFactor:1,mobile:width<768});
   await send('Page.navigate',{url:'about:blank'});await wait("location.href==='about:blank'");
   await send('Page.navigate',{url:base+'/?mode=local&demo=1#/home'});await wait('document.readyState==="complete"&&!!window.HeatherWordUI');await pause(300);
-  const hero=await run('(()=>{const a=document.querySelector(".kids-speech").getBoundingClientRect(),b=document.querySelector(".hw-character-hero").getBoundingClientRect();return {textBottom:a.bottom,artTop:b.top};})()');
-  if(width<768)assert.ok(hero.artTop>=hero.textBottom,'hero art must not overlap copy');
+  // The new rabbit is beside the copy, not below the old human avatar block.
+  // Check actual painted character bounds against actual text-line bounds.
+  const hero=await run(`(()=>{const rig=document.querySelector('.bunny-hero-friend .bunny-rig');if(!rig)throw Error('Original rabbit missing');const r=rig.getBoundingClientRect();const walker=document.createTreeWalker(document.querySelector('.kids-speech'),NodeFilter.SHOW_TEXT);let n;const collisions=[];while(n=walker.nextNode()){if(!n.textContent.trim())continue;const range=document.createRange();range.selectNodeContents(n);for(const t of range.getClientRects()){if(t.right>r.left+1&&t.left<r.right-1&&t.bottom>r.top+1&&t.top<r.bottom-1)collisions.push(n.textContent.trim());}}return {art:{left:r.left,top:r.top,width:r.width,height:r.height},collisions};})()`);
+  assert.deepEqual(hero.collisions,[],'hero art must not overlap copy');
+  assert.ok(hero.art.width>50&&hero.art.height>100,'rabbit remains recognizable');
   await run('window.HeatherWordUI.openLegacy("dress")');await wait('document.querySelector("#avatarGame.ready canvas")');await pause(600);
   const state=await run('(()=>{const rect=e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return {x:r.x,y:r.y,width:r.width,height:r.height,cssWidth:s.width,cssHeight:s.height,margin:s.margin,position:s.position,display:s.display,transform:s.transform,inline:e.getAttribute("style")};};const c=document.querySelector("#avatarGame canvas");return {room:rect(document.querySelector(".phaser-dress-room")),host:rect(document.querySelector("#avatarGame")),canvas:rect(c),backing:{width:c.width,height:c.height},png:c.toDataURL("image/png")};})()');
   await writeFile(join(out,`canvas-${width}.png`),Buffer.from(state.png.split(',')[1],'base64'));delete state.png;

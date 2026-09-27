@@ -1,0 +1,82 @@
+name: Bunny adventure review
+on:
+  push:
+    branches: [main, feat/bunny-adventure-20260927]
+    paths: ['bunny-*', 'ui/components.js', 'index.html', 'tests/bunny-*', '.github/workflows/bunny-adventure-qa.yml']
+  pull_request:
+    branches: [main]
+    paths: ['bunny-*', 'ui/components.js', 'index.html', 'tests/bunny-*', '.github/workflows/bunny-adventure-qa.yml']
+permissions:
+  contents: read
+concurrency:
+  group: bunny-review-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare exact review source
+        run: |
+          mkdir -p review-output
+          git archive --format=zip HEAD -o review-output/source.zip
+      - name: Regression tests
+        run: |
+          node --test tests/*.test.mjs
+          node --check bunny-adventure.js
+          node --check bunny-audio.js
+      - name: Browser setup
+        run: |
+          npm install --no-save --package-lock=false playwright@1.51.1
+          npx playwright install --with-deps chromium
+      - name: Capture and exercise app
+        run: |
+          python3 -m http.server 8765 > /tmp/heather-review-http.log 2>&1 &
+          for attempt in {1..40}; do
+            if curl -fsS http://127.0.0.1:8765/ >/dev/null; then break; fi
+            sleep 0.25
+          done
+          node tests/bunny-browser.mjs
+      - name: Verify exact deployed Pages assets
+        if: github.ref == 'refs/heads/main'
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const paths=['index.html','ui/components.js','bunny-adventure.js','bunny-adventure.css','bunny-art.js','bunny-audio.js'];
+          let stale=[];
+          for(let attempt=0;attempt<60;attempt++) {
+            stale=[];
+            for(const path of paths) {
+              try {
+                const r=await fetch(`https://dalmook.github.io/heather_word/${path}?revision=${process.env.GITHUB_SHA}&check=${attempt}`,{signal:AbortSignal.timeout(15000)});
+                const live=Buffer.from(await r.arrayBuffer());
+                if(!r.ok||!live.equals(fs.readFileSync(path)))stale.push(path);
+              } catch {stale.push(path);}
+            }
+            if(!stale.length)break;
+            console.log('Waiting for Pages:',stale.join(', '));
+            await new Promise(r=>setTimeout(r,5000));
+          }
+          const result={commit:process.env.GITHUB_SHA,checked:paths,stale,passed:!stale.length};
+          fs.writeFileSync('review-output/deployed-assets.json',JSON.stringify(result,null,2));
+          if(stale.length)throw Error('Pages did not reach the reviewed revision');
+          JS
+      - name: Repeat browser checks against deployed site in isolated LOCAL and trial storage
+        if: github.ref == 'refs/heads/main'
+        env:
+          BUNNY_TEST_URL: https://dalmook.github.io/heather_word/
+        run: |
+          cp review-output/report.json review-output/local-report.json
+          node tests/bunny-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bunny-review-${{ github.run_number }}
+          path: review-output/
+          retention-days: 7
