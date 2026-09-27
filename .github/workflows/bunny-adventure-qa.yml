@@ -1,0 +1,63 @@
+name: Bunny adventure review
+on:
+  push:
+    branches: [feat/bunny-adventure-20260927]
+  pull_request:
+    branches: [main]
+    paths: ['bunny-*', 'index.html', 'tests/bunny-*', '.github/workflows/bunny-adventure-qa.yml']
+permissions:
+  contents: read
+concurrency:
+  group: bunny-review-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prepare review source
+        run: |
+          mkdir -p review-output
+          git archive --format=zip HEAD -o review-output/source.zip
+      - name: Regression tests
+        run: |
+          if [ -f package.json ]; then cat package.json; fi
+          if compgen -G 'tests/*.test.mjs' > /dev/null; then node --test tests/*.test.mjs; fi
+          if [ -f bunny-adventure.js ]; then node --check bunny-adventure.js; fi
+      - name: Browser setup
+        run: |
+          npm install --no-save --package-lock=false playwright@1.51.1
+          npx playwright install --with-deps chromium
+      - name: Capture and exercise app
+        run: |
+          python3 -m http.server 8765 > /tmp/heather-review-http.log 2>&1 &
+          if [ -f tests/bunny-browser.mjs ]; then
+            node tests/bunny-browser.mjs
+          else
+            node --input-type=module <<'JS'
+          import {chromium} from 'playwright';
+          import fs from 'node:fs';
+          const browser = await chromium.launch({headless:true});
+          const page = await browser.newPage({viewport:{width:1440,height:960}});
+          const errors=[]; page.on('pageerror',e=>errors.push(e.message));
+          await page.goto('http://127.0.0.1:8765/?mode=local#/home');
+          await page.waitForTimeout(5000);
+          await page.screenshot({path:'review-output/before-desktop.png',fullPage:true});
+          await page.setViewportSize({width:390,height:844});
+          await page.screenshot({path:'review-output/before-mobile.png',fullPage:true});
+          fs.writeFileSync('review-output/boot-report.json',JSON.stringify({errors,body:await page.locator('body').innerText()},null,2));
+          await browser.close();
+          JS
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bunny-review-${{ github.run_number }}
+          path: review-output/
+          retention-days: 7
