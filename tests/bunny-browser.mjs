@@ -22,7 +22,10 @@ async function seasonCorrect(){
  if(await page.locator('.s2-choice-grid').count())await page.locator(`[data-s2-action=answer-choice][data-word-id="${w.id}"]`).click();
  else if(await page.locator('.s2-letter-bank').count()){
   for(let i=0;i<w.word.toLowerCase().replace(/[^a-z]/g,'').length;i++){
+   const retained=await page.locator('#season2Overlay .bunny-study-bar').elementHandle();
    await page.locator(`[data-s2-action=add-block][data-letter-index="${i}"]`).click();
+   await page.waitForSelector('#season2Overlay .bunny-study-bar');
+   assert.ok(await retained.evaluate(el=>el.isConnected),'same rig survives the scheduled render');
    assert.equal(await page.locator('#season2Overlay .bunny-study-bar').count(),1,'one retained rabbit for block DOM replacements');
   }
   await page.locator('[data-s2-action=check-block]').click();
@@ -50,7 +53,7 @@ try{
    if(stage===0){await page.locator('[data-s2-action=skip-question]').click();await page.waitForFunction(()=>document.querySelector('#season2Overlay .bunny-study-bar')?.dataset.reaction==='review');await page.locator('[data-s2-action=retry-question]').click();}
    for(let j=0;j<[5,7,5,4][stage];j++)await seasonCorrect();
    await page.waitForSelector('.s2-stage-complete .bunny-result-art');await shot(`13-stage-complete-${stage+1}`);
-   const reward=(await season()).wallet;await page.waitForTimeout(200);assert.deepEqual((await season()).wallet,reward,'no duplicate presentation reward');
+   const reward=await season();await page.waitForTimeout(200);assert.deepEqual(await season(),reward,'no duplicate presentation reward');
    await page.locator('[data-s2-action=finish-stage]').click();await page.waitForTimeout(150);
   }
   assert.equal((await season()).dailyAdventure.completed,true);assert.deepEqual((await snapshot()).words,before.words);await overflow();
