@@ -81,6 +81,8 @@ function inspectPlay(){
 function ensureBuddy(play){
  if(!play?.host)return null;
  let buddy=$('.bunny-study-bar',play.parent);
+ // Season 2 replaces its question DOM on every tile. Reattach the same rig.
+ if(!buddy && buddyHost && !buddyHost.isConnected){buddy=buddyHost;play.host.before(buddy);}
  if(!buddy){
   buddy=document.createElement('aside');buddy.className='bunny-study-bar';buddy.setAttribute('aria-label','토리 응원과 이번 라운드의 정답 수');
   buddy.innerHTML=`${rabbitMarkup({decorative:true})}<div class="bunny-study-copy"><strong data-bunny-speech>천천히 생각해도 괜찮아.</strong><div class="bunny-energy-title"><span data-bunny-energy-label>차근차근 출발!</span><span data-bunny-count></span></div><div class="bunny-energy" aria-hidden="true">${'<i></i>'.repeat(10)}</div></div>${tools()}`;
@@ -162,6 +164,7 @@ function onClick(event){
   setMood('wave',button);text($('.bunny-name-tag',button),'반가워! 같이 놀자!');clearTimeout(reactionTimer);reactionTimer=setTimeout(()=>{setMood('idle',button);text($('.bunny-name-tag',button),'토리 · 너의 모험 친구');},1500);burst(button,'반가워!',false);return;
  }
  if(button.matches('.tile,[data-s2-action="add-block"]')){
+  buddyHost=ensureBuddy(inspectPlay())||buddyHost;
   setMood('input');carryLetter(button.textContent,button);clearTimeout(inputTimer);inputTimer=setTimeout(()=>setMood('idle'),500);
  }
  schedule();

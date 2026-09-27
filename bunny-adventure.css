@@ -44,6 +44,29 @@ html.hw9-ready body{background:#f5f1fc}.bunny-ready .hw9-app{background:var(--co
 .bunny-study-bar{grid-template-columns:70px minmax(0,1fr) 32px;min-height:82px;padding:5px 10px 5px 0;gap:6px;border-radius:18px;margin-bottom:10px}.bunny-study-bar .bunny-rabbit{width:75px;height:85px;margin-top:-6px}.bunny-study-copy strong{font-size:13px}.bunny-energy-title{font-size:9px;gap:2px}.bunny-study-bar .bunny-tools [data-bunny-settings]{display:none}.bunny-study-bar .bunny-tool{width:31px;height:35px;min-width:31px;min-height:35px}.bunny-result-art{height:133px;width:125px}
 }
 @media(max-height:720px) and (max-width:600px){.bunny-study-bar{min-height:65px;grid-template-columns:57px minmax(0,1fr) 32px}.bunny-study-bar .bunny-rabbit{height:65px;width:56px}.bunny-energy-title{margin:2px 0}.bunny-energy{height:5px}.bunny-ready.hw9-legacy-active .game-box{padding:14px!important}.bunny-ready.hw9-legacy-active .mode-tabs{margin-bottom:8px!important}}
-.bunny-ready.keyboard-open .bunny-study-bar{min-height:42px;grid-template-columns:minmax(0,1fr) 32px;padding:4px 10px}.bunny-ready.keyboard-open .bunny-study-bar>.bunny-rabbit{display:none}.bunny-ready.keyboard-open .bunny-energy-title{display:none}.bunny-ready.keyboard-open .bunny-energy{height:4px;margin-top:4px}
+/* Keep the friend visible while the mobile keyboard is open. */
+@media(max-width:600px){.bunny-ready.keyboard-open .bunny-study-bar{min-height:56px;grid-template-columns:45px minmax(0,1fr) 44px;padding:4px 8px}.bunny-ready.keyboard-open .bunny-study-bar>.bunny-rabbit{display:block;width:45px;height:52px}.bunny-ready.keyboard-open .bunny-energy-title{display:none}.bunny-ready.keyboard-open .bunny-energy{height:4px;margin-top:4px}}
 @media(prefers-reduced-motion:reduce){.bunny-rabbit *,.bunny-orbit,.bunny-ready .kids-path-node{animation:none!important;transition:none!important}.bunny-flying-letter,.bunny-fx-canvas,.bunny-fx-word{display:none!important}}
 @media print{.bunny-tools,.bunny-study-bar,.bunny-fx-canvas,.bunny-flying-letter,.bunny-fx-word,.bunny-settings{display:none!important}}
+
+/* Settled viewport, contrast and touch-target refinements. */
+.bunny-ready .hw9-tabbar{background:#fffdfd!important;border-color:#e7ddef!important}
+.bunny-ready .hw9-brand>span svg{width:40px;height:46px;margin:0}
+.bunny-landscape{mask-image:linear-gradient(to right,transparent,#000 18%);-webkit-mask-image:linear-gradient(to right,transparent,#000 18%)}
+.bunny-ready .kids-launch .hw9-hero-cta{min-height:58px!important;box-shadow:0 5px 0 #923724!important}
+.bunny-ready .kids-launch .hw9-hero-cta:hover{box-shadow:0 7px 0 #923724!important}
+.bunny-ready .kids-launch .hw9-hero-cta:active{box-shadow:0 1px 0 #923724!important}
+.bunny-energy-title{color:#695379}
+.bunny-ready.hw9-legacy-active .mode-btn.active small{color:#72568f!important;opacity:1!important}
+.bunny-ready #kidsPlayHint{color:#63488a!important}
+.bunny-ready #gameScreen:has(.round-complete) #kidsPlayHint{display:none}
+.bunny-ready .round-complete>span:first-of-type,.bunny-ready .s2-stage-complete>.hw-stage-friend{display:none!important}
+.bunny-ready .round-complete{padding:16px!important}
+.bunny-ready .round-complete .bunny-result-art{width:100px;height:106px}
+.bunny-ready .round-complete h3{margin:4px 0!important}
+.bunny-ready .round-complete p{margin:6px 0!important}
+.bunny-ready .round-complete strong{font-size:16px!important}
+.bunny-ready .round-complete .bunny-result-note{font-size:12px!important}
+.bunny-ready .hw12-demo-banner>span{min-width:0;flex:1;font-size:11px}
+.bunny-ready .hw12-demo-banner>button{flex-shrink:0;font-size:11px}
+@media(max-width:600px){.bunny-study-bar{grid-template-columns:70px minmax(0,1fr) 44px}.bunny-study-bar .bunny-tools [data-bunny-settings]{display:inline-grid;width:44px;height:44px;min-width:44px;min-height:44px}.bunny-study-bar .bunny-tools [data-bunny-music]{display:none}}
