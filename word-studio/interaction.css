@@ -1,0 +1,10 @@
+/* Keep hit targets stationary: hover translations can oscillate at pointer edges.
+   Character animations, pressed feedback and learning reactions remain enabled. */
+body.word-studio .ws-btn:hover:not(:disabled),
+body.word-studio .ws-mode:hover,
+body.word-studio .ws-word:hover,
+body.word-studio .ws-choices button:hover:not(:disabled){transform:none}
+body.word-studio button,body.word-studio a{touch-action:manipulation}
+@media(prefers-reduced-motion:reduce){
+ body.word-studio .ws-btn:active,body.word-studio .ws-choices button:active{transform:none}
+}
