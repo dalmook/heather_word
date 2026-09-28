@@ -24,7 +24,11 @@ export async function openStore(demo=false) {
       pr.onsuccess=()=>{pReady=true;finish();};mr.onsuccess=()=>{mReady=true;finish();};
     });},
     async setMeta(value){return transact(['meta'],'readwrite',tx=>tx.objectStore('meta').put(value));},
-    async backup(catalog){const s=await this.snapshot();const images=await Promise.all(s.images.map(async x=>({id:x.id,type:x.blob.type,data:await toDataURL(x.blob)})));return{format:'heather-word-studio',schemaVersion:1,version:VERSION,createdAt:new Date().toISOString(),entries:catalog.map(w=>({...normalizeWord(w),_packId:w._packId,localImage:!!w.localImage})),progress:s.progress,meta:s.meta,images};},
+    async backup(catalog){
+      const s=await this.snapshot(),ids=new Set(catalog.filter(w=>w.localImage).map(w=>w.id));
+      const images=await Promise.all(s.images.filter(x=>ids.has(x.id)).map(async x=>({id:x.id,type:x.blob.type,data:await toDataURL(x.blob)})));
+      return{format:'heather-word-studio',schemaVersion:1,version:VERSION,createdAt:new Date().toISOString(),entries:catalog.map(w=>({...normalizeWord(w),_packId:w._packId,localImage:!!w.localImage,hidden:!!w.hidden})),progress:s.progress,meta:s.meta.filter(m=>['profile','settings'].includes(m.id)),images};
+    },
     async restore(payload){
       const clean=validateBackup(payload);
       return transact(stores,'readwrite',tx=>{for(const [name,rows] of Object.entries(clean))for(const r of rows)tx.objectStore(name).put(r);});
@@ -35,7 +39,7 @@ export async function openStore(demo=false) {
 export function toDataURL(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(blob);});}
 export function validateBackup(p){
   if(!p||p.format!=='heather-word-studio'||p.schemaVersion!==1||!Array.isArray(p.entries)||p.entries.length>10000||!Array.isArray(p.images)||p.images.length>10000||!Array.isArray(p.progress)||p.progress.length>10000||!Array.isArray(p.meta)||p.meta.length>20)throw Error('이 앱의 백업 파일이 아니거나 파일이 너무 커요.');
-  const seen=new Set();const entries=p.entries.map(e=>{const w=normalizeWord(e);if(seen.has(w.id))throw Error('백업에 중복 ID가 있어요.');seen.add(w.id);return{...w,_packId:String(e._packId||'my-words'),localImage:e.localImage===true,_source:'복원한 단어'};});
+  const seen=new Set();const entries=p.entries.map(e=>{const w=normalizeWord(e);if(seen.has(w.id))throw Error('백업에 중복 ID가 있어요.');seen.add(w.id);return{...w,_packId:String(e._packId||'my-words'),localImage:e.localImage===true,hidden:e.hidden===true,_source:'복원한 단어'};});
   let size=0;const imageIds=new Set();
   const images=p.images.map(x=>{if(!seen.has(x.id)||imageIds.has(x.id)||!/^data:image\/(webp|png|jpeg);base64,[a-zA-Z0-9+/=]+$/.test(x.data||''))throw Error('백업 사진 형식이 올바르지 않아요.');imageIds.add(x.id);const type=x.data.slice(5,x.data.indexOf(';')),bin=atob(x.data.split(',')[1]);size+=bin.length;if(size>40*1024*1024)throw Error('백업 사진 용량이 40MB를 넘어요.');return{id:x.id,blob:new Blob([Uint8Array.from(bin,c=>c.charCodeAt(0))],{type})};});
   if(entries.some(e=>e.localImage&&!imageIds.has(e.id)))throw Error('백업에 빠진 사진이 있어요.');

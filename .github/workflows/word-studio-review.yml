@@ -28,23 +28,25 @@ jobs:
           git archive --format=zip HEAD -o studio-review/source.zip
       - name: Validate syntax, data and all regression tests
         run: |
+          set -o pipefail
           node --check word-studio/app.js
           node --check word-studio/store.js
           node --check word-studio/launcher.js
-          node tools/validate-word-studio.mjs
-          node --test tests/*.test.mjs
+          node tools/validate-word-studio.mjs | tee studio-review/content-validation.txt
+          node --test tests/*.test.mjs 2>&1 | tee studio-review/unit-tests.txt
       - name: Prepare browser
         run: |
           npm install --no-save --package-lock=false playwright@1.51.1
           npx playwright install --with-deps chromium
       - name: Browser flows and screenshots
         run: |
+          set -o pipefail
           python3 -m http.server 8765 >/tmp/studio-http.log 2>&1 &
           for attempt in {1..40}; do
             if curl -fsS http://127.0.0.1:8765/ >/dev/null; then break; fi
             sleep 0.25
           done
-          node tests/word-studio-browser.mjs
+          node tests/word-studio-browser.mjs 2>&1 | tee studio-review/browser-log.txt
       - name: Check exact Pages revision
         if: github.ref == 'refs/heads/main'
         run: |
@@ -66,8 +68,9 @@ jobs:
         env:
           STUDIO_TEST_URL: https://dalmook.github.io/heather_word/
         run: |
+          set -o pipefail
           cp studio-review/report.json studio-review/local-report.json
-          node tests/word-studio-browser.mjs
+          node tests/word-studio-browser.mjs 2>&1 | tee studio-review/live-browser-log.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
