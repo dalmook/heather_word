@@ -31,3 +31,9 @@
     window.HEATHER_DEMO_ERROR = true;
   }
 })();
+// The new photo/content playground is additive; the original engine stays intact.
+(function loadWordStudioLauncher(){
+  const script=document.createElement('script');script.type='module';
+  script.src=new URL('./word-studio/launcher.js?v=1.0.0',document.currentScript.src).href;
+  document.head.append(script);
+})();

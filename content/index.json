@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "packs": [
+    { "id": "starter", "file": "packs/starter.json" }
+  ]
+}

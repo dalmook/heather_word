@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "starter",
+  "title": "처음 만나는 12단어",
+  "description": "사용법을 익히는 별도의 체험팩입니다. 기존 단어장에는 추가하지 않습니다.",
+  "sample": true,
+  "words": [
+    {"id":"sample-apple","word":"apple","meaning":"사과","category":"간식","emoji":"🍎","example":"I like apples.","exampleMeaning":"나는 사과를 좋아해요."},
+    {"id":"sample-banana","word":"banana","meaning":"바나나","category":"간식","emoji":"🍌","example":"This is a banana.","exampleMeaning":"이것은 바나나예요."},
+    {"id":"sample-bread","word":"bread","meaning":"빵","category":"간식","emoji":"🍞","example":"I eat bread.","exampleMeaning":"나는 빵을 먹어요."},
+    {"id":"sample-milk","word":"milk","meaning":"우유","category":"간식","emoji":"🥛","example":"I drink milk.","exampleMeaning":"나는 우유를 마셔요."},
+    {"id":"sample-cat","word":"cat","meaning":"고양이","category":"동물","emoji":"🐱","example":"The cat is small.","exampleMeaning":"고양이는 작아요."},
+    {"id":"sample-dog","word":"dog","meaning":"개","category":"동물","emoji":"🐶","example":"The dog can run.","exampleMeaning":"개는 달릴 수 있어요."},
+    {"id":"sample-rabbit","word":"rabbit","meaning":"토끼","category":"동물","emoji":"🐰","example":"The rabbit is white.","exampleMeaning":"토끼는 하얘요."},
+    {"id":"sample-bird","word":"bird","meaning":"새","category":"동물","emoji":"🐦","example":"The bird can fly.","exampleMeaning":"새는 날 수 있어요."},
+    {"id":"sample-book","word":"book","meaning":"책","category":"학교","emoji":"📖","example":"I read a book.","exampleMeaning":"나는 책을 읽어요."},
+    {"id":"sample-pencil","word":"pencil","meaning":"연필","category":"학교","emoji":"✏️","example":"This is my pencil.","exampleMeaning":"이것은 내 연필이에요."},
+    {"id":"sample-bag","word":"bag","meaning":"가방","category":"학교","emoji":"🎒","example":"My bag is blue.","exampleMeaning":"내 가방은 파란색이에요."},
+    {"id":"sample-school","word":"school","meaning":"학교","category":"학교","emoji":"🏫","example":"I go to school.","exampleMeaning":"나는 학교에 가요."}
+  ]

@@ -1,0 +1,76 @@
+name: Word Studio review
+on:
+  push:
+    branches: [main, feat/word-studio-20260928]
+    paths: ['word-studio/**', 'word-studio.html', 'content/**', 'starter-context.js', 'tests/word-studio*', 'tools/validate-word-studio.mjs', '.github/workflows/word-studio-review.yml']
+  pull_request:
+    branches: [main]
+    paths: ['word-studio/**', 'word-studio.html', 'content/**', 'starter-context.js', 'tests/word-studio*', 'tools/validate-word-studio.mjs', '.github/workflows/word-studio-review.yml']
+permissions:
+  contents: read
+concurrency:
+  group: word-studio-review-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Archive exact review source
+        run: |
+          mkdir -p studio-review
+          git archive --format=zip HEAD -o studio-review/source.zip
+      - name: Validate syntax, data and all regression tests
+        run: |
+          node --check word-studio/app.js
+          node --check word-studio/store.js
+          node --check word-studio/launcher.js
+          node tools/validate-word-studio.mjs
+          node --test tests/*.test.mjs
+      - name: Prepare browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.51.1
+          npx playwright install --with-deps chromium
+      - name: Browser flows and screenshots
+        run: |
+          python3 -m http.server 8765 >/tmp/studio-http.log 2>&1 &
+          for attempt in {1..40}; do
+            if curl -fsS http://127.0.0.1:8765/ >/dev/null; then break; fi
+            sleep 0.25
+          done
+          node tests/word-studio-browser.mjs
+      - name: Check exact Pages revision
+        if: github.ref == 'refs/heads/main'
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const paths=['word-studio.html','word-studio/app.js','word-studio/core.js','word-studio/store.js','word-studio/style.css','word-studio/launcher.js','starter-context.js','content/index.json'];
+          let stale=[];
+          for(let attempt=0;attempt<60;attempt++){
+            stale=[];
+            await Promise.all(paths.map(async path=>{try{const r=await fetch(`https://dalmook.github.io/heather_word/${path}?revision=${process.env.GITHUB_SHA}&attempt=${attempt}`,{signal:AbortSignal.timeout(15000)});if(!r.ok||!Buffer.from(await r.arrayBuffer()).equals(fs.readFileSync(path)))stale.push(path);}catch{stale.push(path);}}));
+            if(!stale.length)break;
+            console.log('Pages pending:',stale.join(', '));await new Promise(r=>setTimeout(r,5000));
+          }
+          fs.writeFileSync('studio-review/deployed-assets.json',JSON.stringify({commit:process.env.GITHUB_SHA,paths,stale,passed:!stale.length},null,2));
+          if(stale.length)throw Error('Pages did not reach the reviewed revision');
+          JS
+      - name: Run browser flows against actual Pages in isolated storage
+        if: github.ref == 'refs/heads/main'
+        env:
+          STUDIO_TEST_URL: https://dalmook.github.io/heather_word/
+        run: |
+          cp studio-review/report.json studio-review/local-report.json
+          node tests/word-studio-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: word-studio-review-${{ github.run_number }}
+          path: studio-review/
+          retention-days: 7
