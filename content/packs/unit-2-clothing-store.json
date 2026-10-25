@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "id": "unit-2-clothing-store",
+  "title": "Unit 2 옷가게",
+  "description": "At the Clothing Store · 의류 영어단어 20개",
+  "words": [
+    {
+      "id": "unit2-clothing-dress",
+      "word": "dress",
+      "meaning": "드레스",
+      "category": "옷가게",
+      "emoji": "👗",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-shirt",
+      "word": "shirt",
+      "meaning": "셔츠",
+      "category": "옷가게",
+      "emoji": "👔",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-sweatshirt",
+      "word": "sweatshirt",
+      "meaning": "운동할 때 입는 셔츠",
+      "category": "옷가게",
+      "emoji": "👕",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-sweatpants",
+      "word": "sweatpants",
+      "meaning": "운동할 때 입는 바지",
+      "category": "옷가게",
+      "emoji": "👖",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-windbreaker",
+      "word": "windbreaker",
+      "meaning": "바람막이 점퍼",
+      "category": "옷가게",
+      "emoji": "🧥",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-shorts",
+      "word": "shorts",
+      "meaning": "반바지",
+      "category": "옷가게",
+      "emoji": "🩳",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-raincoat",
+      "word": "raincoat",
+      "meaning": "우비",
+      "category": "옷가게",
+      "emoji": "☔",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-rain-boots",
+      "word": "rain boots",
+      "meaning": "장화",
+      "category": "옷가게",
+      "emoji": "👢",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-overalls",
+      "word": "overalls",
+      "meaning": "멜빵바지",
+      "category": "옷가게",
+      "emoji": "👖",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-blouse",
+      "word": "blouse",
+      "meaning": "블라우스",
+      "category": "옷가게",
+      "emoji": "👚",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-jeans",
+      "word": "jeans",
+      "meaning": "청바지",
+      "category": "옷가게",
+      "emoji": "👖",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-coat",
+      "word": "coat",
+      "meaning": "코트",
+      "category": "옷가게",
+      "emoji": "🧥",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-suit",
+      "word": "suit",
+      "meaning": "정장",
+      "category": "옷가게",
+      "emoji": "👔",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-t-shirt",
+      "word": "T-shirt",
+      "meaning": "티셔츠",
+      "category": "옷가게",
+      "emoji": "👕",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-pants",
+      "word": "pants",
+      "meaning": "바지",
+      "category": "옷가게",
+      "emoji": "👖",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-sweater",
+      "word": "sweater",
+      "meaning": "스웨터",
+      "category": "옷가게",
+      "emoji": "🧶",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-hat",
+      "word": "hat",
+      "meaning": "모자",
+      "category": "옷가게",
+      "emoji": "👒",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-jacket",
+      "word": "jacket",
+      "meaning": "재킷",
+      "category": "옷가게",
+      "emoji": "🧥",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-skirt",
+      "word": "skirt",
+      "meaning": "치마",
+      "category": "옷가게",
+      "emoji": "👗",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    },
+    {
+      "id": "unit2-clothing-tie",
+      "word": "tie",
+      "meaning": "넥타이",
+      "category": "옷가게",
+      "emoji": "👔",
+      "image": "",
+      "audio": "",
+      "example": "",
+      "exampleMeaning": ""
+    }
+  ]
+}
