@@ -1,6 +1,13 @@
 {
   "schemaVersion": 1,
   "packs": [
-    { "id": "starter", "file": "packs/starter.json" }
+    {
+      "id": "starter",
+      "file": "packs/starter.json"
+    },
+    {
+      "id": "unit-2-clothing-store",
+      "file": "packs/unit-2-clothing-store.json"
+    }
   ]
 }
